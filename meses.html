@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vista por Meses</title>
+    <link rel="stylesheet" href="meses-estilos.css">
+</head>
+<body>
+    <a href="index.html" class="btn-volver">Volver al Registro</a>
+
+    <h1>Congregacion Agua Azul</h1>
+    <p class="subtitulo">Organizado por mes - Datos de cada publicador</p>
+
+    <div class="controles">
+        <label for="select-mes">Mes:</label>
+        <select id="select-mes">
+            <option value="0">Septiembre</option>
+            <option value="1">Octubre</option>
+            <option value="2">Noviembre</option>
+            <option value="3">Diciembre</option>
+            <option value="4">Enero</option>
+            <option value="5">Febrero</option>
+            <option value="6">Marzo</option>
+            <option value="7">Abril</option>
+            <option value="8">Mayo</option>
+            <option value="9">Junio</option>
+            <option value="10">Julio</option>
+            <option value="11">Agosto</option>
+        </select>
+
+        <label for="select-grupo-mes">Grupo:</label>
+        <select id="select-grupo-mes">
+            <option value="todos">Todos</option>
+        </select>
+
+        <label for="select-anio-servicio">Año Serv.:</label>
+        <select id="select-anio-servicio">
+            <option value="todos">Todos</option>
+        </select>
+
+        <button class="btn-pdf" id="btn-pdf-mes">Generar PDF del Mes</button>
+        <button class="btn-pdf" id="btn-editar-masivo" style="background-color:#7aa2f7;">Editar Todos</button>
+    </div>
+
+    <div id="estadisticas-container"></div>
+    <div id="contenedor-mes"></div>
+
+    <script src="meses.js"></script>
+</body>
+</html>

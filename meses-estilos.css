@@ -1,0 +1,270 @@
+body {
+    color: #c0caf5;
+    background-color: #1a1b26;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    color: #7aa2f7;
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.subtitulo {
+    text-align: center;
+    color: #565f89;
+    margin-bottom: 20px;
+}
+
+.controles {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.controles label {
+    font-weight: bold;
+}
+
+.controles select {
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #414868;
+    background-color: #33374a;
+    color: #c0caf5;
+    font-size: 14px;
+}
+
+.controles select:focus {
+    border-color: #7aa2f7;
+    outline: none;
+}
+
+.btn-volver {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    background-color: #414868;
+    color: #c0caf5;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-volver:hover {
+    background-color: #565f89;
+}
+
+.btn-pdf {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    background-color: #ff9e64;
+    color: #1a1b26;
+}
+
+.btn-pdf:hover {
+    background-color: #ffb07a;
+}
+
+#contenedor-mes {
+    margin-top: 10px;
+}
+
+.tabla-mes {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin-bottom: 30px;
+    background-color: #24283b;
+    border: 1px solid #414868;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.tabla-mes th {
+    background-color: #414868;
+    color: #c0caf5;
+    padding: 10px 12px;
+    text-align: center;
+    border: 1px solid #565f89;
+    font-size: 13px;
+}
+
+.tabla-mes td {
+    padding: 8px 12px;
+    border: 1px solid #414868;
+    text-align: center;
+}
+
+.tabla-mes tr:nth-child(even) {
+    background-color: #292e42;
+}
+
+.tabla-mes tr:hover {
+    background-color: #33374a;
+}
+
+.tabla-mes td:first-child {
+    text-align: left;
+    font-weight: bold;
+    color: #7aa2f7;
+}
+
+.tabla-mes td:nth-child(2) {
+    text-align: left;
+}
+
+.si {
+    color: #9ece6a;
+    font-weight: bold;
+}
+
+.no {
+    color: #565f89;
+}
+
+.fila-no-participo {
+    background-color: #3b1d28 !important;
+}
+
+.fila-no-participo:hover {
+    background-color: #4a2233 !important;
+}
+
+.fila-no-participo td {
+    color: #f7768e;
+}
+
+.fila-no-participo td:first-child {
+    color: #f7768e;
+}
+
+.fila-no-participo .si,
+.fila-no-participo .no {
+    color: #f7768e;
+}
+
+.horas-bajas {
+    color: #ff9e64 !important;
+    font-weight: bold;
+}
+
+.total-row {
+    background-color: #414868 !important;
+    font-weight: bold;
+}
+
+.total-row td {
+    border-color: #565f89;
+}
+
+.resumen-header {
+    background-color: #33374a;
+    padding: 10px 15px;
+    border-radius: 8px 8px 0 0;
+    border: 1px solid #414868;
+    border-bottom: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.resumen-header h2 {
+    margin: 0;
+    color: #7aa2f7;
+    font-size: 18px;
+}
+
+.estadisticas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.stat-card {
+    background-color: #24283b;
+    border: 1px solid #414868;
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+}
+
+.stat-card .numero {
+    font-size: 24px;
+    font-weight: bold;
+    color: #7aa2f7;
+}
+
+.stat-card .label {
+    font-size: 12px;
+    color: #565f89;
+    margin-top: 4px;
+}
+
+.stat-card.verde .numero { color: #9ece6a; }
+.stat-card.naranja .numero { color: #ff9e64; }
+.stat-card.rojo .numero { color: #f7768e; }
+.stat-card.morado .numero { color: #bb9af7; }
+
+.tabla-mes input[type="text"],
+.tabla-mes input[type="number"] {
+    background-color: #33374a;
+    color: #c0caf5;
+    border: 1px solid #414868;
+    border-radius: 3px;
+    padding: 3px 5px;
+    font-size: 13px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.tabla-mes input[type="text"]:focus,
+.tabla-mes input[type="number"]:focus {
+    border-color: #7aa2f7;
+    outline: none;
+}
+
+.tabla-mes input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.btn-guardar-fila {
+    padding: 3px 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 12px;
+    background-color: #9ece6a;
+    color: #1a1b26;
+}
+
+.btn-guardar-fila:hover {
+    background-color: #73daca;
+}
+
+.tabla-mes select {
+    background-color: #33374a;
+    color: #c0caf5;
+    border: 1px solid #414868;
+    border-radius: 3px;
+    padding: 3px 5px;
+    font-size: 12px;
+}
+
+.tabla-mes select:focus {
+    border-color: #7aa2f7;
+    outline: none;
+}

@@ -1,36 +1,43 @@
-body{
-    color: #cdd6f4;
-    background-color: #1e1e2e;
+body {
+    color: #c0caf5;
+    background-color: #1a1b26;
+    font-family: 'Segoe UI', Arial, sans-serif;
 }
 
-#total{
-    text-align: right; font-weight: bold;
-
+#total {
+    text-align: right;
+    font-weight: bold;
 }
 
-#total-horas{
-    font-weight:bold;}
+#total-horas {
+    font-weight: bold;
+}
 
 .ficha {
-    border: 2px solid #585b70;
+    border: 2px solid #414868;
     border-radius: 8px;
     margin: 20px 0;
     padding: 15px;
-    background-color: #313244;
+    background-color: #24283b;
+    transition: border-color 0.2s;
+}
+
+.ficha:hover {
+    border-color: #7aa2f7;
 }
 
 .ficha-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #585b70;
+    border-bottom: 1px solid #414868;
     padding-bottom: 10px;
     margin-bottom: 10px;
 }
 
 .ficha-header h3 {
     margin: 0;
-    color: #89b4fa;
+    color: #7aa2f7;
 }
 
 .ficha-botones button {
@@ -42,14 +49,40 @@ body{
     font-weight: bold;
 }
 
-.ficha-botones button:nth-child(1) {
-    background-color: #a6e3a1;
-    color: #1e1e2e;
+.btn-guardar-edit {
+    background-color: #9ece6a;
+    color: #1a1b26;
 }
 
-.ficha-botones button:nth-child(2) {
-    background-color: #f38ba8;
-    color: #1e1e2e;
+.btn-guardar-edit:hover {
+    background-color: #73daca;
+}
+
+.btn-cancelar-edit {
+    background-color: #e0af68;
+    color: #1a1b26;
+}
+
+.btn-cancelar-edit:hover {
+    background-color: #ff9e64;
+}
+
+.btn-eliminar {
+    background-color: #f7768e;
+    color: #1a1b26;
+}
+
+.btn-eliminar:hover {
+    background-color: #ff7a93;
+}
+
+.btn-pdf-ficha {
+    background-color: #89b4fa;
+    color: #1a1b26;
+}
+
+.btn-pdf-ficha:hover {
+    background-color: #a0c4ff;
 }
 
 .ficha-datos {
@@ -68,23 +101,205 @@ body{
     border-collapse: collapse;
 }
 
-.ficha-tabla th, .ficha-tabla td {
-    border: 1px solid #585b70;
+.ficha-tabla th,
+.ficha-tabla td {
+    border: 1px solid #414868;
     padding: 5px 8px;
     text-align: center;
 }
 
 .ficha-tabla th {
-    background-color: #45475a;
-    color: #cdd6f4;
+    background-color: #414868;
+    color: #c0caf5;
+}
+
+.ficha-tabla tr:hover {
+    background-color: #33374a;
 }
 
 #fichas-guardadas {
     margin-top: 30px;
-    border-top: 2px solid #585b70;
+    border-top: 2px solid #414868;
     padding-top: 20px;
 }
 
+#grupo-controls {
+    margin: 15px 0;
+    padding: 10px;
+    background-color: #24283b;
+    border: 1px solid #414868;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
 
+#grupo-controls label {
+    font-weight: bold;
+    color: #c0caf5;
+}
 
+#grupo-controls select {
+    padding: 5px 10px;
+    border-radius: 4px;
+    border: 1px solid #414868;
+    background-color: #33374a;
+    color: #c0caf5;
+}
 
+#grupo-controls select:focus {
+    border-color: #7aa2f7;
+    outline: none;
+}
+
+#btn-pdf-grupo {
+    padding: 5px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    background-color: #7aa2f7;
+    color: #1a1b26;
+}
+
+#btn-pdf-grupo:hover {
+    background-color: #89b4fa;
+}
+
+.grupo-header {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #7aa2f7;
+    padding: 10px 0;
+    border-bottom: 2px solid #7aa2f7;
+    margin: 20px 0 10px 0;
+}
+
+.grupo-seccion .ficha {
+    border-left: 4px solid #bb9af7;
+}
+
+#busqueda-container {
+    margin: 10px 0;
+}
+
+#busqueda-container label {
+    font-weight: bold;
+    margin-right: 8px;
+}
+
+#input-buscar {
+    padding: 5px 10px;
+    border-radius: 4px;
+    border: 1px solid #414868;
+    background-color: #33374a;
+    color: #c0caf5;
+    width: 250px;
+}
+
+#input-buscar:focus {
+    border-color: #7aa2f7;
+    outline: none;
+}
+
+button {
+    background-color: #7aa2f7;
+    color: #1a1b26;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: #89b4fa;
+}
+
+#btn-guardar {
+    background-color: #9ece6a;
+}
+
+#btn-guardar:hover {
+    background-color: #73daca;
+}
+
+#btn-ver {
+    background-color: #bb9af7;
+}
+
+#btn-ver:hover {
+    background-color: #c89bf5;
+}
+
+#btn-generar-pdf {
+    background-color: #ff9e64;
+}
+
+#btn-generar-pdf:hover {
+    background-color: #ffb07a;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"] {
+    background-color: #33374a;
+    color: #c0caf5;
+    border: 1px solid #414868;
+    border-radius: 4px;
+    padding: 5px 8px;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus {
+    border-color: #7aa2f7;
+    outline: none;
+}
+
+select {
+    background-color: #33374a;
+    color: #c0caf5;
+    border: 1px solid #414868;
+    border-radius: 4px;
+    padding: 5px 8px;
+}
+
+select:focus {
+    border-color: #7aa2f7;
+    outline: none;
+}
+
+.ficha input[type="text"],
+.ficha input[type="number"],
+.ficha input[type="date"] {
+    background-color: #33374a;
+    color: #c0caf5;
+    border: 1px solid #414868;
+    border-radius: 3px;
+    padding: 2px 4px;
+}
+
+.ficha input[type="text"]:focus,
+.ficha input[type="number"]:focus,
+.ficha input[type="date"]:focus {
+    border-color: #7aa2f7;
+    outline: none;
+}
+
+label {
+    color: #c0caf5;
+}
+
+h2 {
+    color: #7aa2f7;
+}
+
+table {
+    border-color: #414868;
+}
+
+thead {
+    background-color: #414868;
+}

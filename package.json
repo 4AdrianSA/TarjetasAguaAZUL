@@ -1,0 +1,8 @@
+{
+  "name": "fichas-de-agua-azul",
+  "version": "1.0.0",
+  "description": "Sistema de fichas para registro de publicadores",
+  "scripts": {
+    "start": "npx serve -s . -l 3000 --no-clipboard"
+  }
+}
