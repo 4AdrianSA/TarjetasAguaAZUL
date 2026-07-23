@@ -5,8 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tarjetas Agua AZUL </title>
     <link rel="stylesheet" href="estilos.css">
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="app.js" defer></script>
+    <script src="app.js?v=11" defer></script>
 </head>
 <body>
 
@@ -14,6 +17,12 @@
        <button id="btn-ver">Ver guardados</button>
        <button id="btn-generar-pdf">Generar PDF de la Ficha</button>
        <a href="meses.html" id="btn-meses" style="padding:8px 16px;border-radius:4px;background-color:#bb9af7;color:#1a1b26;text-decoration:none;font-weight:bold;display:inline-block;margin-left:4px;">Ver por Meses</a>
+       <button id="btn-nuevo-anio" style="background-color:#ff9e64;">Iniciar Nuevo Año</button>
+       <button id="btn-exportar" style="background-color:#9ece6a;">Exportar Backup</button>
+       <button id="btn-importar" style="background-color:#7dcfff;">Importar Backup</button>
+       <input type="file" id="input-importar" accept=".json" style="display:none;">
+       <button id="btn-resumen-sucursal" style="background-color:#bb9af7;">Resumen a Sucursal</button>
+       <button id="btn-pdf-masivo" style="background-color:#f7768e;">PDF Masivo (2 por pág)</button>
 
     <div>
     <div> <h2 aria-label="Formulario para el registro de un nuevo publicador">
@@ -62,8 +71,21 @@
             <label><input type="radio" name="rol-grupo" value="Superintendente de grupo"> Superintendente de grupo</label>
             <label><input type="radio" name="rol-grupo" value="Auxiliar de grupo"> Auxiliar de grupo</label>
         </p>
+        <p>
+            <label>Estado del publicador:</label>
+            <select id="input-estado">
+                <option value="Activo">Activo</option>
+                <option value="Inactivo">Inactivo</option>
+                <option value="Baja">Baja / Bautizado</option>
+            </select>
+        </p>
+        <p>
+            <label>Observaciones:</label>
+            <input type="text" id="input-observaciones" placeholder="Ej: Se mudó, informe parcial..." style="width:100%;max-width:400px;">
+        </p>
     </div>
 
+    <div class="table-responsive">
     <table>
         <thead>
             <tr>
@@ -81,7 +103,7 @@
      <td>   <input type="checkbox" id="sep-participo"></td>
         <td> <input type="number" min= "0" id="sep-cursos"></td>
         <td> <input type="checkbox" id="sep-auxiliar"></td>
-        <td><input type="number" min="0" class="input-horas" id="sep-horas"></td>
+        <td><input type="number" min="0" step="0.5" class="input-horas" id="sep-horas"></td>
  <td><input type="text" placeholder="Notas del mes..." id="sep-notas"></td>
 </tr>
 
@@ -90,7 +112,7 @@
      <td>   <input type="checkbox" id="oct-participo"></td>
         <td> <input type="number" min= "0" id="oct-cursos"></td>
         <td> <input type="checkbox" id="oct-auxiliar"></td>
-        <td><input type="number" min="0" class="input-horas" id="oct-horas"></td>
+        <td><input type="number" min="0" step="0.5" class="input-horas" id="oct-horas"></td>
  <td><input type="text" placeholder="Notas del mes..." id="oct-notas"></td>
 </tr>
 
@@ -99,7 +121,7 @@
      <td>   <input type="checkbox" id="nov-participo"></td>
         <td> <input type="number" min= "0" id="nov-cursos"></td>
         <td> <input type="checkbox" id="nov-auxiliar"></td>
-        <td><input type="number" min="0" class="input-horas" id="nov-horas"></td>
+        <td><input type="number" min="0" step="0.5" class="input-horas" id="nov-horas"></td>
  <td><input type="text" placeholder="Notas del mes..." id="nov-notas"></td>
 </tr>
 
@@ -108,7 +130,7 @@
      <td>   <input type="checkbox" id="dic-participo"></td>
         <td> <input type="number" min= "0" id="dic-cursos"></td>
         <td> <input type="checkbox" id="dic-auxiliar"></td>
-        <td><input type="number" min="0" class="input-horas" id="dic-horas"></td>
+        <td><input type="number" min="0" step="0.5" class="input-horas" id="dic-horas"></td>
  <td><input type="text" placeholder="Notas del mes..." id="dic-notas"></td>
 </tr>
 
@@ -118,7 +140,7 @@
      <td>   <input type="checkbox" id="ene-participo"></td>
         <td> <input type="number" min= "0" id="ene-cursos"></td>
         <td> <input type="checkbox" id="ene-auxiliar"></td>
-        <td><input type="number" min="0" class="input-horas" id="ene-horas"></td>
+        <td><input type="number" min="0" step="0.5" class="input-horas" id="ene-horas"></td>
  <td><input type="text" placeholder="Notas del mes..." id="ene-notas"></td>
 </tr>
 
@@ -128,7 +150,7 @@
      <td>   <input type="checkbox" id="feb-participo"></td>
         <td> <input type="number" min= "0" id="feb-cursos"></td>
         <td> <input type="checkbox" id="feb-auxiliar"></td>
-        <td><input type="number" min="0" class="input-horas" id="feb-horas"></td>
+        <td><input type="number" min="0" step="0.5" class="input-horas" id="feb-horas"></td>
  <td><input type="text" placeholder="Notas del mes..." id="feb-notas"></td>
 </tr>
 
@@ -139,7 +161,7 @@
      <td>   <input type="checkbox" id="mar-participo"></td>
         <td> <input type="number" min= "0" id="mar-cursos"></td>
         <td> <input type="checkbox" id="mar-auxiliar"></td>
-        <td><input type="number" min="0" class="input-horas" id="mar-horas"></td>
+        <td><input type="number" min="0" step="0.5" class="input-horas" id="mar-horas"></td>
  <td><input type="text" placeholder="Notas del mes..." id="mar-notas"></td>
 </tr>
 
@@ -150,7 +172,7 @@
      <td>   <input type="checkbox" id="abr-participo"></td>
         <td> <input type="number" min= "0" id="abr-cursos"></td>
         <td> <input type="checkbox" id="abr-auxiliar"></td>
-        <td><input type="number" min="0" class="input-horas" id="abr-horas"></td>
+        <td><input type="number" min="0" step="0.5" class="input-horas" id="abr-horas"></td>
  <td><input type="text" placeholder="Notas del mes..." id="abr-notas"></td>
 </tr>
 
@@ -161,7 +183,7 @@
      <td>   <input type="checkbox" id="may-participo"></td>
         <td> <input type="number" min= "0" id="may-cursos"></td>
         <td> <input type="checkbox" id="may-auxiliar"></td>
-        <td><input type="number" min="0" class="input-horas" id="may-horas"></td>
+        <td><input type="number" min="0" step="0.5" class="input-horas" id="may-horas"></td>
  <td><input type="text" placeholder="Notas del mes..." id="may-notas"></td>
 </tr>
 
@@ -171,7 +193,7 @@
      <td>   <input type="checkbox" id="jun-participo"></td>
         <td> <input type="number" min= "0" id="jun-cursos"></td>
         <td> <input type="checkbox" id="jun-auxiliar"></td>
-        <td><input type="number" min="0" class="input-horas" id="jun-horas"></td>
+        <td><input type="number" min="0" step="0.5" class="input-horas" id="jun-horas"></td>
  <td><input type="text" placeholder="Notas del mes..." id="jun-notas"></td>
 </tr>
 
@@ -181,7 +203,7 @@
      <td>   <input type="checkbox" id="jul-participo"></td>
         <td> <input type="number" min= "0" id="jul-cursos"></td>
         <td> <input type="checkbox" id="jul-auxiliar"></td>
-        <td><input type="number" min="0" class="input-horas" id="jul-horas"></td>
+        <td><input type="number" min="0" step="0.5" class="input-horas" id="jul-horas"></td>
  <td><input type="text" placeholder="Notas del mes..." id="jul-notas"></td>
 </tr>
 
@@ -191,7 +213,7 @@
      <td>   <input type="checkbox" id="ago-participo"></td>
         <td> <input type="number" min= "0" id="ago-cursos"></td>
         <td> <input type="checkbox" id="ago-auxiliar"></td>
-        <td><input type="number" min="0" class="input-horas" id="ago-horas"></td>
+        <td><input type="number" min="0" step="0.5" class="input-horas" id="ago-horas"></td>
  <td><input type="text" placeholder="Notas del mes..." id="ago-notas"></td>
 </tr>
 </tbody>
@@ -202,6 +224,7 @@
     </tr>
 </tfoot>
     </table>
+    </div>
     </div>
 
     <div id="busqueda-container">
@@ -214,10 +237,27 @@
         <select id="select-grupo-pdf">
             <option value="todos">Todos</option>
         </select>
+        <label for="select-estado">Estado:</label>
+        <select id="select-estado">
+            <option value="todos">Todos</option>
+            <option value="Activo">Activo</option>
+            <option value="Inactivo">Inactivo</option>
+            <option value="Baja">Baja</option>
+        </select>
         <button id="btn-pdf-grupo">Generar PDF del Grupo</button>
     </div>
 
     <div id="fichas-guardadas"></div>
+
+    <div id="modal-resumen" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:1000;justify-content:center;align-items:center;">
+        <div style="background:#24283b;border:2px solid #414868;border-radius:8px;padding:20px;max-width:500px;width:90%;max-height:80vh;overflow-y:auto;color:#c0caf5;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
+                <h2 style="margin:0;color:#7aa2f7;font-size:18px;">Resumen a Sucursal</h2>
+                <button onclick="document.getElementById('modal-resumen').style.display='none'" style="background:#f7768e;padding:5px 12px;font-size:14px;">Cerrar</button>
+            </div>
+            <div id="contenido-resumen"></div>
+        </div>
+    </div>
 
 </body>
 </html>

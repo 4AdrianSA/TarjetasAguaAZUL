@@ -268,3 +268,197 @@ h1 {
     border-color: #7aa2f7;
     outline: none;
 }
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 15px;
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    .controles {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .controles select,
+    .controles button {
+        width: 100%;
+        padding: 10px 14px;
+        font-size: 14px;
+    }
+
+    .controles label {
+        margin-top: 5px;
+    }
+
+    .resumen-header {
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+    }
+
+    .estadisticas {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+
+    .stat-card {
+        padding: 10px;
+    }
+
+    .stat-card .numero {
+        font-size: 20px;
+    }
+
+    .tabla-mes {
+        font-size: 13px;
+    }
+
+    .tabla-mes th {
+        padding: 8px 6px;
+        font-size: 12px;
+    }
+
+    .tabla-mes td {
+        padding: 6px 5px;
+        font-size: 12px;
+    }
+
+    .tabla-mes td input[type="text"],
+    .tabla-mes td input[type="number"] {
+        font-size: 12px;
+        padding: 4px 5px;
+    }
+
+    .btn-guardar-fila {
+        padding: 5px 8px;
+        font-size: 11px;
+    }
+
+    .btn-volver {
+        padding: 10px 14px;
+        font-size: 14px;
+    }
+
+    .btn-pdf {
+        padding: 10px 14px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 8px;
+        font-size: 14px;
+    }
+
+    h1 {
+        font-size: 1.3em;
+    }
+
+    .subtitulo {
+        font-size: 13px;
+        margin-bottom: 12px;
+    }
+
+    .controles {
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+    .controles label {
+        font-size: 14px;
+        margin-bottom: 0;
+    }
+
+    .controles select {
+        padding: 10px 12px;
+        font-size: 15px;
+    }
+
+    .btn-volver {
+        padding: 12px 14px;
+        font-size: 15px;
+        display: block;
+        width: 100%;
+        text-align: center;
+        box-sizing: border-box;
+    }
+
+    .btn-pdf {
+        padding: 12px 14px;
+        font-size: 15px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    #btn-editar-masivo {
+        width: 100%;
+        padding: 12px 14px;
+        font-size: 15px;
+        box-sizing: border-box;
+    }
+
+    .estadisticas {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .stat-card .numero {
+        font-size: 18px;
+    }
+
+    .stat-card .label {
+        font-size: 11px;
+    }
+
+    .tabla-mes {
+        font-size: 12px;
+    }
+
+    .tabla-mes th {
+        padding: 6px 4px;
+        font-size: 11px;
+    }
+
+    .tabla-mes td {
+        padding: 5px 4px;
+        font-size: 11px;
+    }
+
+    .tabla-mes td input[type="text"],
+    .tabla-mes td input[type="number"] {
+        font-size: 13px;
+        padding: 6px 5px;
+    }
+
+    .tabla-mes td input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+    }
+
+    .btn-guardar-fila {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+
+    .resumen-header {
+        padding: 8px 10px;
+    }
+
+    .resumen-header h2 {
+        font-size: 15px;
+    }
+
+    .modal,
+    [id*="modal"] {
+        width: 95% !important;
+        max-width: 95% !important;
+    }
+}

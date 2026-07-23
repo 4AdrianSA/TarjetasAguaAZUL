@@ -5,9 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vista por Meses</title>
     <link rel="stylesheet" href="meses-estilos.css">
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
 </head>
 <body>
-    <a href="index.html" class="btn-volver">Volver al Registro</a>
+    <button class="btn-volver" onclick="volverAlRegistro()">Volver al Registro</button>
 
     <h1>Congregacion Agua Azul</h1>
     <p class="subtitulo">Organizado por mes - Datos de cada publicador</p>
@@ -46,6 +49,6 @@
     <div id="estadisticas-container"></div>
     <div id="contenedor-mes"></div>
 
-    <script src="meses.js"></script>
+    <script src="meses.js?v=5"></script>
 </body>
 </html>

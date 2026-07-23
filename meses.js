@@ -1,14 +1,61 @@
 var nombresMeses = ['Septiembre','Octubre','Noviembre','Diciembre','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto'];
 var modoEdicionMasiva = false;
+var editandoFilaId = null;
+
+// Firebase / Firestore
+var db = null;
+var usaFirebase = false;
+var cacheLista = [];
+
+try {
+    if (typeof firebase !== 'undefined' && typeof firebaseConfig !== 'undefined' && firebaseConfig.apiKey !== 'TU_API_KEY_AQUI') {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.firestore();
+        usaFirebase = true;
+    }
+} catch(e) { console.log('Firebase no disponible:', e); }
+
+function volverAlRegistro() {
+    var clave = prompt('Ingrese la contraseña del Secretario:');
+    if (clave === 'Panda20042') {
+        window.location.href = 'index.html';
+    } else if (clave !== null) {
+        alert('Contraseña incorrecta. Acceso denegada.');
+    }
+}
 
 function cargarLista() {
-    var datos = JSON.parse(localStorage.getItem('publicadores')) || [];
-    return datos.filter(function(f) { return f && f.nombre; });
+    return cacheLista.filter(function(f) { return f && f.nombre; });
 }
 
 function guardarLista(lista) {
-    localStorage.setItem('publicadores', JSON.stringify(lista));
-    canal.postMessage('actualizar');
+    cacheLista = lista.filter(function(f) { return f && f.nombre; });
+    localStorage.setItem('publicadores', JSON.stringify(cacheLista));
+    if (usaFirebase && db) {
+        db.collection('publicadores').doc('datos').set({
+            lista: cacheLista,
+            fechaGuardado: new Date().toISOString()
+        }).catch(function(err) { console.error('Error Firestore:', err); });
+    }
+}
+
+function cargarDatosIniciales(callback) {
+    if (usaFirebase && db) {
+        db.collection('publicadores').doc('datos').get().then(function(doc) {
+            if (doc.exists && doc.data().lista) {
+                cacheLista = doc.data().lista;
+            } else {
+                cacheLista = (JSON.parse(localStorage.getItem('publicadores')) || []).filter(function(f) { return f && f.nombre; });
+            }
+            callback();
+        }).catch(function(err) {
+            cacheLista = (JSON.parse(localStorage.getItem('publicadores')) || []).filter(function(f) { return f && f.nombre; });
+            callback();
+        });
+    } else {
+        cacheLista = (JSON.parse(localStorage.getItem('publicadores')) || []).filter(function(f) { return f && f.nombre; });
+        callback();
+    }
 }
 
 function actualizarSelectorGrupos() {
@@ -44,9 +91,50 @@ function pesoCargo(cargos, rolGrupo) {
 
 function toggleEdicionMasiva() {
     modoEdicionMasiva = !modoEdicionMasiva;
+    editandoFilaId = null;
     var btn = document.getElementById('btn-editar-masivo');
     btn.textContent = modoEdicionMasiva ? 'Guardar Todos' : 'Editar Todos';
     btn.style.backgroundColor = modoEdicionMasiva ? '#9ece6a' : '#7aa2f7';
+    mostrarMes();
+}
+
+function editarFila(id) {
+    editandoFilaId = id;
+    mostrarMes();
+}
+
+function guardarFila(id) {
+    var idxMes = parseInt(document.getElementById('select-mes').value);
+    var lista = cargarLista();
+    var f = null;
+    for (var i = 0; i < lista.length; i++) {
+        if (lista[i].id === id) { f = lista[i]; break; }
+    }
+    if (!f) return;
+
+    var tr = document.querySelector('tr[data-id="' + id + '"]');
+    if (!tr) return;
+
+    var participoCb = tr.querySelector('.edit-participo');
+    var cursosIn = tr.querySelector('.edit-cursos');
+    var horasIn = tr.querySelector('.edit-horas');
+    var notasIn = tr.querySelector('.edit-notas');
+
+    if (!f.meses || !Array.isArray(f.meses)) {
+        f.meses = [];
+        for (var j = 0; j < 12; j++) f.meses.push({ participo: false, cursos: 0, horas: 0, auxiliar: false, notas: '' });
+    }
+    if (!f.meses[idxMes]) {
+        f.meses[idxMes] = { participo: false, cursos: 0, horas: 0, auxiliar: false, notas: '' };
+    }
+
+    if (participoCb) f.meses[idxMes].participo = participoCb.checked;
+    if (cursosIn) f.meses[idxMes].cursos = parseInt(cursosIn.value) || 0;
+    if (horasIn) f.meses[idxMes].horas = parseInt(horasIn.value) || 0;
+    if (notasIn) f.meses[idxMes].notas = notasIn.value;
+
+    guardarLista(lista);
+    editandoFilaId = null;
     mostrarMes();
 }
 
@@ -139,6 +227,8 @@ function mostrarMes() {
             id: f.id,
             nombre: f.nombre,
             servicio: cargoPrincipal || 'Publicador',
+            estado: f.estado || 'Activo',
+            observaciones: f.observaciones || '',
             participo: participo,
             cursos: cursos,
             horas: horas,
@@ -153,8 +243,10 @@ function mostrarMes() {
         return a.nombre.localeCompare(b.nombre);
     });
 
+    var porcentaje = filas.length > 0 ? Math.round((totalParticipo / filas.length) * 100) : 0;
+
     var statsHtml = '<div class="estadisticas">' +
-        '<div class="stat-card verde"><div class="numero">' + totalParticipo + '</div><div class="label">Participaron</div></div>' +
+        '<div class="stat-card verde"><div class="numero">' + totalParticipo + '/' + filas.length + '</div><div class="label">Informes Recibidos (' + porcentaje + '%)</div></div>' +
         '<div class="stat-card rojo"><div class="numero">' + totalNoParticipo + '</div><div class="label">No Participaron</div></div>' +
         '<div class="stat-card"><div class="numero">' + totalCursos + '</div><div class="label">Cursos Totales</div></div>' +
         '<div class="stat-card naranja"><div class="numero">' + totalHoras + '</div><div class="label">Horas Totales</div></div>' +
@@ -190,32 +282,57 @@ function mostrarMes() {
             '<th>Cursos</th>' +
             '<th>Horas</th>' +
             '<th style="text-align:left;">Notas</th>' +
+            '<th>Acciones</th>' +
         '</tr></thead><tbody>';
 
     filas.forEach(function(f) {
         var claseFila = '';
-        if (!f.participo) claseFila = 'fila-no-participo';
+        if (f.estado === 'Inactivo') claseFila = 'fila-inactivo';
+        else if (f.estado === 'Baja') claseFila = 'fila-baja';
+        else if (!f.participo) claseFila = 'fila-no-participo';
         var claseHoras = '';
         if (f.esPrecReg && f.horas >= 50) claseHoras = 'si';
         else if (f.esPrecReg && f.horas > 0 && f.horas < 50) claseHoras = 'horas-bajas';
 
         if (modoEdicionMasiva) {
+            var nombreConEstado = f.nombre;
+            if (f.estado === 'Inactivo') nombreConEstado += ' <span class="badge-estado badge-estado-inactivo">INACTIVO</span>';
+            if (f.estado === 'Baja') nombreConEstado += ' <span class="badge-estado badge-estado-baja">BAJA</span>';
             tablaHtml += '<tr data-id="' + f.id + '" class="' + claseFila + '">' +
-                '<td style="text-align:left;">' + f.nombre + '</td>' +
+                '<td style="text-align:left;">' + nombreConEstado + '</td>' +
                 '<td style="font-size:12px;">' + f.servicio + '</td>' +
                 '<td><input type="checkbox" class="edit-participo"' + (f.participo ? ' checked' : '') + '></td>' +
                 '<td><input type="number" class="edit-cursos" value="' + f.cursos + '" min="0" style="width:50px;"></td>' +
-                '<td class="' + claseHoras + '"><input type="number" class="edit-horas" value="' + f.horas + '" min="0" style="width:60px;"></td>' +
+                '<td class="' + claseHoras + '"><input type="number" class="edit-horas" value="' + f.horas + '" min="0" step="0.5" style="width:60px;"></td>' +
                 '<td><input type="text" class="edit-notas" value="' + f.notas.replace(/"/g, '&quot;') + '" style="width:120px;"></td>' +
+                '<td></td>' +
+                '</tr>';
+        } else if (editandoFilaId === f.id) {
+            var nombreConEstado2 = f.nombre;
+            if (f.estado === 'Inactivo') nombreConEstado2 += ' <span class="badge-estado badge-estado-inactivo">INACTIVO</span>';
+            if (f.estado === 'Baja') nombreConEstado2 += ' <span class="badge-estado badge-estado-baja">BAJA</span>';
+            tablaHtml += '<tr data-id="' + f.id + '" class="' + claseFila + '">' +
+                '<td style="text-align:left;">' + nombreConEstado2 + '</td>' +
+                '<td style="font-size:12px;">' + f.servicio + '</td>' +
+                '<td><input type="checkbox" class="edit-participo"' + (f.participo ? ' checked' : '') + '></td>' +
+                '<td><input type="number" class="edit-cursos" value="' + f.cursos + '" min="0" style="width:50px;"></td>' +
+                '<td class="' + claseHoras + '"><input type="number" class="edit-horas" value="' + f.horas + '" min="0" step="0.5" style="width:60px;"></td>' +
+                '<td><input type="text" class="edit-notas" value="' + f.notas.replace(/"/g, '&quot;') + '" style="width:120px;"></td>' +
+                '<td><button class="btn-guardar-fila" onclick="guardarFila(\'' + f.id + '\')" style="padding:4px 10px;font-size:12px;">Guardar</button> ' +
+                '<button class="btn-guardar-fila" style="background-color:#f7768e;color:#1a1b26;padding:4px 10px;font-size:12px;" onclick="editandoFilaId=null;mostrarMes();">Cancelar</button></td>' +
                 '</tr>';
         } else {
+            var nombreConEstado3 = f.nombre;
+            if (f.estado === 'Inactivo') nombreConEstado3 += ' <span class="badge-estado badge-estado-inactivo">INACTIVO</span>';
+            if (f.estado === 'Baja') nombreConEstado3 += ' <span class="badge-estado badge-estado-baja">BAJA</span>';
             tablaHtml += '<tr data-id="' + f.id + '" class="' + claseFila + '">' +
-                '<td style="text-align:left;">' + f.nombre + '</td>' +
+                '<td style="text-align:left;">' + nombreConEstado3 + '</td>' +
                 '<td style="font-size:12px;">' + f.servicio + '</td>' +
                 '<td class="' + (f.participo ? 'si' : 'no') + '">' + (f.participo ? '\u2713' : '\u2717') + '</td>' +
                 '<td>' + f.cursos + '</td>' +
                 '<td class="' + claseHoras + '">' + f.horas + '</td>' +
-                '<td style="text-align:left;font-size:12px;">' + f.notas + '</td>' +
+                '<td style="text-align:left;font-size:12px;">' + f.notas + (f.observaciones ? ' <em style="color:#bb9af7;">(' + f.observaciones + ')</em>' : '') + '</td>' +
+                '<td><button class="btn-guardar-fila" onclick="editarFila(\'' + f.id + '\')" style="padding:4px 10px;font-size:12px;background-color:#7aa2f7;">Editar</button></td>' +
                 '</tr>';
         }
     });
@@ -227,11 +344,12 @@ function mostrarMes() {
         '<td>' + totalCursos + '</td>' +
         '<td>' + totalHoras + '</td>' +
         '<td></td>' +
+        '<td></td>' +
         '</tr>';
 
     tablaHtml += '</tbody></table>';
 
-    document.getElementById('contenedor-mes').innerHTML = tablaHtml;
+    document.getElementById('contenedor-mes').innerHTML = '<div class="table-responsive">' + tablaHtml + '</div>';
 }
 
 function cargarAnioDesdeDatos() {
@@ -271,42 +389,81 @@ document.getElementById('btn-pdf-mes').addEventListener('click', function() {
     var valorGrupo = document.getElementById('select-grupo-mes').value;
     var grupoTexto = valorGrupo === 'todos' ? 'Todos los grupos' : 'Grupo ' + valorGrupo;
 
-    var tabla = document.querySelector('.tabla-mes');
-    var stats = document.getElementById('estadisticas-container');
-
     var tempDiv = document.createElement('div');
-    tempDiv.style.color = '#000000';
-    tempDiv.style.backgroundColor = '#ffffff';
+    tempDiv.style.color = '#000';
+    tempDiv.style.backgroundColor = '#fff';
     tempDiv.style.padding = '15px';
     tempDiv.style.fontFamily = 'Arial, sans-serif';
     tempDiv.style.width = '750px';
-    tempDiv.style.maxWidth = '750px';
 
-    tempDiv.innerHTML = '<h1 style="text-align:center;color:#000;margin-bottom:5px;">' + nombreMes + '</h1>' +
-        '<p style="text-align:center;color:#555;margin-bottom:15px;">' + grupoTexto + '</p>' +
-        stats.innerHTML;
+    var stats = document.getElementById('estadisticas-container');
+    var statNums = stats.querySelectorAll('.stat-card');
+    var labels = [];
+    statNums.forEach(function(sc) {
+        var n = sc.querySelector('.numero');
+        var l = sc.querySelector('.label');
+        if (n && l) labels.push({ num: n.textContent, text: l.textContent });
+    });
 
+    var statsFila = '';
+    for (var i = 0; i < labels.length; i += 2) {
+        statsFila += '<tr>' +
+            '<td style="border:1px solid #000;padding:6px 10px;font-weight:bold;">' + labels[i].text + '</td>' +
+            '<td style="border:1px solid #000;padding:6px 10px;text-align:right;font-weight:bold;font-size:16px;">' + labels[i].num + '</td>';
+        if (i + 1 < labels.length) {
+            statsFila += '<td style="border:1px solid #000;padding:6px 10px;font-weight:bold;">' + labels[i+1].text + '</td>' +
+                '<td style="border:1px solid #000;padding:6px 10px;text-align:right;font-weight:bold;font-size:16px;">' + labels[i+1].num + '</td>';
+        } else {
+            statsFila += '<td style="border:1px solid #000;padding:6px 10px;"></td>' +
+                '<td style="border:1px solid #000;padding:6px 10px;"></td>';
+        }
+        statsFila += '</tr>';
+    }
+
+    var tabla = document.querySelector('.tabla-mes');
+    var tablaHtml = '';
     if (tabla) {
         var tablaClon = tabla.cloneNode(true);
-        var celdas = tablaClon.querySelectorAll('td, th');
-        celdas.forEach(function(c) {
+        tablaClon.querySelectorAll('.btn-guardar-fila').forEach(function(b) { b.remove(); });
+        tablaClon.querySelectorAll('input').forEach(function(inp) {
+            var val = '';
+            if (inp.type === 'checkbox') val = inp.checked ? 'Si' : 'No';
+            else val = inp.value || '-';
+            var span = document.createElement('span');
+            span.textContent = val;
+            inp.parentNode.replaceChild(span, inp);
+        });
+        tablaClon.querySelectorAll('td, th').forEach(function(c) {
             c.style.color = '#000';
             c.style.borderColor = '#000';
+            c.style.background = 'transparent';
+            c.style.padding = '5px 8px';
         });
-        var filasTabla = tablaClon.querySelectorAll('tr');
-        filasTabla.forEach(function(f) { f.style.color = '#000'; });
-        var ths = tablaClon.querySelectorAll('th');
-        ths.forEach(function(th) {
-            th.style.backgroundColor = '#eee';
+        tablaClon.querySelectorAll('th').forEach(function(th) {
+            th.style.backgroundColor = '#ddd';
             th.style.color = '#000';
+            th.style.border = '1px solid #000';
         });
-        tempDiv.appendChild(tablaClon);
+        tablaClon.querySelectorAll('tr').forEach(function(tr) {
+            tr.style.borderBottom = '1px solid #ccc';
+        });
+        tablaClon.style.width = '100%';
+        tablaClon.style.borderCollapse = 'collapse';
+        tablaClon.style.fontSize = '12px';
+        tablaHtml = tablaClon.outerHTML;
     }
+
+    tempDiv.innerHTML =
+        '<h1 style="text-align:center;color:#000;margin:0 0 2px 0;font-size:18px;">Congregacion Agua Azul</h1>' +
+        '<h2 style="text-align:center;color:#000;margin:0 0 3px 0;font-size:15px;">' + nombreMes + '</h2>' +
+        '<p style="text-align:center;color:#555;margin:0 0 10px 0;font-size:12px;">' + grupoTexto + '</p>' +
+        '<table style="width:100%;border-collapse:collapse;margin-bottom:12px;">' + statsFila + '</table>' +
+        tablaHtml;
 
     document.body.appendChild(tempDiv);
 
     html2pdf().set({
-        margin: [10, 10, 10, 10],
+        margin: [8, 8, 8, 8],
         filename: nombreMes + '_' + grupoTexto + '.pdf',
         image: { type: 'jpeg', quality: 0.95 },
         html2canvas: { scale: 2, useCORS: true, letterRendering: true },
@@ -317,12 +474,16 @@ document.getElementById('btn-pdf-mes').addEventListener('click', function() {
     });
 });
 
-actualizarSelectorGrupos();
-cargarAnioDesdeDatos();
-mostrarMes();
+cargarDatosIniciales(function() {
+    actualizarSelectorGrupos();
+    cargarAnioDesdeDatos();
+    mostrarMes();
+});
 
 window.addEventListener('storage', function(e) {
     if (e.key === 'publicadores') {
+        var local = JSON.parse(localStorage.getItem('publicadores')) || [];
+        cacheLista = local.filter(function(f) { return f && f.nombre; });
         actualizarSelectorGrupos();
         cargarAnioDesdeDatos();
         mostrarMes();
@@ -332,6 +493,8 @@ window.addEventListener('storage', function(e) {
 var canal = new BroadcastChannel('publicadores_sync');
 canal.onmessage = function(e) {
     if (e.data === 'actualizar') {
+        var local = JSON.parse(localStorage.getItem('publicadores')) || [];
+        cacheLista = local.filter(function(f) { return f && f.nombre; });
         actualizarSelectorGrupos();
         cargarAnioDesdeDatos();
         mostrarMes();

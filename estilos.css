@@ -117,6 +117,86 @@ body {
     background-color: #33374a;
 }
 
+.ficha.estado-inactivo {
+    border-color: #e0af68;
+    opacity: 0.75;
+}
+
+.ficha.estado-baja {
+    border-color: #f7768e;
+    opacity: 0.55;
+    text-decoration: line-through;
+}
+
+.ficha-tabla tr.fila-inactivo {
+    background-color: #3d2e10 !important;
+}
+
+.ficha-tabla tr.fila-inactivo:hover {
+    background-color: #4a3715 !important;
+}
+
+.ficha-tabla tr.fila-inactivo td {
+    color: #e0af68;
+}
+
+.ficha-tabla tr.fila-baja {
+    background-color: #3d1520 !important;
+}
+
+.ficha-tabla tr.fila-baja:hover {
+    background-color: #4a1a28 !important;
+}
+
+.ficha-tabla tr.fila-baja td {
+    color: #f7768e;
+    text-decoration: line-through;
+}
+
+.tabla-mes tr.fila-inactivo {
+    background-color: #3d2e10 !important;
+}
+
+.tabla-mes tr.fila-inactivo:hover {
+    background-color: #4a3715 !important;
+}
+
+.tabla-mes tr.fila-inactivo td {
+    color: #e0af68;
+}
+
+.tabla-mes tr.fila-baja {
+    background-color: #3d1520 !important;
+}
+
+.tabla-mes tr.fila-baja:hover {
+    background-color: #4a1a28 !important;
+}
+
+.tabla-mes tr.fila-baja td {
+    color: #f7768e;
+    text-decoration: line-through;
+}
+
+.badge-estado {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: bold;
+    margin-left: 6px;
+}
+
+.badge-estado-inactivo {
+    background-color: #e0af68;
+    color: #1a1b26;
+}
+
+.badge-estado-baja {
+    background-color: #f7768e;
+    color: #1a1b26;
+}
+
 #fichas-guardadas {
     margin-top: 30px;
     border-top: 2px solid #414868;
@@ -302,4 +382,249 @@ table {
 
 thead {
     background-color: #414868;
+}
+
+#input-estado {
+    padding: 5px 10px;
+    border-radius: 4px;
+    border: 1px solid #414868;
+    background-color: #33374a;
+    color: #c0caf5;
+    font-weight: bold;
+}
+
+#select-estado {
+    padding: 5px 10px;
+    border-radius: 4px;
+    border: 1px solid #414868;
+    background-color: #33374a;
+    color: #c0caf5;
+}
+
+#btn-nuevo-anio {
+    padding: 5px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    background-color: #ff9e64;
+    color: #1a1b26;
+}
+
+#btn-nuevo-anio:hover {
+    background-color: #ffb07a;
+}
+
+#btn-exportar {
+    padding: 5px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    background-color: #9ece6a;
+    color: #1a1b26;
+}
+
+#btn-exportar:hover {
+    background-color: #73daca;
+}
+
+#btn-importar {
+    padding: 5px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    background-color: #7dcfff;
+    color: #1a1b26;
+}
+
+#btn-importar:hover {
+    background-color: #89d4fe;
+}
+
+#btn-resumen-sucursal {
+    padding: 5px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    background-color: #bb9af7;
+    color: #1a1b26;
+}
+
+#btn-resumen-sucursal:hover {
+    background-color: #c89bf5;
+}
+
+#btn-pdf-masivo {
+    padding: 5px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    background-color: #f7768e;
+    color: #1a1b26;
+}
+
+#btn-pdf-masivo:hover {
+    background-color: #ff7a93;
+}
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 15px;
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    #grupo-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    #grupo-controls select,
+    #grupo-controls button,
+    #btn-pdf-grupo {
+        width: 100%;
+    }
+
+    #busqueda-container {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    #input-buscar {
+        width: 100%;
+    }
+
+    .ficha-datos {
+        grid-template-columns: 1fr;
+    }
+
+    .ficha-botones {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .ficha-botones button {
+        flex: 1 1 auto;
+        margin-left: 0;
+        padding: 10px 14px;
+        font-size: 14px;
+    }
+
+    .ficha {
+        padding: 10px;
+    }
+
+    .ficha-header {
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
+    }
+
+    .table-responsive .ficha-tabla th,
+    .table-responsive .ficha-tabla td {
+        padding: 4px 6px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 8px;
+        font-size: 14px;
+    }
+
+    h2 {
+        font-size: 1.2em;
+    }
+
+    button,
+    #btn-guardar,
+    #btn-ver,
+    #btn-generar-pdf,
+    #btn-pdf-grupo {
+        padding: 12px 14px;
+        font-size: 15px;
+        width: 100%;
+    }
+
+    #btn-meses {
+        padding: 12px 14px;
+        font-size: 15px;
+        display: block;
+        text-align: center;
+        margin-left: 0;
+        margin-top: 8px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"] {
+        padding: 10px 12px;
+        font-size: 15px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .ficha-input input[type="text"],
+    .ficha-input input[type="number"],
+    .ficha-input input[type="date"] {
+        padding: 10px 12px;
+        font-size: 15px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    select {
+        padding: 10px 12px;
+        font-size: 15px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    label {
+        font-size: 14px;
+    }
+
+    .ficha-botones button {
+        padding: 12px 14px;
+        font-size: 15px;
+    }
+
+    .ficha-tabla th,
+    .ficha-tabla td {
+        padding: 4px 5px;
+        font-size: 11px;
+    }
+
+    .ficha-tabla td input[type="text"],
+    .ficha-tabla td input[type="number"] {
+        padding: 6px 8px;
+        font-size: 14px;
+    }
+
+    .ficha-tabla td input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+    }
+
+    .table-responsive {
+        margin-bottom: 10px;
+    }
+
+    .modal,
+    [id*="modal"] {
+        width: 95% !important;
+        max-width: 95% !important;
+    }
 }
