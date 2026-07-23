@@ -90,7 +90,7 @@ function renderizarTablaMesesPDF(meses) {
     var totalCursos = 0;
     meses.forEach(function(m) { totalHoras += m.horas || 0; totalCursos += m.cursos || 0; });
 
-    var html = '<table style="width:100%;border-collapse:collapse;margin:6px 0;font-size:13px;border-color:#000;">' +
+    var html = '<table style="width:100%;table-layout:fixed;border-collapse:collapse;margin:6px 0;font-size:12px;border-color:#000;">' +
         '<thead><tr>' +
         '<th style="border:1px solid #000;padding:4px 5px;text-align:left;background:#eee;color:#000;">Mes</th>' +
         '<th style="border:1px solid #000;padding:4px 5px;text-align:center;background:#eee;color:#000;">Participo</th>' +
@@ -202,28 +202,28 @@ function renderizarResumen(resumen, titulo) {
         '<p style="margin:2px 0;color:#000;"><strong>Prec. Aux. Horas:</strong> ' + resumen.precAuxHoras + ' | <strong>Cursos:</strong> ' + resumen.precAuxCursos + '</p>' +
         '<p style="margin:2px 0;color:#000;"><strong>Total Horas:</strong> ' + resumen.totalHoras + ' | <strong>Total Cursos:</strong> ' + resumen.totalCursos + '</p>';
 
-    html += '<table style="width:100%;border-collapse:collapse;margin:8px 0;font-size:11px;border-color:#000;">' +
+    html += '<table style="width:100%;table-layout:fixed;border-collapse:collapse;margin:8px 0;font-size:9px;border-color:#000;">' +
         '<thead><tr>' +
-        '<th style="border:1px solid #000;padding:3px;background:#eee;color:#000;">Mes</th>' +
-        '<th style="border:1px solid #000;padding:3px;background:#eee;color:#000;">Prec.Reg.H</th>' +
-        '<th style="border:1px solid #000;padding:3px;background:#eee;color:#000;">Prec.Reg.C</th>' +
-        '<th style="border:1px solid #000;padding:3px;background:#eee;color:#000;">Prec.Aux.H</th>' +
-        '<th style="border:1px solid #000;padding:3px;background:#eee;color:#000;">Prec.Aux.C</th>' +
-        '<th style="border:1px solid #000;padding:3px;background:#eee;color:#000;">Total H</th>' +
-        '<th style="border:1px solid #000;padding:3px;background:#eee;color:#000;">Total C</th>' +
-        '<th style="border:1px solid #000;padding:3px;background:#eee;color:#000;">No Part.</th>' +
+        '<th style="border:1px solid #000;padding:2px;background:#eee;color:#000;">Mes</th>' +
+        '<th style="border:1px solid #000;padding:2px;background:#eee;color:#000;">PR.H</th>' +
+        '<th style="border:1px solid #000;padding:2px;background:#eee;color:#000;">PR.C</th>' +
+        '<th style="border:1px solid #000;padding:2px;background:#eee;color:#000;">PA.H</th>' +
+        '<th style="border:1px solid #000;padding:2px;background:#eee;color:#000;">PA.C</th>' +
+        '<th style="border:1px solid #000;padding:2px;background:#eee;color:#000;">TH</th>' +
+        '<th style="border:1px solid #000;padding:2px;background:#eee;color:#000;">TC</th>' +
+        '<th style="border:1px solid #000;padding:2px;background:#eee;color:#000;">No Part.</th>' +
         '</tr></thead><tbody>';
 
     resumen.porMes.forEach(function(m) {
         html += '<tr>' +
-            '<td style="border:1px solid #000;padding:3px;color:#000;">' + m.nombre + '</td>' +
-            '<td style="border:1px solid #000;padding:3px;text-align:center;color:#000;">' + m.precRegHoras + '</td>' +
-            '<td style="border:1px solid #000;padding:3px;text-align:center;color:#000;">' + m.precRegCursos + '</td>' +
-            '<td style="border:1px solid #000;padding:3px;text-align:center;color:#000;">' + m.precAuxHoras + '</td>' +
-            '<td style="border:1px solid #000;padding:3px;text-align:center;color:#000;">' + m.precAuxCursos + '</td>' +
-            '<td style="border:1px solid #000;padding:3px;text-align:center;color:#000;">' + m.totalHoras + '</td>' +
-            '<td style="border:1px solid #000;padding:3px;text-align:center;color:#000;">' + m.totalCursos + '</td>' +
-            '<td style="border:1px solid #000;padding:3px;font-size:10px;color:#000;">' + (m.noParticipo.length > 0 ? m.noParticipo.join(', ') : '-') + '</td>' +
+            '<td style="border:1px solid #000;padding:2px;color:#000;">' + m.nombre + '</td>' +
+            '<td style="border:1px solid #000;padding:2px;text-align:center;color:#000;">' + m.precRegHoras + '</td>' +
+            '<td style="border:1px solid #000;padding:2px;text-align:center;color:#000;">' + m.precRegCursos + '</td>' +
+            '<td style="border:1px solid #000;padding:2px;text-align:center;color:#000;">' + m.precAuxHoras + '</td>' +
+            '<td style="border:1px solid #000;padding:2px;text-align:center;color:#000;">' + m.precAuxCursos + '</td>' +
+            '<td style="border:1px solid #000;padding:2px;text-align:center;color:#000;">' + m.totalHoras + '</td>' +
+            '<td style="border:1px solid #000;padding:2px;text-align:center;color:#000;">' + m.totalCursos + '</td>' +
+            '<td style="border:1px solid #000;padding:2px;font-size:8px;color:#000;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (m.noParticipo.length > 0 ? m.noParticipo.join(', ') : '-') + '</td>' +
             '</tr>';
     });
 
@@ -256,6 +256,41 @@ function renderizarFichaPDF(ficha) {
         '</table>' +
         (ficha.meses ? renderizarTablaMesesPDF(ficha.meses) : '') +
     '</div>';
+}
+
+function generarPDFFicha(ficha, opciones) {
+    opciones = opciones || {};
+    var tempDiv = document.createElement('div');
+    tempDiv.style.color = '#000000';
+    tempDiv.style.backgroundColor = '#ffffff';
+    tempDiv.style.padding = '15px';
+    tempDiv.style.fontFamily = 'Arial, sans-serif';
+    tempDiv.style.width = '680px';
+
+    var titulo = opciones.titulo || 'Ficha de Registro';
+    tempDiv.innerHTML = '<h1 style="text-align:center;color:#000;margin-bottom:5px;">' + titulo + '</h1>' +
+        renderizarFichaPDF(ficha);
+
+    if (opciones.resumen) {
+        tempDiv.innerHTML += renderizarResumen(opciones.resumen, opciones.resumenTitulo || 'Resumen');
+    }
+
+    document.body.appendChild(tempDiv);
+
+    html2pdf().set({
+        margin: 10,
+        filename: opciones.filename || ('Ficha_' + (ficha.nombre || 'Publicador') + '.pdf'),
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, backgroundColor: '#ffffff' },
+        jsPDF: { unit: 'mm', format: 'letter', orientation: opciones.orientation || 'portrait' },
+        pagebreak: { mode: ['css'] }
+    }).from(tempDiv).save().then(function() {
+        if (tempDiv.parentNode) document.body.removeChild(tempDiv);
+    }).catch(function(err) {
+        console.error('Error generando PDF:', err);
+        alert('Error al generar PDF: ' + err.message);
+        if (tempDiv.parentNode) document.body.removeChild(tempDiv);
+    });
 }
 
 function renderizarFicha(ficha) {
@@ -337,6 +372,20 @@ function mostrarFichas(lista) {
     });
     contenedor.innerHTML = html;
 
+    contenedor.querySelectorAll('.btn-pdf-ficha').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            var fichaId = parseInt(btn.dataset.id);
+            var listaAll = cargarLista();
+            var fichaEncontrada = null;
+            for (var i = 0; i < listaAll.length; i++) {
+                if (listaAll[i].id === fichaId) { fichaEncontrada = listaAll[i]; break; }
+            }
+            if (!fichaEncontrada) { alert('No se encontro la ficha.'); return; }
+            generarPDFFicha(fichaEncontrada);
+        });
+    });
+
     actualizarSelectorGrupos(ordenGrupos);
 }
 
@@ -412,39 +461,6 @@ document.getElementById('fichas-guardadas').addEventListener('click', function(e
 
     if (e.target.classList.contains('btn-pdf-ficha')) {
         e.stopPropagation();
-        var id2 = parseInt(fichaEl.dataset.id);
-        var lista = cargarLista();
-        var ficha = null;
-        for (var i = 0; i < lista.length; i++) {
-            if (lista[i].id === id2) { ficha = lista[i]; break; }
-        }
-        if (!ficha) { alert('No se encontro la ficha.'); return; }
-
-        var tempDiv = document.createElement('div');
-        tempDiv.style.color = '#000000';
-        tempDiv.style.backgroundColor = '#ffffff';
-        tempDiv.style.padding = '15px';
-        tempDiv.style.fontFamily = 'Arial, sans-serif';
-        tempDiv.style.width = '680px';
-
-        tempDiv.innerHTML = '<h1 style="text-align:center;color:#000;margin-bottom:5px;">Ficha de Registro</h1>' +
-            renderizarFichaPDF(ficha);
-
-        document.body.appendChild(tempDiv);
-
-        html2pdf().set({
-            margin: 10,
-            filename: 'Ficha_' + ficha.nombre + '.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, backgroundColor: '#ffffff' },
-            jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' }
-        }).from(tempDiv).save().then(function() {
-            document.body.removeChild(tempDiv);
-        }).catch(function(err) {
-            console.error('Error generando PDF individual:', err);
-            alert('Error al generar PDF: ' + err.message);
-            if (tempDiv.parentNode) document.body.removeChild(tempDiv);
-        });
         return;
     }
 
@@ -514,13 +530,6 @@ document.getElementById('fichas-guardadas').addEventListener('click', function(e
 });
 
 document.getElementById('btn-generar-pdf').addEventListener('click', function() {
-    var tempDiv = document.createElement('div');
-    tempDiv.style.color = '#000000';
-    tempDiv.style.backgroundColor = '#ffffff';
-    tempDiv.style.padding = '15px';
-    tempDiv.style.fontFamily = 'Arial, sans-serif';
-    tempDiv.style.width = '680px';
-
     var nombre = document.getElementById('input-nombre').value || 'Publicador';
     var fechaNac = document.getElementById('input-fecha-nacimiento').value || '';
     var fechaBau = document.getElementById('fecha-de-bautismo').value || '';
@@ -555,25 +564,10 @@ document.getElementById('btn-generar-pdf').addEventListener('click', function() 
         meses: meses
     };
 
-    tempDiv.innerHTML = '<h1 style="text-align:center;color:#000;margin-bottom:15px;">Ficha de Registro</h1>' +
-        renderizarFichaPDF(ficha);
-
     var resumen = calcularResumenGrupo([ficha]);
-    tempDiv.innerHTML += renderizarResumen(resumen, 'Ficha Individual');
-
-    document.body.appendChild(tempDiv);
-
-    html2pdf().set({
-        margin: 10,
-        filename: 'Ficha_' + nombre + '.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, backgroundColor: '#ffffff' },
-        jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' }
-    }).from(tempDiv).save().then(function() {
-        document.body.removeChild(tempDiv);
-    }).catch(function(err) {
-        console.error('Error generando PDF:', err);
-        if (tempDiv.parentNode) document.body.removeChild(tempDiv);
+    generarPDFFicha(ficha, {
+        resumen: resumen,
+        resumenTitulo: 'Ficha Individual'
     });
 });
 
@@ -618,12 +612,13 @@ document.getElementById('btn-pdf-grupo').addEventListener('click', function() {
         filename: 'Grupo_' + valor + '.pdf',
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, backgroundColor: '#ffffff' },
-        jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' },
+        jsPDF: { unit: 'mm', format: 'letter', orientation: 'landscape' },
         pagebreak: { mode: ['css'] }
     }).from(tempDiv).save().then(function() {
-        document.body.removeChild(tempDiv);
+        if (tempDiv.parentNode) document.body.removeChild(tempDiv);
     }).catch(function(err) {
         console.error('Error generando PDF:', err);
+        alert('Error al generar PDF: ' + err.message);
         if (tempDiv.parentNode) document.body.removeChild(tempDiv);
     });
 });
