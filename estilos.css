@@ -4,6 +4,19 @@ body {
     font-family: 'Segoe UI', Arial, sans-serif;
 }
 
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 10px 0;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #414868;
+}
+
+.toolbar button, .toolbar a {
+    white-space: nowrap;
+}
+
 #total {
     text-align: right;
     font-weight: bold;

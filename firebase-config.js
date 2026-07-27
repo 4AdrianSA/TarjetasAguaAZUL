@@ -1,10 +1,10 @@
-// Firebase Config - Reemplaza estos valores con los de tu proyecto Firebase
-// Firebase Console → Configuracion del proyecto → General → Tu app web
+// Firebase Config - Congregacion Agua Azul
 var firebaseConfig = {
-    apiKey: "TU_API_KEY_AQUI",
-    authDomain: "TU_PROYECTO.firebaseapp.com",
-    projectId: "TU_PROJECT_ID",
-    storageBucket: "TU_PROYECTO.appspot.com",
-    messagingSenderId: "TU_SENDER_ID",
-    appId: "TU_APP_ID"
+    apiKey: "AIzaSyBXwkz4JlUxNDJHD3XnFTkLKLCVAmaGmJ8",
+    authDomain: "fichasaguaazul.firebaseapp.com",
+    projectId: "fichasaguaazul",
+    storageBucket: "fichasaguaazul.firebasestorage.app",
+    messagingSenderId: "310450737577",
+    appId: "1:310450737577:web:c7604a1bd517245ce734b8",
+    measurementId: "G-C6K3W6NWZK"
 };

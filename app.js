@@ -4,74 +4,6 @@ var editandoId = null;
 var prefijos = ['sep','oct','nov','dic','ene','feb','mar','abr','may','jun','jul','ago'];
 var canal = new BroadcastChannel('publicadores_sync');
 
-// Firebase / Firestore
-var db = null;
-var usaFirebase = false;
-var cacheLista = [];
-
-try {
-    if (typeof firebase !== 'undefined' && typeof firebaseConfig !== 'undefined' && firebaseConfig.apiKey !== 'TU_API_KEY_AQUI') {
-        firebase.initializeApp(firebaseConfig);
-        db = firebase.firestore();
-        usaFirebase = true;
-        console.log('Firebase conectado');
-    } else {
-        console.log('Firebase no configurado, usando localStorage');
-    }
-} catch(e) {
-    console.log('Firebase no disponible:', e);
-}
-
-function cargarLista() {
-    return cacheLista.filter(function(f) { return f && f.nombre; });
-}
-
-function guardarLista(lista) {
-    cacheLista = lista.filter(function(f) { return f && f.nombre; });
-    localStorage.setItem('publicadores', JSON.stringify(cacheLista));
-
-    if (usaFirebase && db) {
-        db.collection('publicadores').doc('datos').set({
-            lista: cacheLista,
-            fechaGuardado: new Date().toISOString()
-        }).then(function() {
-            console.log('Guardado en Firestore');
-        }).catch(function(err) {
-            console.error('Error Firestore:', err);
-        });
-    }
-
-    canal.postMessage('actualizar');
-}
-
-function cargarDatosIniciales(callback) {
-    if (usaFirebase && db) {
-        db.collection('publicadores').doc('datos').get().then(function(doc) {
-            if (doc.exists && doc.data().lista) {
-                cacheLista = doc.data().lista;
-                console.log('Datos desde Firestore:', cacheLista.length);
-            } else {
-                var local = JSON.parse(localStorage.getItem('publicadores')) || [];
-                cacheLista = local.filter(function(f) { return f && f.nombre; });
-                if (cacheLista.length > 0) {
-                    guardarLista(cacheLista);
-                    console.log('Migrados a Firestore:', cacheLista.length);
-                }
-            }
-            callback();
-        }).catch(function(err) {
-            console.error('Error Firestore:', err);
-            var local = JSON.parse(localStorage.getItem('publicadores')) || [];
-            cacheLista = local.filter(function(f) { return f && f.nombre; });
-            callback();
-        });
-    } else {
-        var local = JSON.parse(localStorage.getItem('publicadores')) || [];
-        cacheLista = local.filter(function(f) { return f && f.nombre; });
-        callback();
-    }
-}
-
 function leerCheckboxes(name) {
     return Array.from(document.querySelectorAll('input[name="' + name + '"]:checked')).map(function(cb) { return cb.value; });
 }
@@ -93,7 +25,17 @@ document.querySelectorAll('.input-horas').forEach(function(casilla) {
 function recolectarDatos() {
     var nombre = document.getElementById('input-nombre').value.trim();
     if (!nombre) {
-        alert('Escribe el nombre del publicador');
+        mostrarToast('Escribe el nombre del publicador', 'error');
+        return null;
+    }
+
+    var horasNegativas = false;
+    prefijos.forEach(function(p) {
+        var h = parseFloat(document.getElementById(p + '-horas').value);
+        if (!isNaN(h) && h < 0) horasNegativas = true;
+    });
+    if (horasNegativas) {
+        mostrarToast('Las horas no pueden ser negativas', 'error');
         return null;
     }
 
@@ -144,24 +86,13 @@ function limpiarFormulario() {
         document.getElementById(p + '-notas').value = '';
     });
     editandoId = null;
-}
-
-function cargarLista() {
-    var datos = JSON.parse(localStorage.getItem('publicadores')) || [];
-    return datos.filter(function(f) { return f && f.nombre; });
-}
-
-function guardarLista(lista) {
-    localStorage.setItem('publicadores', JSON.stringify(lista));
-    canal.postMessage('actualizar');
+    calcularSumaHoras();
 }
 
 function renderizarTablaMesesPDF(meses) {
     console.log('renderizarTablaMesesPDF - meses:', meses ? meses.length : 0, meses);
     if (!Array.isArray(meses) || meses.length === 0) return '';
 
-    var nombresMeses = ['Septiembre','Octubre','Noviembre','Diciembre','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto'];
-    var abbr = {'Septiembre':'Sep','Octubre':'Oct','Noviembre':'Nov','Diciembre':'Dic','Enero':'Ene','Febrero':'Feb','Marzo':'Mar','Abril':'Abr','Mayo':'May','Junio':'Jun','Julio':'Jul','Agosto':'Ago'};
     var mesMap = {};
     meses.forEach(function(m) { mesMap[m.nombre] = m; });
 
@@ -216,8 +147,8 @@ function renderizarCheckS21(ficha) {
 
     if (ficha.genero === 'Hombre') items.push('Hombre');
     if (ficha.genero === 'Mujer') items.push('Mujer');
-    if (ficha.grupo !== 'ungido') items.push('Otras ovejas');
-    if (ficha.grupo === 'ungido') items.push('Ungido');
+    if (ficha.grupo !== 'Ungido') items.push('Otras ovejas');
+    if (ficha.grupo === 'Ungido') items.push('Ungido');
     if (cargos.indexOf('Anciano') !== -1) items.push('Anciano');
     if (cargos.indexOf('Siervo ministerial') !== -1) items.push('Siervo ministerial');
     if (cargos.indexOf('Precursor Regular') !== -1) items.push('Prec. regular');
@@ -255,13 +186,13 @@ function renderizarFichaPDF(ficha, opciones) {
             '</div>';
 
         html += '<table style="width:100%;border-collapse:collapse;font-size:' + fs + ';color:#000;font-weight:500;margin:0 0 3px 0;">' +
-            '<tr><td style="padding:' + padCell + ';width:55%;"><strong>Nombre:</strong> ' + (ficha.nombre || '') + '</td>' +
+            '<tr><td style="padding:' + padCell + ';width:55%;"><strong>Nombre:</strong> ' + escapeHtml(ficha.nombre) + '</td>' +
             '<td style="padding:' + padCell + ';width:45%;" rowspan="3">' + renderizarCheckS21(ficha) + '</td></tr>' +
             '<tr><td style="padding:' + padCell + ';"><strong>Fecha de nacimiento:</strong> ' + (ficha.fechaNacimiento || '') + '</td></tr>' +
             '<tr><td style="padding:' + padCell + ';"><strong>Fecha de bautismo:</strong> ' + (ficha.fechaBautismo || '') + '</td></tr>' +
             '<tr><td style="padding:' + padCell + ';"><strong>Grupo N. \u00B0:</strong> ' + (ficha.grupoNumero || '') +
             (ficha.rolGrupo ? ' <strong>Rol:</strong> ' + ficha.rolGrupo : '') + '</td></tr>' +
-            (ficha.observaciones ? '<tr><td style="padding:' + padCell + ';font-style:italic;"><strong>Observaciones:</strong> ' + ficha.observaciones + '</td></tr>' : '') +
+            (ficha.observaciones ? '<tr><td style="padding:' + padCell + ';font-style:italic;"><strong>Observaciones:</strong> ' + escapeHtml(ficha.observaciones) + '</td></tr>' : '') +
             '</table>';
 
         html += '<div style="font-size:' + fsLabel + ';color:#000;margin:0 0 3px 0;font-weight:bold;">A\u00F1o de servicio ' + (ficha.anioServicio || new Date().getFullYear()) + '</div>';
@@ -276,7 +207,7 @@ function renderizarFichaPDF(ficha, opciones) {
 
     return '<div style="' + wrapStyle + '">' +
         '<div style="border-bottom:1px solid #000;padding-bottom:3px;margin-bottom:4px;">' +
-            '<h3 style="margin:0;font-size:13px;color:#000;">' + ficha.nombre + '</h3>' +
+            '<h3 style="margin:0;font-size:13px;color:#000;">' + escapeHtml(ficha.nombre) + '</h3>' +
             '<p style="margin:1px 0 0 0;font-size:10px;color:#333;">' +
                 (ficha.grupo ? 'Grupo ' + ficha.grupoNumero : '') +
                 (ficha.rolGrupo ? ' - ' + ficha.rolGrupo : '') +
@@ -294,7 +225,7 @@ function renderizarFichaPDF(ficha, opciones) {
             '<tr>' +
                 '<td style="padding:1px 4px;"><strong>Genero:</strong> ' + (ficha.genero || '-') + '</td>' +
             '</tr>' +
-            (ficha.observaciones ? '<tr><td colspan="2" style="padding:1px 4px;font-style:italic;"><strong>Obs:</strong> ' + ficha.observaciones + '</td></tr>' : '') +
+            (ficha.observaciones ? '<tr><td colspan="2" style="padding:1px 4px;font-style:italic;"><strong>Obs:</strong> ' + escapeHtml(ficha.observaciones) + '</td></tr>' : '') +
         '</table>' +
         (ficha.meses ? renderizarTablaMesesPDF(ficha.meses) : '') +
     '</div>';
@@ -326,8 +257,6 @@ function ordenarFichas(fichas) {
 }
 
 function calcularResumenGrupo(datos) {
-    var nombresMeses = ['Septiembre','Octubre','Noviembre','Diciembre','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto'];
-
     var resumen = {
         totalPublicadores: datos.length,
         ancianos: 0,
@@ -430,7 +359,6 @@ function calcularResumenGrupo(datos) {
 }
 
 function renderizarResumen(resumen, titulo, anioServicio) {
-    var abbr = {'Septiembre':'Sep','Octubre':'Oct','Noviembre':'Nov','Diciembre':'Dic','Enero':'Ene','Febrero':'Feb','Marzo':'Mar','Abril':'Abr','Mayo':'May','Junio':'Jun','Julio':'Jul','Agosto':'Ago'};
     var mesesCompletos = ['Septiembre','Octubre','Noviembre','Diciembre','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto'];
     var mesNumMap = {'Septiembre':8,'Octubre':9,'Noviembre':10,'Diciembre':11,'Enero':0,'Febrero':1,'Marzo':2,'Abril':3,'Mayo':4,'Junio':5,'Julio':6,'Agosto':7};
     var mesMap = {};
@@ -642,10 +570,12 @@ function renderizarFicha(ficha) {
 
     var html = '<div class="ficha' + fichaClassExtra + '" data-id="' + ficha.id + '">' +
         '<div class="ficha-header">' +
-            '<h3>' + ficha.nombre + estadoBadge + '</h3>' +
+            '<h3>' + escapeHtml(ficha.nombre) + estadoBadge + '</h3>' +
             '<div class="ficha-botones">' +
                 '<button class="btn-pdf-ficha" data-id="' + ficha.id + '">PDF</button>' +
                 '<button class="btn-editar">Editar</button>' +
+                '<button class="btn-cambiar-grupo" style="background-color:#7dcfff;color:#1a1b26;">Cambiar Grupo</button>' +
+                '<button class="btn-eliminar">Eliminar</button>' +
             '</div>' +
         '</div>' +
         '<div class="ficha-datos">' +
@@ -657,17 +587,16 @@ function renderizarFicha(ficha) {
             '<p><strong>Cargo:</strong> ' + (cargo || '-') + '</p>' +
             '<p><strong>Genero:</strong> ' + (ficha.genero || '-') + '</p>' +
             '<p><strong>Estado:</strong> ' + estado + '</p>' +
-            (ficha.observaciones ? '<p style="grid-column:1/-1;"><strong>Observaciones:</strong> <em>' + ficha.observaciones + '</em></p>' : '') +
+            (ficha.observaciones ? '<p style="grid-column:1/-1;"><strong>Observaciones:</strong> <em>' + escapeHtml(ficha.observaciones) + '</em></p>' : '') +
         '</div>';
 
     if (ficha.meses && Array.isArray(ficha.meses)) {
-        var nombresMesesAll = ['Septiembre','Octubre','Noviembre','Diciembre','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto'];
         var mesMapAll = {};
         ficha.meses.forEach(function(m) { mesMapAll[m.nombre] = m; });
         html += '<div class="table-responsive"><table class="ficha-tabla"><thead><tr>' +
             '<th>Mes</th><th>Part.</th><th>Cursos</th><th>Aux.</th><th>Horas</th><th>Notas</th>' +
             '</tr></thead><tbody>';
-        nombresMesesAll.forEach(function(nombre) {
+        nombresMeses.forEach(function(nombre) {
             var m = mesMapAll[nombre] || { nombre: nombre, participo: false, cursos: 0, auxiliar: false, horas: 0, notas: '' };
             html += '<tr class="' + rowClass + '">' +
                 '<td>' + m.nombre + '</td>' +
@@ -759,7 +688,7 @@ document.getElementById('btn-guardar').addEventListener('click', function() {
     if (editandoId !== null) {
         var idx = -1;
         for (var i = 0; i < lista.length; i++) {
-            if (lista[i].id === editandoId) { idx = i; break; }
+            if (Number(lista[i].id) === Number(editandoId)) { idx = i; break; }
         }
         if (idx !== -1) lista[idx] = ficha;
         editandoId = null;
@@ -768,7 +697,7 @@ document.getElementById('btn-guardar').addEventListener('click', function() {
     }
 
     guardarLista(lista);
-    alert('Guardado: ' + ficha.nombre);
+    mostrarToast('Guardado: ' + ficha.nombre, 'ok');
     mostrarFichas(lista);
     limpiarFormulario();
 });
@@ -796,7 +725,7 @@ function filtrarPorGrupoYEstado(lista) {
     var estado = document.getElementById('select-estado').value;
     var filtrada = lista;
     if (grupo !== 'todos') {
-        filtrada = filtrada.filter(function(f) { return f.grupoNumero === grupo; });
+        filtrada = filtrada.filter(function(f) { return String(f.grupoNumero) === String(grupo); });
     }
     if (estado !== 'todos') {
         filtrada = filtrada.filter(function(f) { return (f.estado || 'Activo') === estado; });
@@ -874,7 +803,12 @@ document.getElementById('fichas-guardadas').addEventListener('click', function(e
 
         editandoId = id;
         fichaEl.style.opacity = '0.5';
+        fichaEl.style.border = '2px solid #e0af68';
+        document.querySelectorAll('.ficha').forEach(function(el) {
+            if (el !== fichaEl) el.style.opacity = '1';
+        });
         window.scrollTo({ top: 0, behavior: 'smooth' });
+        mostrarToast('Editando: ' + ficha2.nombre, 'ok');
         return;
     }
 
@@ -890,6 +824,54 @@ document.getElementById('fichas-guardadas').addEventListener('click', function(e
         mostrarFichas(nueva);
         return;
     }
+
+    if (e.target.classList.contains('btn-cambiar-grupo')) {
+        e.stopPropagation();
+        var lista4 = cargarLista();
+        var ficha4 = null;
+        for (var m = 0; m < lista4.length; m++) {
+            if (Number(lista4[m].id) === id) { ficha4 = lista4[m]; break; }
+        }
+        if (!ficha4) return;
+
+        window._fichaCambioGrupo = ficha4;
+        document.getElementById('nombre-cambio-grupo').textContent = ficha4.nombre;
+        document.getElementById('grupo-actual-cambio').textContent = ficha4.grupoNumero || 'Sin grupo';
+        var sel = document.getElementById('select-nuevo-grupo');
+        sel.value = ficha4.grupoNumero || '';
+        document.getElementById('grupo-nuevo-label').textContent = sel.options[sel.selectedIndex].text;
+        document.getElementById('modal-cambiar-grupo').style.display = 'flex';
+        return;
+    }
+});
+
+document.getElementById('select-nuevo-grupo').addEventListener('change', function() {
+    var label = this.options[this.selectedIndex].text;
+    document.getElementById('grupo-nuevo-label').textContent = label;
+});
+
+document.getElementById('btn-confirmar-cambio-grupo').addEventListener('click', function() {
+    var ficha = window._fichaCambioGrupo;
+    if (!ficha) return;
+
+    var nuevoGrupo = document.getElementById('select-nuevo-grupo').value;
+    var lista = cargarLista();
+    for (var i = 0; i < lista.length; i++) {
+        if (Number(lista[i].id) === Number(ficha.id)) {
+            lista[i].grupoNumero = nuevoGrupo;
+            break;
+        }
+    }
+    guardarLista(lista);
+    mostrarFichas(lista);
+    document.getElementById('modal-cambiar-grupo').style.display = 'none';
+    mostrarToast('Grupo de ' + ficha.nombre + ' cambiado a ' + (nuevoGrupo || 'Sin grupo'), 'ok');
+    window._fichaCambioGrupo = null;
+});
+
+document.getElementById('btn-cancelar-cambio-grupo').addEventListener('click', function() {
+    document.getElementById('modal-cambiar-grupo').style.display = 'none';
+    window._fichaCambioGrupo = null;
 });
 
 document.getElementById('btn-generar-pdf').addEventListener('click', function() {
@@ -927,22 +909,19 @@ document.getElementById('btn-generar-pdf').addEventListener('click', function() 
         meses: meses
     };
 
-    var resumen = calcularResumenGrupo([ficha]);
-    generarPDFFicha(ficha, {
-        resumen: resumen,
-        resumenTitulo: 'Ficha Individual',
-        anioServicio: anio
-    });
+    generarPDFFicha(ficha);
 });
 
 document.getElementById('btn-pdf-grupo').addEventListener('click', function() {
     var lista = cargarLista();
     var valor = document.getElementById('select-grupo-pdf').value;
+    var estadoFiltro = document.getElementById('select-estado').value;
     var grupoNombre = valor === 'todos' ? 'Todos los grupos' : 'Grupo ' + valor;
 
     var listaFiltrada = lista.filter(function(f) {
         var estado = f.estado || 'Activo';
-        return estado === 'Activo';
+        if (estadoFiltro !== 'todos' && estado !== estadoFiltro) return false;
+        return true;
     });
 
     var datos;
@@ -960,7 +939,7 @@ document.getElementById('btn-pdf-grupo').addEventListener('click', function() {
             datos.push({ subtitulo: 'Grupo ' + gruposOrden[gi], fichas: gruposMap[gruposOrden[gi]] });
         }
     } else {
-        datos = [{ subtitulo: null, fichas: listaFiltrada.filter(function(f) { return f.grupoNumero === valor; }) }];
+        datos = [{ subtitulo: null, fichas: listaFiltrada.filter(function(f) { return String(f.grupoNumero) === String(valor); }) }];
     }
 
     var totalPub = 0;
@@ -996,10 +975,7 @@ document.getElementById('btn-pdf-grupo').addEventListener('click', function() {
         for (var f = 0; f < fichasOrdenadas.length; f++) {
             fichaCount++;
             paginasGrupos.push(nombreBloque);
-            var fichaStyle = fichaCount > 1
-                ? 'margin:0;padding:0 15px;page-break-before:always;'
-                : 'margin:0;padding:0 15px;';
-            html += '<div style="' + fichaStyle + '">' + renderizarFichaPDF(fichasOrdenadas[f], {grupo: true, nombreGrupo: nombreBloque}) + '</div>';
+            html += '<div style="margin:0;padding:0 15px;page-break-before:always;page-break-inside:avoid;break-inside:avoid;">' + renderizarFichaPDF(fichasOrdenadas[f], {grupo: true, nombreGrupo: nombreBloque}) + '</div>';
         }
     }
 
@@ -1077,7 +1053,14 @@ document.getElementById('btn-nuevo-anio').addEventListener('click', function() {
         var a = parseInt(f.anioServicio);
         if (a && a > ultimoAnio) ultimoAnio = a;
     });
-    var anioSugerido = ultimoAnio ? ultimoAnio + 1 : new Date().getFullYear();
+    var anioSugerido;
+    if (ultimoAnio) {
+        anioSugerido = ultimoAnio + 1;
+    } else {
+        var ahora = new Date();
+        var mesActual = ahora.getMonth();
+        anioSugerido = mesActual >= 8 ? ahora.getFullYear() : ahora.getFullYear() - 1;
+    }
 
     var nuevoAnio = prompt('Ano de servicio nuevo (Septiembre a Agosto):', anioSugerido);
     if (!nuevoAnio) return;
@@ -1183,15 +1166,20 @@ document.getElementById('input-importar').addEventListener('change', function(e)
 });
 
 document.getElementById('btn-resumen-sucursal').addEventListener('click', function() {
-    var idxMes = parseInt(document.getElementById('select-estado').dataset.mesIdx) || 0;
-    var nombresMeses = ['Septiembre','Octubre','Noviembre','Diciembre','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto'];
     var mesIdx = prompt('Numero del mes (0=Sept, 1=Oct, ... 11=Ago):', '0');
     if (mesIdx === null) return;
     mesIdx = parseInt(mesIdx);
     if (isNaN(mesIdx) || mesIdx < 0 || mesIdx > 11) { alert('Mes invalido.'); return; }
 
+    var anioPrompt = prompt('Año de servicio (ej: 2025, 2026):', '2025');
+    if (anioPrompt === null) return;
+    var anioServicio = anioPrompt.trim();
+    if (!anioServicio) { alert('Año invalido.'); return; }
+
     var lista = cargarLista();
-    var activos = lista.filter(function(f) { return (f.estado || 'Activo') === 'Activo'; });
+    var activos = lista.filter(function(f) {
+        return (f.estado || 'Activo') === 'Activo' && String(f.anioServicio || '') === anioServicio;
+    });
 
     var totalPub = 0;
     var totalCursos = 0;
@@ -1205,8 +1193,12 @@ document.getElementById('btn-resumen-sucursal').addEventListener('click', functi
     var precEspecialPub = 0;
     var precEspecialHoras = 0;
     var precEspecialCursos = 0;
+    var pubOrdinarios = 0;
+    var pubOrdHoras = 0;
+    var pubOrdCursos = 0;
     var varones = 0;
     var mujeres = 0;
+    var noInformaron = [];
 
     activos.forEach(function(f) {
         var mes = (f.meses && Array.isArray(f.meses)) ? f.meses[mesIdx] : null;
@@ -1215,6 +1207,8 @@ document.getElementById('btn-resumen-sucursal').addEventListener('click', functi
         var horas = mes ? (mes.horas || 0) : 0;
         var cursos = mes ? (mes.cursos || 0) : 0;
         var esPrecAux = mes ? mes.auxiliar : false;
+        var esPrecReg = cargos.indexOf('Precursor Regular') !== -1;
+        var esPrecEsp = cargos.indexOf('Precursor Especial') !== -1;
 
         if (participo) totalPub++;
         totalHoras += horas;
@@ -1223,24 +1217,31 @@ document.getElementById('btn-resumen-sucursal').addEventListener('click', functi
         if (f.genero === 'Hombre') varones++;
         else mujeres++;
 
-        if (cargos.indexOf('Precursor Regular') !== -1) {
+        if (!participo) {
+            noInformaron.push(f.nombre || 'Sin nombre');
+        }
+
+        if (esPrecReg) {
             precRegPub++;
             precRegHoras += horas;
             precRegCursos += cursos;
-        }
-        if (cargos.indexOf('Precursor Especial') !== -1) {
+        } else if (esPrecEsp) {
             precEspecialPub++;
             precEspecialHoras += horas;
             precEspecialCursos += cursos;
-        }
-        if (esPrecAux) {
+        } else if (esPrecAux) {
             precAuxPub++;
             precAuxHoras += horas;
             precAuxCursos += cursos;
+        } else if (participo) {
+            pubOrdinarios++;
+            pubOrdHoras += horas;
+            pubOrdCursos += cursos;
         }
     });
 
     var html = '<p style="margin:5px 0;font-size:14px;"><strong>Mes:</strong> ' + nombresMeses[mesIdx] + '</p>';
+    html += '<p style="margin:5px 0;font-size:14px;"><strong>Año de servicio:</strong> ' + anioServicio + '</p>';
     html += '<p style="margin:5px 0;font-size:14px;"><strong>Total publicadores activos:</strong> ' + activos.length + '</p>';
     html += '<p style="margin:5px 0;font-size:14px;"><strong>Varones:</strong> ' + varones + ' | <strong>Mujeres:</strong> ' + mujeres + '</p>';
     html += '<hr style="border-color:#414868;">';
@@ -1250,23 +1251,57 @@ document.getElementById('btn-resumen-sucursal').addEventListener('click', functi
     html += '<tr style="border-bottom:1px solid #414868;"><td style="padding:6px;"><strong>Horas totales</strong></td><td style="padding:6px;text-align:right;"><strong>' + totalHoras + '</strong></td></tr>';
     html += '<tr style="border-bottom:1px solid #414868;"><td style="padding:6px;">Prec. Regulares (pub/horas/cursos)</td><td style="padding:6px;text-align:right;">' + precRegPub + ' / ' + precRegHoras + ' / ' + precRegCursos + '</td></tr>';
     html += '<tr style="border-bottom:1px solid #414868;"><td style="padding:6px;">Prec. Especiales (pub/horas/cursos)</td><td style="padding:6px;text-align:right;">' + precEspecialPub + ' / ' + precEspecialHoras + ' / ' + precEspecialCursos + '</td></tr>';
-    html += '<tr><td style="padding:6px;">Prec. Auxiliares (pub/horas/cursos)</td><td style="padding:6px;text-align:right;">' + precAuxPub + ' / ' + precAuxHoras + ' / ' + precAuxCursos + '</td></tr>';
+    html += '<tr style="border-bottom:1px solid #414868;"><td style="padding:6px;">Prec. Auxiliares (pub/horas/cursos)</td><td style="padding:6px;text-align:right;">' + precAuxPub + ' / ' + precAuxHoras + ' / ' + precAuxCursos + '</td></tr>';
+    html += '<tr><td style="padding:6px;"><strong>Pub. Ordinarios (pub/horas/cursos)</strong></td><td style="padding:6px;text-align:right;"><strong>' + pubOrdinarios + ' / ' + pubOrdHoras + ' / ' + pubOrdCursos + '</strong></td></tr>';
     html += '</table>';
+
+    if (noInformaron.length > 0) {
+        html += '<hr style="border-color:#414868;margin-top:12px;">';
+        html += '<p style="margin:5px 0;font-size:14px;"><strong>No informaron (' + noInformaron.length + '):</strong></p>';
+        html += '<p style="margin:3px 0;font-size:13px;">' + noInformaron.join(', ') + '</p>';
+    }
 
     document.getElementById('contenido-resumen').innerHTML = html;
     document.getElementById('modal-resumen').style.display = 'flex';
 });
 
+document.getElementById('btn-pdf-resumen').addEventListener('click', function() {
+    var contenido = document.getElementById('contenido-resumen');
+    if (!contenido || !contenido.innerHTML.trim()) { alert('Primero genera el resumen.'); return; }
+
+    var tempDiv = document.createElement('div');
+    tempDiv.style.cssText = 'background:#fff;color:#000;padding:20px;font-family:Arial,sans-serif;font-size:13px;';
+    tempDiv.innerHTML = contenido.innerHTML
+        .replace(/border-color:#414868/g, 'border-color:#cccccc')
+        .replace(/style="padding:6px;"/g, 'style="padding:6px;color:#000;"')
+        .replace(/style="padding:6px;text-align:right;"/g, 'style="padding:6px;text-align:right;color:#000;"');
+    document.body.appendChild(tempDiv);
+
+    var opt = {
+        margin: 0.5,
+        filename: 'Resumen_Sucursal.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, backgroundColor: '#ffffff' },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(tempDiv).save().then(function() {
+        document.body.removeChild(tempDiv);
+    });
+});
+
 document.getElementById('btn-pdf-masivo').addEventListener('click', function() {
     var lista = cargarLista();
     var valor = document.getElementById('select-grupo-pdf').value;
+    var estadoFiltro = document.getElementById('select-estado').value;
 
     var activos = lista.filter(function(f) {
-        return (f.estado || 'Activo') === 'Activo';
+        var estado = f.estado || 'Activo';
+        if (estadoFiltro !== 'todos' && estado !== estadoFiltro) return false;
+        return true;
     });
 
     if (valor !== 'todos') {
-        activos = activos.filter(function(f) { return f.grupoNumero === valor; });
+        activos = activos.filter(function(f) { return String(f.grupoNumero) === String(valor); });
     }
 
     if (activos.length === 0) {
@@ -1329,3 +1364,66 @@ document.getElementById('btn-pdf-masivo').addEventListener('click', function() {
 });
 
 }); // fin cargarDatosIniciales
+
+document.getElementById('btn-cerrar-sesion').addEventListener('click', function() {
+    sessionStorage.removeItem('acceso');
+    window.location.href = 'login.html';
+});
+
+document.getElementById('btn-duplicados').addEventListener('click', function() {
+    var lista = cargarLista();
+    var grupos = {};
+    lista.forEach(function(f) {
+        var clave = (f.nombre || '').toLowerCase().trim() + '|' + (f.anioServicio || '');
+        if (!grupos[clave]) grupos[clave] = [];
+        grupos[clave].push(f);
+    });
+
+    var duplicados = [];
+    Object.keys(grupos).forEach(function(clave) {
+        if (grupos[clave].length > 1) duplicados.push(grupos[clave]);
+    });
+
+    if (duplicados.length === 0) {
+        alert('No se encontraron fichas duplicadas.');
+        return;
+    }
+
+    var totalDups = 0;
+    duplicados.forEach(function(g) { totalDups += g.length - 1; });
+
+    var html = '<p style="margin:0 0 10px 0;color:#e0af68;font-size:14px;">Se encontraron <strong>' + totalDups + '</strong> ficha(s) duplicada(s) en <strong>' + duplicados.length + '</strong> grupo(s):</p>';
+
+    duplicados.forEach(function(grupo, gi) {
+        html += '<div style="border:1px solid #414868;border-radius:6px;padding:10px;margin-bottom:10px;">';
+        html += '<p style="margin:0 0 6px 0;font-weight:bold;color:#7aa2f7;font-size:13px;">' + grupo[0].nombre + ' (Año: ' + (grupo[0].anioServicio || '-') + ')</p>';
+        grupo.forEach(function(f, fi) {
+            var fecha = f.fechaNacimiento || '-';
+            var baut = f.fechaBautismo || '-';
+            var cargo = Array.isArray(f.cargo) ? f.cargo.join(', ') : (f.cargo || '-');
+            html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid #33374a;">';
+            html += '<span style="font-size:12px;">Nac: ' + fecha + ' | Baut: ' + baut + ' | Cargo: ' + cargo + '</span>';
+            if (fi > 0) {
+                html += '<button onclick="eliminarDuplicado(' + f.id + ')" style="background:#f7768e;color:#1a1b26;border:none;padding:3px 8px;border-radius:3px;cursor:pointer;font-size:11px;font-weight:bold;margin-left:8px;">Eliminar</button>';
+            } else {
+                html += '<span style="color:#9ece6a;font-size:11px;font-weight:bold;margin-left:8px;">Mantener</span>';
+            }
+            html += '</div>';
+        });
+        html += '</div>';
+    });
+
+    html += '<p style="margin:10px 0 0 0;color:#565f89;font-size:11px;">"Mantener" = primera ficha (no se elimina). Puedes eliminar las demás.</p>';
+
+    document.getElementById('contenido-duplicados').innerHTML = html;
+    document.getElementById('modal-duplicados').style.display = 'flex';
+});
+
+function eliminarDuplicado(id) {
+    if (!confirm('Eliminar esta ficha duplicada?')) return;
+    var lista = cargarLista();
+    var nueva = lista.filter(function(f) { return f.id !== id; });
+    guardarLista(nueva);
+    mostrarFichas(nueva);
+    document.getElementById('btn-duplicados').click();
+}
