@@ -1,5 +1,51 @@
 var modoEdicionMasiva = false;
 var editandoFilaId = null;
+var historialUndo = [];
+
+function pushUndo() {
+    historialUndo.push(JSON.stringify(cargarLista()));
+    if (historialUndo.length > 20) historialUndo.shift();
+    actualizarEstadoDeshacer();
+}
+
+function deshacer() {
+    if (historialUndo.length === 0) {
+        mostrarToast('No hay cambios que deshacer', 'error');
+        return;
+    }
+    var prev = historialUndo.pop();
+    guardarLista(JSON.parse(prev));
+    actualizarEstadoDeshacer();
+    mostrarMes();
+    mostrarToast('Cambios deshechos');
+}
+
+function actualizarEstadoDeshacer() {
+    var btn = document.getElementById('btn-deshacer');
+    if (btn) btn.disabled = historialUndo.length === 0;
+}
+
+function mesYaPaso(idxMes) {
+    var mapMes = [8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7];
+    var hoy = new Date();
+    var anio = parseInt(document.getElementById('select-anio-servicio').value);
+    if (!anio || isNaN(anio)) {
+        anio = hoy.getMonth() >= 8 ? hoy.getFullYear() : hoy.getFullYear() - 1;
+    }
+    var mesCal = mapMes[idxMes];
+    var anioCal = mesCal >= 8 ? anio - 1 : anio;
+    if (anioCal < hoy.getFullYear()) return true;
+    if (anioCal > hoy.getFullYear()) return false;
+    return mesCal < hoy.getMonth();
+}
+
+function confirmarMesPasado() {
+    var idxMes = parseInt(document.getElementById('select-mes').value);
+    if (mesYaPaso(idxMes)) {
+        return confirm('El mes de ' + nombresMeses[idxMes] + ' ya pasó. Estos cambios son de un mes anterior. ¿Deseas continuar?');
+    }
+    return true;
+}
 
 function volverAlRegistro() {
     var _k2 = ['P','a','n','d','a','2','0','0','4','2'];
@@ -44,6 +90,7 @@ function pesoCargo(cargos, rolGrupo) {
 }
 
 function toggleEdicionMasiva() {
+    if (!confirmarMesPasado()) return;
     modoEdicionMasiva = !modoEdicionMasiva;
     editandoFilaId = null;
     var btn = document.getElementById('btn-editar-masivo');
@@ -53,6 +100,7 @@ function toggleEdicionMasiva() {
 }
 
 function editarFila(id) {
+    if (!confirmarMesPasado()) return;
     editandoFilaId = parseInt(id);
     mostrarMes();
 }
@@ -61,6 +109,7 @@ function guardarFila(id) {
     id = parseInt(id);
     var idxMes = parseInt(document.getElementById('select-mes').value);
     var lista = cargarLista();
+    pushUndo();
     var f = null;
     for (var i = 0; i < lista.length; i++) {
         if (lista[i].id === id) { f = lista[i]; break; }
@@ -98,6 +147,7 @@ function guardarFila(id) {
 function guardarEdicionMasiva() {
     var idxMes = parseInt(document.getElementById('select-mes').value);
     var lista = cargarLista();
+    pushUndo();
 
     lista.forEach(function(f) {
         var tr = document.querySelector('tr[data-id="' + f.id + '"]');
@@ -349,6 +399,10 @@ document.getElementById('btn-editar-masivo').addEventListener('click', function(
     }
 });
 
+document.getElementById('btn-deshacer').addEventListener('click', function() {
+    deshacer();
+});
+
 document.getElementById('btn-pdf-mes').addEventListener('click', function() {
     var idxMes = parseInt(document.getElementById('select-mes').value);
     var nombreMes = nombresMeses[idxMes];
@@ -441,6 +495,7 @@ document.getElementById('btn-pdf-mes').addEventListener('click', function() {
 });
 
 cargarDatosIniciales(function() {
+    actualizarEstadoDeshacer();
     actualizarSelectorGrupos();
     cargarAnioDesdeDatos();
     mostrarMes();
