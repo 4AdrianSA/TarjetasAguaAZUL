@@ -73,6 +73,7 @@ function guardarFila(id) {
     var participoCb = tr.querySelector('.edit-participo');
     var cursosIn = tr.querySelector('.edit-cursos');
     var horasIn = tr.querySelector('.edit-horas');
+    var auxiliarCb = tr.querySelector('.edit-auxiliar');
     var notasIn = tr.querySelector('.edit-notas');
 
     if (!f.meses || !Array.isArray(f.meses)) {
@@ -86,6 +87,7 @@ function guardarFila(id) {
     if (participoCb) f.meses[idxMes].participo = participoCb.checked;
     if (cursosIn) f.meses[idxMes].cursos = parseInt(cursosIn.value) || 0;
     if (horasIn) f.meses[idxMes].horas = parseFloat(horasIn.value) || 0;
+    if (auxiliarCb) f.meses[idxMes].auxiliar = auxiliarCb.checked;
     if (notasIn) f.meses[idxMes].notas = notasIn.value;
 
     guardarLista(lista);
@@ -104,6 +106,7 @@ function guardarEdicionMasiva() {
         var participoCb = tr.querySelector('.edit-participo');
         var cursosIn = tr.querySelector('.edit-cursos');
         var horasIn = tr.querySelector('.edit-horas');
+        var auxiliarCb = tr.querySelector('.edit-auxiliar');
         var notasIn = tr.querySelector('.edit-notas');
 
         if (!f.meses || !Array.isArray(f.meses)) {
@@ -117,6 +120,7 @@ function guardarEdicionMasiva() {
         if (participoCb) f.meses[idxMes].participo = participoCb.checked;
         if (cursosIn) f.meses[idxMes].cursos = parseInt(cursosIn.value) || 0;
     if (horasIn) f.meses[idxMes].horas = parseFloat(horasIn.value) || 0;
+        if (auxiliarCb) f.meses[idxMes].auxiliar = auxiliarCb.checked;
         if (notasIn) f.meses[idxMes].notas = notasIn.value;
     });
 
@@ -159,6 +163,7 @@ function mostrarMes() {
         var participo = mes ? mes.participo : false;
         var cursos = mes ? (mes.cursos || 0) : 0;
         var horas = mes ? (mes.horas || 0) : 0;
+        var auxiliar = mes ? mes.auxiliar : false;
         var notas = mes ? (mes.notas || '') : '';
         var cargoPrincipal = cargos[0] || '';
 
@@ -187,6 +192,7 @@ function mostrarMes() {
             participo: participo,
             cursos: cursos,
             horas: horas,
+            auxiliar: auxiliar,
             notas: notas,
             peso: pesoCargo(cargos, f.rolGrupo),
             esPrecReg: cargos.indexOf('Precursor Regular') !== -1
@@ -236,6 +242,7 @@ function mostrarMes() {
             '<th>Participo</th>' +
             '<th>Cursos</th>' +
             '<th>Horas</th>' +
+            '<th>Prec. Auxiliar</th>' +
             '<th style="text-align:left;">Notas</th>' +
             '<th>Acciones</th>' +
         '</tr></thead><tbody>';
@@ -259,6 +266,7 @@ function mostrarMes() {
                 '<td><input type="checkbox" class="edit-participo"' + (f.participo ? ' checked' : '') + '></td>' +
                 '<td><input type="number" class="edit-cursos" value="' + f.cursos + '" min="0" style="width:50px;"></td>' +
                 '<td class="' + claseHoras + '"><input type="number" class="edit-horas" value="' + f.horas + '" min="0" step="0.5" style="width:60px;"></td>' +
+                '<td><input type="checkbox" class="edit-auxiliar"' + (f.auxiliar ? ' checked' : '') + '></td>' +
                 '<td><input type="text" class="edit-notas" value="' + f.notas.replace(/"/g, '&quot;') + '" style="width:120px;"></td>' +
                 '<td></td>' +
                 '</tr>';
@@ -272,6 +280,7 @@ function mostrarMes() {
                 '<td><input type="checkbox" class="edit-participo"' + (f.participo ? ' checked' : '') + '></td>' +
                 '<td><input type="number" class="edit-cursos" value="' + f.cursos + '" min="0" style="width:50px;"></td>' +
                 '<td class="' + claseHoras + '"><input type="number" class="edit-horas" value="' + f.horas + '" min="0" step="0.5" style="width:60px;"></td>' +
+                '<td><input type="checkbox" class="edit-auxiliar"' + (f.auxiliar ? ' checked' : '') + '></td>' +
                 '<td><input type="text" class="edit-notas" value="' + f.notas.replace(/"/g, '&quot;') + '" style="width:120px;"></td>' +
                 '<td><button class="btn-guardar-fila" onclick="guardarFila(\'' + f.id + '\')" style="padding:4px 10px;font-size:12px;">Guardar</button> ' +
                 '<button class="btn-guardar-fila" style="background-color:#f7768e;color:#1a1b26;padding:4px 10px;font-size:12px;" onclick="editandoFilaId=null;mostrarMes();">Cancelar</button></td>' +
@@ -286,6 +295,7 @@ function mostrarMes() {
                 '<td class="' + (f.participo ? 'si' : 'no') + '">' + (f.participo ? '\u2713' : '\u2717') + '</td>' +
                 '<td>' + f.cursos + '</td>' +
                 '<td class="' + claseHoras + '">' + f.horas + '</td>' +
+                '<td class="' + (f.auxiliar ? 'si' : 'no') + '">' + (f.auxiliar ? '\u2713' : '\u2717') + '</td>' +
                 '<td style="text-align:left;font-size:12px;">' + escapeHtml(f.notas) + (f.observaciones ? ' <em style="color:#bb9af7;">(' + escapeHtml(f.observaciones) + ')</em>' : '') + '</td>' +
                 '<td><button class="btn-guardar-fila" onclick="editarFila(\'' + f.id + '\')" style="padding:4px 10px;font-size:12px;background-color:#7aa2f7;">Editar</button></td>' +
                 '</tr>';
@@ -298,6 +308,7 @@ function mostrarMes() {
         '<td>' + totalParticipo + '/' + filas.length + '</td>' +
         '<td>' + totalCursos + '</td>' +
         '<td>' + totalHoras + '</td>' +
+        '<td></td>' +
         '<td></td>' +
         '<td></td>' +
         '</tr>';
