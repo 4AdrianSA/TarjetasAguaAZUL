@@ -131,6 +131,27 @@ function guardarEdicionMasiva() {
     mostrarMes();
 }
 
+function toggleAuxiliarDirecto(id) {
+    id = parseInt(id);
+    var idxMes = parseInt(document.getElementById('select-mes').value);
+    var lista = cargarLista();
+    var f = null;
+    for (var i = 0; i < lista.length; i++) {
+        if (lista[i].id === id) { f = lista[i]; break; }
+    }
+    if (!f) return;
+    if (!f.meses || !Array.isArray(f.meses)) {
+        f.meses = [];
+        for (var j = 0; j < 12; j++) f.meses.push({ participo: false, cursos: 0, horas: 0, auxiliar: false, notas: '' });
+    }
+    if (!f.meses[idxMes]) {
+        f.meses[idxMes] = { participo: false, cursos: 0, horas: 0, auxiliar: false, notas: '' };
+    }
+    f.meses[idxMes].auxiliar = !f.meses[idxMes].auxiliar;
+    guardarLista(lista);
+    mostrarMes();
+}
+
 function mostrarMes() {
     var idxMes = parseInt(document.getElementById('select-mes').value);
     var valorGrupo = document.getElementById('select-grupo-mes').value;
@@ -295,7 +316,7 @@ function mostrarMes() {
                 '<td class="' + (f.participo ? 'si' : 'no') + '">' + (f.participo ? '\u2713' : '\u2717') + '</td>' +
                 '<td>' + f.cursos + '</td>' +
                 '<td class="' + claseHoras + '">' + f.horas + '</td>' +
-                '<td class="' + (f.auxiliar ? 'si' : 'no') + '">' + (f.auxiliar ? '\u2713' : '\u2717') + '</td>' +
+                '<td><input type="checkbox" onchange="toggleAuxiliarDirecto(' + f.id + ')"' + (f.auxiliar ? ' checked' : '') + '></td>' +
                 '<td style="text-align:left;font-size:12px;">' + escapeHtml(f.notas) + (f.observaciones ? ' <em style="color:#bb9af7;">(' + escapeHtml(f.observaciones) + ')</em>' : '') + '</td>' +
                 '<td><button class="btn-guardar-fila" onclick="editarFila(\'' + f.id + '\')" style="padding:4px 10px;font-size:12px;background-color:#7aa2f7;">Editar</button></td>' +
                 '</tr>';
