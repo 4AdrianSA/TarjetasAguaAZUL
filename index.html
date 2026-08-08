@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tarjetas Agua AZUL </title>
+    <title>📋 Tarjetas Agua Azul</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💧</text></svg>">
     <link rel="stylesheet" href="estilos.css">
     <script>
         if (sessionStorage.getItem('acceso') !== 'secretario') { window.location.href = 'login.html'; }
@@ -14,23 +15,26 @@
     <script src="firebase-config.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="utils.js"></script>
-    <script src="app.js?v=13" defer></script>
+    <script src="app.js?v=14" defer></script>
 </head>
 <body>
 
        <div class="toolbar">
-       <button id="btn-guardar">Guardar Publicador</button>
-       <button id="btn-ver">Ver guardados</button>
-       <button id="btn-generar-pdf">Generar PDF de la Ficha</button>
-       <a href="meses.html" id="btn-meses" style="padding:8px 16px;border-radius:4px;background-color:#bb9af7;color:#1a1b26;text-decoration:none;font-weight:bold;display:inline-block;margin-left:4px;">Ver por Meses</a>
-       <button id="btn-nuevo-anio" style="background-color:#ff9e64;">Iniciar Nuevo Año</button>
-       <button id="btn-exportar" style="background-color:#9ece6a;">Exportar Backup</button>
-       <button id="btn-importar" style="background-color:#7dcfff;">Importar Backup</button>
+       <button id="btn-guardar">💾 Guardar</button>
+       <button id="btn-ver">📋 Ver guardados</button>
+       <button id="btn-generar-pdf">📄 PDF Ficha</button>
+       <a href="meses.html" id="btn-meses" style="padding:8px 16px;border-radius:4px;background-color:#bb9af7;color:#1a1b26;text-decoration:none;font-weight:bold;display:inline-block;margin-left:4px;">📅 Ver por Meses</a>
+       <button id="btn-nuevo-anio" style="background-color:#ff9e64;">🔄 Nuevo Año</button>
+       <button id="btn-exportar" style="background-color:#9ece6a;">⬇️ Exportar</button>
+       <button id="btn-importar" style="background-color:#7dcfff;">⬆️ Importar</button>
        <input type="file" id="input-importar" accept=".json" style="display:none;">
-        <button id="btn-resumen-sucursal" style="background-color:#bb9af7;">Resumen a Sucursal</button>
-        <button id="btn-pdf-masivo" style="background-color:#f7768e;">PDF Masivo (2 por pág)</button>
-        <button id="btn-duplicados" style="background-color:#e0af68;">Buscar Duplicados</button>
-        <button id="btn-cerrar-sesion" style="background-color:#f7768e;margin-left:8px;">Cerrar Sesion</button>
+        <button id="btn-resumen-sucursal" style="background-color:#bb9af7;">📊 Resumen</button>
+        <button id="btn-pdf-masivo" style="background-color:#f7768e;">📑 PDF Masivo</button>
+        <button id="btn-pdf-prec-reg" style="background-color:#bb9af7;">📋 Prec. Regulares</button>
+        <button id="btn-pdf-ancianos" style="background-color:#ff9e64;">📋 Ancianos</button>
+        <button id="btn-pdf-siervos" style="background-color:#9ece6a;">📋 Siervos</button>
+        <button id="btn-duplicados" style="background-color:#e0af68;">🔍 Duplicados</button>
+        <button id="btn-cerrar-sesion" style="background-color:#f7768e;margin-left:8px;">🚪 Cerrar Sesión</button>
        </div>
 
     <div>
@@ -77,6 +81,7 @@
             <input type="number" id="input-grupo-numero" min="1" placeholder="Ej: 1">
         </p>
         <p>
+            <label><input type="radio" name="rol-grupo" value="" checked> Ninguno</label>
             <label><input type="radio" name="rol-grupo" value="Superintendente de grupo"> Superintendente de grupo</label>
             <label><input type="radio" name="rol-grupo" value="Auxiliar de grupo"> Auxiliar de grupo</label>
         </p>

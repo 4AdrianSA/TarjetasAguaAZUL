@@ -220,7 +220,7 @@ function renderizarFichaPDF(ficha, opciones) {
             '</tr>' +
             '<tr>' +
                 '<td style="padding:1px 4px;"><strong>Serv:</strong> ' + (ficha.anioServicio || '-') + '</td>' +
-                '<td style="padding:1px 4px;"><strong>Cargo:</strong> ' + (cargo || '-') + '</td>' +
+                '<td style="padding:1px 4px;">' + (cargo || '-') + '</td>' +
             '</tr>' +
             '<tr>' +
                 '<td style="padding:1px 4px;"><strong>Genero:</strong> ' + (ficha.genero || '-') + '</td>' +
@@ -231,28 +231,19 @@ function renderizarFichaPDF(ficha, opciones) {
     '</div>';
 }
 
+function pesoFicha(f) {
+    var rol = (f.rolGrupo || '').toLowerCase();
+    if (rol === 'superintendente de grupo' || rol === 'superintendente') return 0;
+    if (rol === 'auxiliar de grupo' || rol === 'auxiliar') return 1;
+    var cargos = Array.isArray(f.cargo) ? f.cargo : (f.cargo ? [f.cargo] : []);
+    var cargosLower = cargos.map(function(c) { return c.toLowerCase(); });
+    if (cargosLower.indexOf('anciano') !== -1) return 2;
+    if (cargosLower.indexOf('precursor regular') !== -1) return 3;
+    if (cargosLower.indexOf('precursor especial') !== -1) return 4;
+    return 5;
+}
+
 function ordenarFichas(fichas) {
-    var prioridad = {
-        'superintendente': 0,
-        'auxiliar': 1,
-        'anciano': 2,
-        'precursor regular': 3,
-        'precursor especial': 4,
-        'publicador': 5
-    };
-
-    function pesoFicha(f) {
-        var rol = (f.rolGrupo || '').toLowerCase();
-        if (rol === 'superintendente de grupo' || rol === 'superintendente') return 0;
-        if (rol === 'auxiliar de grupo' || rol === 'auxiliar') return 1;
-        var cargos = Array.isArray(f.cargo) ? f.cargo : (f.cargo ? [f.cargo] : []);
-        var cargosLower = cargos.map(function(c) { return c.toLowerCase(); });
-        if (cargosLower.indexOf('anciano') !== -1) return 2;
-        if (cargosLower.indexOf('precursor regular') !== -1) return 3;
-        if (cargosLower.indexOf('precursor especial') !== -1) return 4;
-        return 5;
-    }
-
     return fichas.slice().sort(function(a, b) { return pesoFicha(a) - pesoFicha(b); });
 }
 
@@ -572,10 +563,10 @@ function renderizarFicha(ficha) {
         '<div class="ficha-header">' +
             '<h3>' + escapeHtml(ficha.nombre) + estadoBadge + '</h3>' +
             '<div class="ficha-botones">' +
-                '<button class="btn-pdf-ficha" data-id="' + ficha.id + '">PDF</button>' +
-                '<button class="btn-editar">Editar</button>' +
-                '<button class="btn-cambiar-grupo" style="background-color:#7dcfff;color:#1a1b26;">Cambiar Grupo</button>' +
-                '<button class="btn-eliminar">Eliminar</button>' +
+                '<button class="btn-pdf-ficha" data-id="' + ficha.id + '">📄 PDF</button>' +
+                '<button class="btn-editar">✏️ Editar</button>' +
+                '<button class="btn-cambiar-grupo" style="background-color:#7dcfff;color:#1a1b26;">🔄 Cambiar Grupo</button>' +
+                '<button class="btn-eliminar">🗑️ Eliminar</button>' +
             '</div>' +
         '</div>' +
         '<div class="ficha-datos">' +
@@ -1294,23 +1285,20 @@ document.getElementById('btn-pdf-masivo').addEventListener('click', function() {
     var valor = document.getElementById('select-grupo-pdf').value;
     var estadoFiltro = document.getElementById('select-estado').value;
 
-    var activos = lista.filter(function(f) {
+    var todos = lista.filter(function(f) {
         var estado = f.estado || 'Activo';
         if (estadoFiltro !== 'todos' && estado !== estadoFiltro) return false;
         return true;
     });
 
     if (valor !== 'todos') {
-        activos = activos.filter(function(f) { return String(f.grupoNumero) === String(valor); });
+        todos = todos.filter(function(f) { return String(f.grupoNumero) === String(valor); });
     }
 
-    if (activos.length === 0) {
+    if (todos.length === 0) {
         alert('No hay publicadores activos para generar PDF.');
         return;
     }
-
-    var ordenados = ordenarFichas(activos);
-    var grupoNombre = valor === 'todos' ? 'Toda la Congregacion' : 'Grupo ' + valor;
 
     var tempDiv = document.createElement('div');
     tempDiv.style.color = '#000';
@@ -1320,17 +1308,63 @@ document.getElementById('btn-pdf-masivo').addEventListener('click', function() {
     tempDiv.style.width = '680px';
 
     var html = '<style>@page{size:letter portrait;margin:5mm 8mm 5mm 8mm !important;}</style>';
-    html += '<div style="margin:0;padding:10px 15px;text-align:center;">' +
-        '<h1 style="margin:0;font-size:16px;color:#000;">' + grupoNombre + ' - Fichas S-21</h1>' +
-        '<p style="margin:2px 0 0 0;font-size:11px;color:#333;">Total: ' + ordenados.length + ' publicadores</p></div>';
 
-    for (var i = 0; i < ordenados.length; i += 2) {
-        html += '<div style="page-break-before:' + (i > 0 ? 'always' : 'auto') + ';padding:5px 15px 0 15px;">';
-        html += renderizarFichaPDF(ordenados[i], {grupo: true, nombreGrupo: grupoNombre});
-        if (i + 1 < ordenados.length) {
-            html += '<div style="margin-top:8px;">' + renderizarFichaPDF(ordenados[i + 1], {grupo: true, nombreGrupo: grupoNombre}) + '</div>';
+    if (valor === 'todos') {
+        var gruposMap = {};
+        var gruposOrden = [];
+        todos.forEach(function(f) {
+            var num = f.grupoNumero || 'Sin grupo';
+            if (!gruposMap[num]) { gruposMap[num] = []; gruposOrden.push(num); }
+            gruposMap[num].push(f);
+        });
+        gruposOrden.sort(function(a, b) {
+            if (a === 'Sin grupo') return 1;
+            if (b === 'Sin grupo') return -1;
+            return parseInt(a) - parseInt(b);
+        });
+
+        var totalGeneral = todos.length;
+        html += '<div style="margin:0;padding:10px 15px;text-align:center;">' +
+            '<h1 style="margin:0;font-size:16px;color:#000;">Toda la Congregacion - Fichas S-21</h1>' +
+            '<p style="margin:2px 0 0 0;font-size:11px;color:#333;">Total: ' + totalGeneral + ' publicadores</p></div>';
+
+        for (var gi = 0; gi < gruposOrden.length; gi++) {
+            var grupo = gruposOrden[gi];
+            var fichasGrupo = gruposMap[grupo].slice().sort(function(a, b) { return pesoFicha(a) - pesoFicha(b); });
+            var nombreGrupo = 'Grupo ' + grupo;
+
+            html += '<h2 style="margin:20px 0 5px 15px;font-size:14px;color:#000;page-break-before:' + (gi > 0 ? 'always' : 'auto') + ';">' + nombreGrupo + ' (' + fichasGrupo.length + ')</h2>';
+
+            for (var k = 0; k < fichasGrupo.length; k += 2) {
+                html += '<div style="padding:5px 15px 0 15px;">';
+                html += renderizarFichaPDF(fichasGrupo[k], {grupo: true, nombreGrupo: nombreGrupo});
+                if (k + 1 < fichasGrupo.length) {
+                    html += '<div style="margin-top:8px;">' + renderizarFichaPDF(fichasGrupo[k + 1], {grupo: true, nombreGrupo: nombreGrupo}) + '</div>';
+                }
+                html += '</div>';
+            }
         }
-        html += '</div>';
+    } else {
+        var ordenados = todos.slice().sort(function(a, b) {
+            var ga = parseInt(a.grupoNumero) || 9999;
+            var gb = parseInt(b.grupoNumero) || 9999;
+            if (ga !== gb) return ga - gb;
+            return pesoFicha(a) - pesoFicha(b);
+        });
+        var grupoNombre = 'Grupo ' + valor;
+
+        html += '<div style="margin:0;padding:10px 15px;text-align:center;">' +
+            '<h1 style="margin:0;font-size:16px;color:#000;">' + grupoNombre + ' - Fichas S-21</h1>' +
+            '<p style="margin:2px 0 0 0;font-size:11px;color:#333;">Total: ' + ordenados.length + ' publicadores</p></div>';
+
+        for (var i = 0; i < ordenados.length; i += 2) {
+            html += '<div style="page-break-before:' + (i > 0 ? 'always' : 'auto') + ';padding:5px 15px 0 15px;">';
+            html += renderizarFichaPDF(ordenados[i], {grupo: true, nombreGrupo: grupoNombre});
+            if (i + 1 < ordenados.length) {
+                html += '<div style="margin-top:8px;">' + renderizarFichaPDF(ordenados[i + 1], {grupo: true, nombreGrupo: grupoNombre}) + '</div>';
+            }
+            html += '</div>';
+        }
     }
 
     tempDiv.innerHTML = html;
@@ -1361,6 +1395,86 @@ document.getElementById('btn-pdf-masivo').addEventListener('click', function() {
             if (tempDiv.parentNode) document.body.removeChild(tempDiv);
         });
     }, 100);
+});
+
+function generarPDFPorCargo(nombreCargo, tituloPDF) {
+    var lista = cargarLista();
+    var estadoFiltro = document.getElementById('select-estado').value;
+
+    var filtrados = lista.filter(function(f) {
+        var estado = f.estado || 'Activo';
+        if (estadoFiltro !== 'todos' && estado !== estadoFiltro) return false;
+        var cargos = Array.isArray(f.cargo) ? f.cargo : (f.cargo ? [f.cargo] : []);
+        return cargos.indexOf(nombreCargo) !== -1;
+    });
+
+    if (filtrados.length === 0) {
+        mostrarToast('No hay publicadores con cargo: ' + nombreCargo, 'error');
+        return;
+    }
+
+    var ordenados = ordenarFichas(filtrados);
+
+    var tempDiv = document.createElement('div');
+    tempDiv.style.color = '#000';
+    tempDiv.style.backgroundColor = '#fff';
+    tempDiv.style.padding = '0';
+    tempDiv.style.fontFamily = 'Arial, sans-serif';
+    tempDiv.style.width = '680px';
+
+    var html = '<style>@page{size:letter portrait;margin:5mm 8mm 5mm 8mm !important;}</style>';
+    html += '<div style="margin:0;padding:10px 15px;text-align:center;">' +
+        '<h1 style="margin:0;font-size:16px;color:#000;">' + tituloPDF + ' - Fichas S-21</h1>' +
+        '<p style="margin:2px 0 0 0;font-size:11px;color:#333;">Total: ' + ordenados.length + ' publicadores</p></div>';
+
+    for (var i = 0; i < ordenados.length; i += 2) {
+        html += '<div style="page-break-before:' + (i > 0 ? 'always' : 'auto') + ';padding:5px 15px 0 15px;">';
+        html += renderizarFichaPDF(ordenados[i], {grupo: true, nombreGrupo: tituloPDF});
+        if (i + 1 < ordenados.length) {
+            html += '<div style="margin-top:8px;">' + renderizarFichaPDF(ordenados[i + 1], {grupo: true, nombreGrupo: tituloPDF}) + '</div>';
+        }
+        html += '</div>';
+    }
+
+    tempDiv.innerHTML = html;
+    document.body.appendChild(tempDiv);
+
+    setTimeout(function() {
+        html2pdf().set({
+            margin: [5, 8, 5, 8],
+            filename: tituloPDF.replace(/\s+/g, '_') + '_Fichas_S21.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, backgroundColor: '#ffffff' },
+            jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' },
+            pagebreak: { mode: ['css'] }
+        }).from(tempDiv).toPdf().get('pdf').then(function(pdf) {
+            var totalPaginas = pdf.internal.getNumberOfPages();
+            for (var p = 1; p <= totalPaginas; p++) {
+                pdf.setPage(p);
+                var texto = 'Pag. ' + p + ' de ' + totalPaginas;
+                pdf.setFontSize(8);
+                pdf.setTextColor(160, 160, 160);
+                pdf.text(texto, pdf.internal.pageSize.getWidth() / 2, pdf.internal.pageSize.getHeight() - 4, { align: 'center' });
+            }
+        }).save().then(function() {
+            if (tempDiv.parentNode) document.body.removeChild(tempDiv);
+        }).catch(function(err) {
+            console.error('Error PDF por cargo:', err);
+            if (tempDiv.parentNode) document.body.removeChild(tempDiv);
+        });
+    }, 100);
+}
+
+document.getElementById('btn-pdf-prec-reg').addEventListener('click', function() {
+    generarPDFPorCargo('Precursor Regular', 'Precursors Regulares');
+});
+
+document.getElementById('btn-pdf-ancianos').addEventListener('click', function() {
+    generarPDFPorCargo('Anciano', 'Ancianos');
+});
+
+document.getElementById('btn-pdf-siervos').addEventListener('click', function() {
+    generarPDFPorCargo('Siervo ministerial', 'Siervos Ministeriales');
 });
 
 }); // fin cargarDatosIniciales
