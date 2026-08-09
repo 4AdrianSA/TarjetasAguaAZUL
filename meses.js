@@ -1,6 +1,7 @@
 var modoEdicionMasiva = false;
 var editandoFilaId = null;
 var historialUndo = [];
+var CONTRASENA_SECRETARIO = ['P','a','n','d','a','2','0','0','4','2'].join('');
 
 function pushUndo() {
     historialUndo.push(JSON.stringify(cargarLista()));
@@ -25,32 +26,60 @@ function actualizarEstadoDeshacer() {
     if (btn) btn.disabled = historialUndo.length === 0;
 }
 
-function mesYaPaso(idxMes) {
-    var mapMes = [8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7];
+function anioServicioActual() {
     var hoy = new Date();
-    var anio = parseInt(document.getElementById('select-anio-servicio').value);
-    if (!anio || isNaN(anio)) {
-        anio = hoy.getMonth() >= 8 ? hoy.getFullYear() : hoy.getFullYear() - 1;
-    }
-    var mesCal = mapMes[idxMes];
-    var anioCal = mesCal >= 8 ? anio - 1 : anio;
-    if (anioCal < hoy.getFullYear()) return true;
-    if (anioCal > hoy.getFullYear()) return false;
-    return mesCal < hoy.getMonth();
+    return hoy.getMonth() >= 8 ? hoy.getFullYear() + 1 : hoy.getFullYear();
 }
 
-function confirmarMesPasado() {
+function esMesLibre(idxMes) {
+    var hoy = new Date();
+    var idxActual = (hoy.getMonth() + 4) % 12;
+    var idxAnterior = (hoy.getMonth() + 3) % 12;
+    return idxMes === idxActual || idxMes === idxAnterior;
+}
+
+function verificarAccesoMes() {
     var idxMes = parseInt(document.getElementById('select-mes').value);
-    if (mesYaPaso(idxMes)) {
-        return confirm('El mes de ' + nombresMeses[idxMes] + ' ya pasó. Estos cambios son de un mes anterior. ¿Deseas continuar?');
+    var valorAnio = document.getElementById('select-anio-servicio').value;
+    var esAnioActual = valorAnio === 'todos' || String(valorAnio) === String(anioServicioActual());
+    if (esAnioActual && esMesLibre(idxMes)) return true;
+    if (!confirm('Estás editando otro mes que no corresponde (' + nombresMeses[idxMes] + '). ¿Seguro que deseas continuar?')) return false;
+    var clave = prompt('Contraseña del Secretario:');
+    if (clave === CONTRASENA_SECRETARIO) return true;
+    alert('Contraseña incorrecta.');
+    return false;
+}
+
+function mostrarAnioServicio() {
+    var el = document.getElementById('anio-servicio-titulo');
+    if (el) el.textContent = 'Anio de servicio ' + anioServicioActual();
+}
+
+function tieneOpcionGrupo(select, valor) {
+    for (var i = 0; i < select.options.length; i++) {
+        if (select.options[i].value === String(valor)) return true;
     }
-    return true;
+    return false;
+}
+
+function seleccionarGrupoUsuario() {
+    var select = document.getElementById('select-grupo-mes');
+    var guardado = localStorage.getItem('grupoUsuario');
+    if (guardado) {
+        if (tieneOpcionGrupo(select, guardado)) select.value = String(guardado);
+        return;
+    }
+    var numero = prompt('¿Qué grupo eres? (número)');
+    if (numero === null || numero.trim() === '') return;
+    numero = numero.trim();
+    if (!/^\d{1,2}$/.test(numero)) return;
+    localStorage.setItem('grupoUsuario', numero);
+    if (tieneOpcionGrupo(select, numero)) select.value = String(numero);
 }
 
 function volverAlRegistro() {
-    var _k2 = ['P','a','n','d','a','2','0','0','4','2'];
     var clave = prompt('Contraseña del Secretario:');
-    if (clave === _k2.join('')) {
+    if (clave === CONTRASENA_SECRETARIO) {
         sessionStorage.setItem('acceso', 'secretario');
         window.location.href = 'index.html';
     } else if (clave !== null) {
@@ -90,7 +119,7 @@ function pesoCargo(cargos, rolGrupo) {
 }
 
 function toggleEdicionMasiva() {
-    if (!confirmarMesPasado()) return;
+    if (!verificarAccesoMes()) return;
     modoEdicionMasiva = !modoEdicionMasiva;
     editandoFilaId = null;
     var btn = document.getElementById('btn-editar-masivo');
@@ -100,7 +129,7 @@ function toggleEdicionMasiva() {
 }
 
 function editarFila(id) {
-    if (!confirmarMesPasado()) return;
+    if (!verificarAccesoMes()) return;
     editandoFilaId = parseInt(id);
     mostrarMes();
 }
@@ -389,7 +418,12 @@ function cargarAnioDesdeDatos() {
 }
 
 document.getElementById('select-mes').addEventListener('change', function() { modoEdicionMasiva = false; mostrarMes(); });
-document.getElementById('select-grupo-mes').addEventListener('change', function() { modoEdicionMasiva = false; mostrarMes(); });
+document.getElementById('select-grupo-mes').addEventListener('change', function() {
+    modoEdicionMasiva = false;
+    var val = this.value;
+    if (val !== 'todos') localStorage.setItem('grupoUsuario', val);
+    mostrarMes();
+});
 document.getElementById('select-anio-servicio').addEventListener('change', function() { modoEdicionMasiva = false; mostrarMes(); });
 document.getElementById('btn-editar-masivo').addEventListener('click', function() {
     if (modoEdicionMasiva) {
@@ -400,6 +434,13 @@ document.getElementById('btn-editar-masivo').addEventListener('click', function(
 });
 
 document.getElementById('btn-deshacer').addEventListener('click', function() {
+    if (sessionStorage.getItem('acceso') !== 'secretario') {
+        var clave = prompt('Contraseña del Secretario:');
+        if (clave !== CONTRASENA_SECRETARIO) {
+            alert('Contraseña incorrecta.');
+            return;
+        }
+    }
     deshacer();
 });
 
@@ -415,6 +456,8 @@ document.getElementById('btn-pdf-mes').addEventListener('click', function() {
     tempDiv.style.padding = '15px';
     tempDiv.style.fontFamily = 'Arial, sans-serif';
     tempDiv.style.width = '750px';
+    tempDiv.style.filter = 'grayscale(1)';
+    tempDiv.style.webkitFilter = 'grayscale(1)';
 
     var stats = document.getElementById('estadisticas-container');
     var statNums = stats.querySelectorAll('.stat-card');
@@ -474,7 +517,7 @@ document.getElementById('btn-pdf-mes').addEventListener('click', function() {
     }
 
     tempDiv.innerHTML =
-        '<h1 style="text-align:center;color:#000;margin:0 0 2px 0;font-size:18px;">Congregacion Agua Azul</h1>' +
+        '<h1 style="text-align:center;color:#000;margin:0 0 2px 0;font-size:18px;">Congregacion Agua Azul - Anio de servicio ' + anioServicioActual() + '</h1>' +
         '<h2 style="text-align:center;color:#000;margin:0 0 3px 0;font-size:15px;">' + nombreMes + '</h2>' +
         '<p style="text-align:center;color:#555;margin:0 0 10px 0;font-size:12px;">' + grupoTexto + '</p>' +
         '<table style="width:100%;border-collapse:collapse;margin-bottom:12px;">' + statsFila + '</table>' +
@@ -498,6 +541,8 @@ cargarDatosIniciales(function() {
     actualizarEstadoDeshacer();
     actualizarSelectorGrupos();
     cargarAnioDesdeDatos();
+    mostrarAnioServicio();
+    seleccionarGrupoUsuario();
     mostrarMes();
 });
 

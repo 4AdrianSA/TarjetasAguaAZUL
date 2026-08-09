@@ -513,6 +513,8 @@ function generarPDFFicha(ficha, opciones) {
     tempDiv.style.padding = '15px';
     tempDiv.style.fontFamily = 'Arial, sans-serif';
     tempDiv.style.width = '680px';
+    tempDiv.style.filter = 'grayscale(1)';
+    tempDiv.style.webkitFilter = 'grayscale(1)';
 
     var titulo = opciones.titulo || 'Ficha de Registro';
     tempDiv.innerHTML = '<h1 style="text-align:center;color:#000;margin-bottom:5px;">' + titulo + '</h1>' +
@@ -948,6 +950,8 @@ document.getElementById('btn-pdf-grupo').addEventListener('click', function() {
     tempDiv.style.fontFamily = 'Arial, sans-serif';
     tempDiv.style.width = '680px';
     tempDiv.style.boxSizing = 'border-box';
+    tempDiv.style.filter = 'grayscale(1)';
+    tempDiv.style.webkitFilter = 'grayscale(1)';
 
     var html = '<style>@page{size:letter portrait;margin-top:0mm !important;margin-bottom:5mm;margin-left:8mm;margin-right:8mm;}</style>' +
         '<div style="margin:0;padding:5px 15px 0 15px;">' +
@@ -1261,7 +1265,7 @@ document.getElementById('btn-pdf-resumen').addEventListener('click', function() 
     if (!contenido || !contenido.innerHTML.trim()) { alert('Primero genera el resumen.'); return; }
 
     var tempDiv = document.createElement('div');
-    tempDiv.style.cssText = 'background:#fff;color:#000;padding:20px;font-family:Arial,sans-serif;font-size:13px;';
+    tempDiv.style.cssText = 'background:#fff;color:#000;padding:20px;font-family:Arial,sans-serif;font-size:13px;filter:grayscale(1);-webkit-filter:grayscale(1);';
     tempDiv.innerHTML = contenido.innerHTML
         .replace(/border-color:#414868/g, 'border-color:#cccccc')
         .replace(/style="padding:6px;"/g, 'style="padding:6px;color:#000;"')
@@ -1306,6 +1310,8 @@ document.getElementById('btn-pdf-masivo').addEventListener('click', function() {
     tempDiv.style.padding = '0';
     tempDiv.style.fontFamily = 'Arial, sans-serif';
     tempDiv.style.width = '680px';
+    tempDiv.style.filter = 'grayscale(1)';
+    tempDiv.style.webkitFilter = 'grayscale(1)';
 
     var html = '<style>@page{size:letter portrait;margin:5mm 8mm 5mm 8mm !important;}</style>';
 
@@ -1421,6 +1427,8 @@ function generarPDFPorCargo(nombreCargo, tituloPDF) {
     tempDiv.style.padding = '0';
     tempDiv.style.fontFamily = 'Arial, sans-serif';
     tempDiv.style.width = '680px';
+    tempDiv.style.filter = 'grayscale(1)';
+    tempDiv.style.webkitFilter = 'grayscale(1)';
 
     var html = '<style>@page{size:letter portrait;margin:5mm 8mm 5mm 8mm !important;}</style>';
     html += '<div style="margin:0;padding:10px 15px;text-align:center;">' +
