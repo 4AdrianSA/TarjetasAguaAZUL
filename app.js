@@ -1268,7 +1268,12 @@ function empaquetarPaginas(bloques) {
 }
 
 function renderizarPaginasAPDF(paginas, nombreArchivo) {
-    var pdf = new jsPDF({ unit: 'mm', format: 'letter', orientation: 'portrait' });
+    var CtorPDF = (typeof window.jsPDF === 'function') ? window.jsPDF :
+                  (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : null;
+    if (!CtorPDF) { alert('Error: librería jsPDF no cargada. Recarga la página.'); return; }
+    if (typeof window.html2canvas !== 'function') { alert('Error: librería html2canvas no cargada. Recarga la página.'); return; }
+
+    var pdf = new CtorPDF({ unit: 'mm', format: 'letter', orientation: 'portrait' });
     var ANCHO_PAG = pdf.internal.pageSize.getWidth();
     var ALTO_PAG = pdf.internal.pageSize.getHeight();
     var MARGEN = 5;
@@ -1291,14 +1296,20 @@ function renderizarPaginasAPDF(paginas, nombreArchivo) {
         cont.style.cssText = 'background:#ffffff;color:#000;font-family:Arial,sans-serif;width:680px;box-sizing:border-box;';
         cont.innerHTML = paginas[indice];
         document.body.appendChild(cont);
-        html2canvas(cont, { scale: 2, backgroundColor: '#ffffff' }).then(function(canvas) {
-            var img = canvas.toDataURL('image/jpeg', 0.98);
-            var altoMM = anchoUtil * canvas.height / canvas.width;
-            if (indice > 0) pdf.addPage('letter', 'portrait');
-            pdf.addImage(img, 'JPEG', MARGEN, MARGEN, anchoUtil, altoMM);
-            document.body.removeChild(cont);
-            indice++;
-            procesarPagina();
+        window.html2canvas(cont, { scale: 2, backgroundColor: '#ffffff' }).then(function(canvas) {
+            try {
+                var img = canvas.toDataURL('image/jpeg', 0.98);
+                var altoMM = anchoUtil * canvas.height / canvas.width;
+                if (indice > 0) pdf.addPage('letter', 'portrait');
+                pdf.addImage(img, 'JPEG', MARGEN, MARGEN, anchoUtil, altoMM);
+                document.body.removeChild(cont);
+                indice++;
+                procesarPagina();
+            } catch (err) {
+                document.body.removeChild(cont);
+                console.error('Error generando PDF:', err);
+                alert('Error al generar PDF: ' + err.message);
+            }
         }).catch(function(err) {
             document.body.removeChild(cont);
             console.error('Error generando PDF:', err);
