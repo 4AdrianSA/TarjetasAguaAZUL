@@ -1304,6 +1304,8 @@ document.getElementById('btn-pdf-masivo').addEventListener('click', function() {
         return;
     }
 
+    var grupoNombre = valor === 'todos' ? 'Todos los grupos' : 'Grupo ' + valor;
+
     var tempDiv = document.createElement('div');
     tempDiv.style.color = '#000';
     tempDiv.style.backgroundColor = '#fff';
@@ -1357,7 +1359,6 @@ document.getElementById('btn-pdf-masivo').addEventListener('click', function() {
             if (ga !== gb) return ga - gb;
             return pesoFicha(a) - pesoFicha(b);
         });
-        var grupoNombre = 'Grupo ' + valor;
 
         html += '<div style="margin:0;padding:10px 15px;text-align:center;">' +
             '<h1 style="margin:0;font-size:16px;color:#000;">' + grupoNombre + ' - Fichas S-21</h1>' +
@@ -1377,29 +1378,35 @@ document.getElementById('btn-pdf-masivo').addEventListener('click', function() {
     document.body.appendChild(tempDiv);
 
     setTimeout(function() {
-        html2pdf().set({
-            margin: [5, 8, 5, 8],
-            filename: 'Fichas_S21_' + grupoNombre.replace(/\s+/g, '_') + '.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, backgroundColor: '#ffffff' },
-            jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' },
-            pagebreak: { mode: ['css'] }
-        }).from(tempDiv).toPdf().get('pdf').then(function(pdf) {
-            var totalPaginas = pdf.internal.getNumberOfPages();
-            for (var p = 1; p <= totalPaginas; p++) {
-                pdf.setPage(p);
-                var texto = 'Pag. ' + p + ' de ' + totalPaginas;
-                pdf.setFontSize(8);
-                pdf.setTextColor(160, 160, 160);
-                pdf.text(texto, pdf.internal.pageSize.getWidth() / 2, pdf.internal.pageSize.getHeight() - 4, { align: 'center' });
-            }
-        }).save().then(function() {
-            if (tempDiv.parentNode) document.body.removeChild(tempDiv);
-        }).catch(function(err) {
+        try {
+            html2pdf().set({
+                margin: [5, 8, 5, 8],
+                filename: 'Fichas_S21_' + grupoNombre.replace(/\s+/g, '_') + '.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, backgroundColor: '#ffffff' },
+                jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' },
+                pagebreak: { mode: ['css'] }
+            }).from(tempDiv).toPdf().get('pdf').then(function(pdf) {
+                var totalPaginas = pdf.internal.getNumberOfPages();
+                for (var p = 1; p <= totalPaginas; p++) {
+                    pdf.setPage(p);
+                    var texto = 'Pag. ' + p + ' de ' + totalPaginas;
+                    pdf.setFontSize(8);
+                    pdf.setTextColor(160, 160, 160);
+                    pdf.text(texto, pdf.internal.pageSize.getWidth() / 2, pdf.internal.pageSize.getHeight() - 4, { align: 'center' });
+                }
+            }).save().then(function() {
+                if (tempDiv.parentNode) document.body.removeChild(tempDiv);
+            }).catch(function(err) {
+                console.error('Error PDF masivo:', err);
+                alert('Error al generar PDF: ' + err.message);
+                if (tempDiv.parentNode) document.body.removeChild(tempDiv);
+            });
+        } catch (err) {
             console.error('Error PDF masivo:', err);
             alert('Error al generar PDF: ' + err.message);
             if (tempDiv.parentNode) document.body.removeChild(tempDiv);
-        });
+        }
     }, 100);
 });
 
