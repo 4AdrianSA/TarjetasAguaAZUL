@@ -653,6 +653,7 @@ function mostrarFichas(lista) {
     });
 
     actualizarSelectorGrupos(ordenGrupos);
+    actualizarContadorFaltantes();
 }
 
 function actualizarSelectorGrupos(ordenGrupos) {
@@ -669,6 +670,115 @@ function actualizarSelectorGrupos(ordenGrupos) {
     }
     if (valorActual) select.value = valorActual;
 }
+
+function contarFaltantes(lista) {
+    return lista.filter(function(f) {
+        if ((f.estado || 'Activo') === 'Baja') return false;
+        if (f.faltanFechasNoAplica) return false;
+        return !f.fechaNacimiento || !f.fechaBautismo;
+    }).length;
+}
+
+function actualizarContadorFaltantes() {
+    var btn = document.getElementById('btn-faltantes');
+    if (!btn) return;
+    btn.textContent = '📋 Fechas Faltantes (' + contarFaltantes(cargarLista()) + ')';
+}
+
+function renderizarFaltantes() {
+    var panel = document.getElementById('faltantes-panel');
+    var lista = cargarLista();
+
+    var faltantes = lista.filter(function(f) {
+        if ((f.estado || 'Activo') === 'Baja') return false;
+        if (f.faltanFechasNoAplica) return false;
+        return !f.fechaNacimiento || !f.fechaBautismo;
+    });
+    var marcados = lista.filter(function(f) { return f.faltanFechasNoAplica; });
+
+    var btn = document.getElementById('btn-faltantes');
+    if (btn) btn.textContent = '📋 Fechas Faltantes (' + faltantes.length + ')';
+    if (!panel) return;
+
+    var html = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">' +
+        '<h3 style="margin:0;color:#7aa2f7;font-size:16px;">Fechas faltantes (' + faltantes.length + ')</h3>' +
+        '<button id="btn-cerrar-faltantes" style="background:#f7768e;color:#1a1b26;border:none;border-radius:4px;padding:5px 12px;cursor:pointer;font-weight:bold;">Cerrar</button>' +
+        '</div>';
+
+    if (faltantes.length === 0) {
+        html += '<p style="margin:8px 0;color:#c0caf5;">No hay fechas faltantes. 🎉</p>';
+    } else {
+        faltantes.forEach(function(f) {
+            var faltas = [];
+            if (!f.fechaNacimiento) faltas.push('Nacimiento');
+            if (!f.fechaBautismo) faltas.push('Bautismo');
+            html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-bottom:1px solid #292e42;flex-wrap:wrap;">' +
+                '<div style="color:#c0caf5;"><strong>' + escapeHtml(f.nombre) + '</strong> <span style="color:#565f89;font-size:12px;">(Grupo ' + (f.grupoNumero || 'Sin grupo') + ')</span><br>' +
+                '<span style="font-size:12px;color:#ff9e64;">Falta: ' + faltas.join(' y ') + '</span></div>' +
+                '<button class="btn-falta-noaplica" data-id="' + f.id + '" style="background:#e0af68;color:#1a1b26;border:none;border-radius:4px;padding:6px 14px;cursor:pointer;font-weight:bold;">No aplica</button>' +
+                '</div>';
+        });
+    }
+
+    if (marcados.length > 0) {
+        html += '<h4 style="margin:15px 0 5px 0;color:#7aa2f7;font-size:13px;">Marcados como "No aplica" (' + marcados.length + ')</h4>';
+        marcados.forEach(function(f) {
+            html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px;border-bottom:1px solid #292e42;flex-wrap:wrap;">' +
+                '<div style="color:#565f89;font-size:13px;"><strong>' + escapeHtml(f.nombre) + '</strong> <span style="font-size:11px;">(Grupo ' + (f.grupoNumero || 'Sin grupo') + ')</span></div>' +
+                '<button class="btn-falta-restaurar" data-id="' + f.id + '" style="background:#7dcfff;color:#1a1b26;border:none;border-radius:4px;padding:4px 12px;cursor:pointer;font-weight:bold;">Restaurar</button>' +
+                '</div>';
+        });
+    }
+
+    panel.innerHTML = html;
+}
+
+document.getElementById('btn-faltantes').addEventListener('click', function() {
+    var panel = document.getElementById('faltantes-panel');
+    if (panel.style.display === 'none' || panel.style.display === '') {
+        renderizarFaltantes();
+        panel.style.display = 'block';
+    } else {
+        panel.style.display = 'none';
+    }
+});
+
+document.getElementById('faltantes-panel').addEventListener('click', function(e) {
+    if (e.target.id === 'btn-cerrar-faltantes') {
+        document.getElementById('faltantes-panel').style.display = 'none';
+        return;
+    }
+    var noaplica = e.target.closest('.btn-falta-noaplica');
+    if (noaplica) {
+        var lista = cargarLista();
+        var idN = parseInt(noaplica.dataset.id);
+        var fichaN = null;
+        for (var i = 0; i < lista.length; i++) {
+            if (lista[i].id === idN) { fichaN = lista[i]; break; }
+        }
+        if (fichaN) {
+            fichaN.faltanFechasNoAplica = true;
+            guardarLista(lista);
+            renderizarFaltantes();
+        }
+        return;
+    }
+    var restaurar = e.target.closest('.btn-falta-restaurar');
+    if (restaurar) {
+        var lista2 = cargarLista();
+        var idR = parseInt(restaurar.dataset.id);
+        var fichaR = null;
+        for (var j = 0; j < lista2.length; j++) {
+            if (lista2[j].id === idR) { fichaR = lista2[j]; break; }
+        }
+        if (fichaR) {
+            delete fichaR.faltanFechasNoAplica;
+            guardarLista(lista2);
+            renderizarFaltantes();
+        }
+        return;
+    }
+});
 
 cargarDatosIniciales(function() {
 
