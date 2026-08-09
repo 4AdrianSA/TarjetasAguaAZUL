@@ -217,6 +217,10 @@ function mostrarMes() {
     if (valorAnio !== 'todos') {
         lista = lista.filter(function(f) { return String(f.anioServicio) === String(valorAnio); });
     }
+    var busqueda = (document.getElementById('input-buscar').value || '').toLowerCase().trim();
+    if (busqueda) {
+        lista = lista.filter(function(f) { return (f.nombre || '').toLowerCase().indexOf(busqueda) !== -1; });
+    }
 
     var nombreMes = nombresMeses[idxMes];
     var totalParticipo = 0;
@@ -311,6 +315,7 @@ function mostrarMes() {
         '</div>' +
         '<table class="tabla-mes">' +
         '<thead><tr>' +
+            '<th style="width:30px;">N°</th>' +
             '<th style="text-align:left;">Nombre</th>' +
             '<th>Servicio</th>' +
             '<th>Participo</th>' +
@@ -321,7 +326,7 @@ function mostrarMes() {
             '<th>Acciones</th>' +
         '</tr></thead><tbody>';
 
-    filas.forEach(function(f) {
+    filas.forEach(function(f, numFila) {
         var claseFila = '';
         if (f.estado === 'Inactivo') claseFila = 'fila-inactivo';
         else if (f.estado === 'Baja') claseFila = 'fila-baja';
@@ -335,6 +340,7 @@ function mostrarMes() {
             if (f.estado === 'Inactivo') nombreConEstado += ' <span class="badge-estado badge-estado-inactivo">INACTIVO</span>';
             if (f.estado === 'Baja') nombreConEstado += ' <span class="badge-estado badge-estado-baja">BAJA</span>';
             tablaHtml += '<tr data-id="' + f.id + '" class="' + claseFila + '">' +
+                '<td>' + (numFila + 1) + '</td>' +
                 '<td style="text-align:left;">' + nombreConEstado + '</td>' +
                 '<td style="font-size:12px;">' + f.servicio + '</td>' +
                 '<td><input type="checkbox" class="edit-participo"' + (f.participo ? ' checked' : '') + '></td>' +
@@ -349,6 +355,7 @@ function mostrarMes() {
             if (f.estado === 'Inactivo') nombreConEstado2 += ' <span class="badge-estado badge-estado-inactivo">INACTIVO</span>';
             if (f.estado === 'Baja') nombreConEstado2 += ' <span class="badge-estado badge-estado-baja">BAJA</span>';
             tablaHtml += '<tr data-id="' + f.id + '" class="' + claseFila + '">' +
+                '<td>' + (numFila + 1) + '</td>' +
                 '<td style="text-align:left;">' + nombreConEstado2 + '</td>' +
                 '<td style="font-size:12px;">' + f.servicio + '</td>' +
                 '<td><input type="checkbox" class="edit-participo"' + (f.participo ? ' checked' : '') + '></td>' +
@@ -364,6 +371,7 @@ function mostrarMes() {
             if (f.estado === 'Inactivo') nombreConEstado3 += ' <span class="badge-estado badge-estado-inactivo">INACTIVO</span>';
             if (f.estado === 'Baja') nombreConEstado3 += ' <span class="badge-estado badge-estado-baja">BAJA</span>';
             tablaHtml += '<tr data-id="' + f.id + '" class="' + claseFila + '">' +
+                '<td>' + (numFila + 1) + '</td>' +
                 '<td style="text-align:left;">' + nombreConEstado3 + '</td>' +
                 '<td style="font-size:12px;">' + f.servicio + '</td>' +
                 '<td class="' + (f.participo ? 'si' : 'no') + '">' + (f.participo ? '\u2713' : '\u2717') + '</td>' +
@@ -377,6 +385,7 @@ function mostrarMes() {
     });
 
     tablaHtml += '<tr class="total-row">' +
+        '<td></td>' +
         '<td style="text-align:left;">TOTAL</td>' +
         '<td></td>' +
         '<td>' + totalParticipo + '/' + filas.length + '</td>' +
@@ -420,6 +429,11 @@ function seleccionarMesAutomatico() {
 }
 
 document.getElementById('select-mes').addEventListener('change', function() { modoEdicionMasiva = false; mostrarMes(); });
+document.getElementById('input-buscar').addEventListener('input', function() {
+    modoEdicionMasiva = false;
+    editandoFilaId = null;
+    mostrarMes();
+});
 document.getElementById('select-grupo-mes').addEventListener('change', function() {
     modoEdicionMasiva = false;
     var val = this.value;

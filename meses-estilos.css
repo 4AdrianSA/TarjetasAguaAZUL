@@ -45,6 +45,25 @@ h1 {
     outline: none;
 }
 
+#input-buscar {
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #414868;
+    background-color: #33374a;
+    color: #c0caf5;
+    font-size: 14px;
+    width: 170px;
+}
+
+#input-buscar::placeholder {
+    color: #565f89;
+}
+
+#input-buscar:focus {
+    border-color: #7aa2f7;
+    outline: none;
+}
+
 .btn-volver {
     padding: 8px 16px;
     border: none;
