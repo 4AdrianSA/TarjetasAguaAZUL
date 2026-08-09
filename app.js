@@ -942,82 +942,35 @@ document.getElementById('btn-pdf-grupo').addEventListener('click', function() {
         return;
     }
 
-    var tempDiv = document.createElement('div');
-    tempDiv.style.color = '#000000';
-    tempDiv.style.backgroundColor = '#ffffff';
-    tempDiv.style.margin = '0';
-    tempDiv.style.padding = '0';
-    tempDiv.style.fontFamily = 'Arial, sans-serif';
-    tempDiv.style.width = '680px';
-    tempDiv.style.boxSizing = 'border-box';
-    tempDiv.style.filter = 'grayscale(1)';
-    tempDiv.style.webkitFilter = 'grayscale(1)';
-
-    var html = '<style>@page{size:letter portrait;margin-top:0mm !important;margin-bottom:5mm;margin-left:8mm;margin-right:8mm;}</style>' +
-        '<div style="margin:0;padding:5px 15px 0 15px;">' +
+    var paginas = [];
+    paginas.push('<div style="margin:0;padding:5px 15px 0 15px;">' +
         '<h1 style="text-align:center;color:#000;margin:0;padding:0;font-size:16px;line-height:1.3;">' + grupoNombre + '</h1>' +
         '<p style="text-align:center;color:#333;margin:0;padding:0 0 2px 0;font-size:11px;line-height:1.3;">Total: ' + totalPub + ' publicadores</p>' +
-        '</div>';
-
-    var fichaCount = 0;
-    var paginasGrupos = [];
-    paginasGrupos.push(grupoNombre);
+        '</div>');
 
     for (var d = 0; d < datos.length; d++) {
         var bloque = datos[d];
         var nombreBloque = bloque.subtitulo || grupoNombre;
         var fichasOrdenadas = ordenarFichas(bloque.fichas);
         for (var f = 0; f < fichasOrdenadas.length; f++) {
-            fichaCount++;
-            paginasGrupos.push(nombreBloque);
-            html += '<div style="margin:0;padding:0 15px;page-break-before:always;page-break-inside:avoid;break-inside:avoid;">' + renderizarFichaPDF(fichasOrdenadas[f], {grupo: true, nombreGrupo: nombreBloque}) + '</div>';
+            paginas.push('<div style="margin:0;padding:0 15px;">' + renderizarFichaPDF(fichasOrdenadas[f], { grupo: true, nombreGrupo: nombreBloque }) + '</div>');
         }
     }
 
-    paginasGrupos.push('Resumen - ' + grupoNombre);
-
     var allFichas = [];
-    datos.forEach(function(d) { allFichas = allFichas.concat(ordenarFichas(d.fichas)); });
+    datos.forEach(function(dd) { allFichas = allFichas.concat(ordenarFichas(dd.fichas)); });
     var resumen = calcularResumenGrupo(allFichas);
 
     var aniosCount = {};
-    allFichas.forEach(function(f) {
-        var a = f.anioServicio || String(new Date().getFullYear());
+    allFichas.forEach(function(ff) {
+        var a = ff.anioServicio || String(new Date().getFullYear());
         aniosCount[a] = (aniosCount[a] || 0) + 1;
     });
     var anioMasComun = Object.keys(aniosCount).sort(function(a, b) { return aniosCount[b] - aniosCount[a]; })[0] || String(new Date().getFullYear());
 
-    html += '<div style="page-break-before:always;clear:both;padding:15px;">' + renderizarResumen(resumen, grupoNombre, anioMasComun) + '</div>';
+    paginas.push('<div style="padding:15px;">' + renderizarResumen(resumen, grupoNombre, anioMasComun) + '</div>');
 
-    tempDiv.innerHTML = html;
-
-    document.body.appendChild(tempDiv);
-
-    setTimeout(function() {
-        html2pdf().set({
-            margin: [0, 8, 10, 8],
-            filename: 'Grupo_' + valor + '.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, backgroundColor: '#ffffff' },
-            jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' },
-            pagebreak: { mode: ['css'] }
-        }).from(tempDiv).toPdf().get('pdf').then(function(pdf) {
-            var totalPaginas = pdf.internal.getNumberOfPages();
-            for (var p = 1; p <= totalPaginas; p++) {
-                pdf.setPage(p);
-                var texto = 'Pág. ' + p + ' de ' + totalPaginas;
-                pdf.setFontSize(8);
-                pdf.setTextColor(160, 160, 160);
-                pdf.text(texto, pdf.internal.pageSize.getWidth() / 2, pdf.internal.pageSize.getHeight() - 4, { align: 'center' });
-            }
-        }).save().then(function() {
-            if (tempDiv.parentNode) document.body.removeChild(tempDiv);
-        }).catch(function(err) {
-            console.error('Error generando PDF:', err);
-            alert('Error al generar PDF: ' + err.message);
-            if (tempDiv.parentNode) document.body.removeChild(tempDiv);
-        });
-    }, 100);
+    renderizarPaginasAPDF(paginas, 'Grupo_' + valor + '.pdf');
 });
 
 canal.onmessage = function(e) {
@@ -1284,6 +1237,77 @@ document.getElementById('btn-pdf-resumen').addEventListener('click', function() 
     });
 });
 
+function medirBloque(html) {
+    var d = document.createElement('div');
+    d.style.cssText = 'position:absolute;left:-10000px;top:0;visibility:hidden;width:680px;font-family:Arial,sans-serif;background:#fff;color:#000;';
+    d.innerHTML = html;
+    document.body.appendChild(d);
+    var h = d.offsetHeight;
+    document.body.removeChild(d);
+    return h;
+}
+
+function empaquetarPaginas(bloques) {
+    var maxCss = 889;
+    var paginas = [];
+    var actual = '';
+    var actualH = 0;
+    for (var i = 0; i < bloques.length; i++) {
+        var h = medirBloque(bloques[i]);
+        if (actual && actualH + h > maxCss) {
+            paginas.push(actual);
+            actual = '';
+            actualH = 0;
+        }
+        if (actual) actual += '<div style="margin-top:8px;">' + bloques[i] + '</div>';
+        else actual = bloques[i];
+        actualH += h;
+    }
+    if (actual) paginas.push(actual);
+    return paginas;
+}
+
+function renderizarPaginasAPDF(paginas, nombreArchivo) {
+    var pdf = new jsPDF({ unit: 'mm', format: 'letter', orientation: 'portrait' });
+    var ANCHO_PAG = pdf.internal.pageSize.getWidth();
+    var ALTO_PAG = pdf.internal.pageSize.getHeight();
+    var MARGEN = 5;
+    var anchoUtil = ANCHO_PAG - MARGEN * 2;
+    var indice = 0;
+
+    function procesarPagina() {
+        if (indice >= paginas.length) {
+            var total = pdf.internal.getNumberOfPages();
+            for (var p = 1; p <= total; p++) {
+                pdf.setPage(p);
+                pdf.setFontSize(8);
+                pdf.setTextColor(160, 160, 160);
+                pdf.text('Pag. ' + p + ' de ' + total, ANCHO_PAG / 2, ALTO_PAG - 4, { align: 'center' });
+            }
+            pdf.save(nombreArchivo);
+            return;
+        }
+        var cont = document.createElement('div');
+        cont.style.cssText = 'background:#ffffff;color:#000;font-family:Arial,sans-serif;width:680px;box-sizing:border-box;';
+        cont.innerHTML = paginas[indice];
+        document.body.appendChild(cont);
+        html2canvas(cont, { scale: 2, backgroundColor: '#ffffff' }).then(function(canvas) {
+            var img = canvas.toDataURL('image/jpeg', 0.98);
+            var altoMM = anchoUtil * canvas.height / canvas.width;
+            if (indice > 0) pdf.addPage('letter', 'portrait');
+            pdf.addImage(img, 'JPEG', MARGEN, MARGEN, anchoUtil, altoMM);
+            document.body.removeChild(cont);
+            indice++;
+            procesarPagina();
+        }).catch(function(err) {
+            document.body.removeChild(cont);
+            console.error('Error generando PDF:', err);
+            alert('Error al generar PDF: ' + err.message);
+        });
+    }
+    procesarPagina();
+}
+
 document.getElementById('btn-pdf-masivo').addEventListener('click', function() {
     var lista = cargarLista();
     var valor = document.getElementById('select-grupo-pdf').value;
@@ -1306,16 +1330,10 @@ document.getElementById('btn-pdf-masivo').addEventListener('click', function() {
 
     var grupoNombre = valor === 'todos' ? 'Todos los grupos' : 'Grupo ' + valor;
 
-    var tempDiv = document.createElement('div');
-    tempDiv.style.color = '#000';
-    tempDiv.style.backgroundColor = '#fff';
-    tempDiv.style.padding = '0';
-    tempDiv.style.fontFamily = 'Arial, sans-serif';
-    tempDiv.style.width = '680px';
-    tempDiv.style.filter = 'grayscale(1)';
-    tempDiv.style.webkitFilter = 'grayscale(1)';
-
-    var html = '<style>@page{size:letter portrait;margin:5mm 8mm 5mm 8mm !important;}</style>';
+    var bloques = [];
+    bloques.push('<div style="margin:0;padding:10px 15px;text-align:center;">' +
+        '<h1 style="margin:0;font-size:16px;color:#000;">' + (valor === 'todos' ? 'Toda la Congregacion - Fichas S-21' : grupoNombre + ' - Fichas S-21') + '</h1>' +
+        '<p style="margin:2px 0 0 0;font-size:11px;color:#333;">Total: ' + todos.length + ' publicadores</p></div>');
 
     if (valor === 'todos') {
         var gruposMap = {};
@@ -1331,26 +1349,17 @@ document.getElementById('btn-pdf-masivo').addEventListener('click', function() {
             return parseInt(a) - parseInt(b);
         });
 
-        var totalGeneral = todos.length;
-        html += '<div style="margin:0;padding:10px 15px;text-align:center;">' +
-            '<h1 style="margin:0;font-size:16px;color:#000;">Toda la Congregacion - Fichas S-21</h1>' +
-            '<p style="margin:2px 0 0 0;font-size:11px;color:#333;">Total: ' + totalGeneral + ' publicadores</p></div>';
-
         for (var gi = 0; gi < gruposOrden.length; gi++) {
             var grupo = gruposOrden[gi];
             var fichasGrupo = gruposMap[grupo].slice().sort(function(a, b) { return pesoFicha(a) - pesoFicha(b); });
             var nombreGrupo = 'Grupo ' + grupo;
 
-            html += '<h2 style="margin:20px 0 5px 15px;font-size:14px;color:#000;page-break-before:' + (gi > 0 ? 'always' : 'auto') + ';">' + nombreGrupo + ' (' + fichasGrupo.length + ')</h2>';
+            bloques.push('<div style="padding:5px 15px 0 15px;">' +
+                '<h2 style="margin:0 0 5px 0;font-size:14px;color:#000;">' + nombreGrupo + ' (' + fichasGrupo.length + ')</h2></div>');
 
-            for (var k = 0; k < fichasGrupo.length; k += 2) {
-                html += '<div style="padding:5px 15px 0 15px;">';
-                html += renderizarFichaPDF(fichasGrupo[k], {grupo: true, nombreGrupo: nombreGrupo});
-                if (k + 1 < fichasGrupo.length) {
-                    html += '<div style="margin-top:8px;">' + renderizarFichaPDF(fichasGrupo[k + 1], {grupo: true, nombreGrupo: nombreGrupo}) + '</div>';
-                }
-                html += '</div>';
-            }
+            fichasGrupo.forEach(function(f) {
+                bloques.push('<div style="padding:0 15px;">' + renderizarFichaPDF(f, { grupo: true, nombreGrupo: nombreGrupo }) + '</div>');
+            });
         }
     } else {
         var ordenados = todos.slice().sort(function(a, b) {
@@ -1360,54 +1369,13 @@ document.getElementById('btn-pdf-masivo').addEventListener('click', function() {
             return pesoFicha(a) - pesoFicha(b);
         });
 
-        html += '<div style="margin:0;padding:10px 15px;text-align:center;">' +
-            '<h1 style="margin:0;font-size:16px;color:#000;">' + grupoNombre + ' - Fichas S-21</h1>' +
-            '<p style="margin:2px 0 0 0;font-size:11px;color:#333;">Total: ' + ordenados.length + ' publicadores</p></div>';
-
-        for (var i = 0; i < ordenados.length; i += 2) {
-            html += '<div style="page-break-before:' + (i > 0 ? 'always' : 'auto') + ';padding:5px 15px 0 15px;">';
-            html += renderizarFichaPDF(ordenados[i], {grupo: true, nombreGrupo: grupoNombre});
-            if (i + 1 < ordenados.length) {
-                html += '<div style="margin-top:8px;">' + renderizarFichaPDF(ordenados[i + 1], {grupo: true, nombreGrupo: grupoNombre}) + '</div>';
-            }
-            html += '</div>';
-        }
+        ordenados.forEach(function(f) {
+            bloques.push('<div style="padding:0 15px;">' + renderizarFichaPDF(f, { grupo: true, nombreGrupo: grupoNombre }) + '</div>');
+        });
     }
 
-    tempDiv.innerHTML = html;
-    document.body.appendChild(tempDiv);
-
-    setTimeout(function() {
-        try {
-            html2pdf().set({
-                margin: [5, 8, 5, 8],
-                filename: 'Fichas_S21_' + grupoNombre.replace(/\s+/g, '_') + '.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, backgroundColor: '#ffffff' },
-                jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' },
-                pagebreak: { mode: ['css'] }
-            }).from(tempDiv).toPdf().get('pdf').then(function(pdf) {
-                var totalPaginas = pdf.internal.getNumberOfPages();
-                for (var p = 1; p <= totalPaginas; p++) {
-                    pdf.setPage(p);
-                    var texto = 'Pag. ' + p + ' de ' + totalPaginas;
-                    pdf.setFontSize(8);
-                    pdf.setTextColor(160, 160, 160);
-                    pdf.text(texto, pdf.internal.pageSize.getWidth() / 2, pdf.internal.pageSize.getHeight() - 4, { align: 'center' });
-                }
-            }).save().then(function() {
-                if (tempDiv.parentNode) document.body.removeChild(tempDiv);
-            }).catch(function(err) {
-                console.error('Error PDF masivo:', err);
-                alert('Error al generar PDF: ' + err.message);
-                if (tempDiv.parentNode) document.body.removeChild(tempDiv);
-            });
-        } catch (err) {
-            console.error('Error PDF masivo:', err);
-            alert('Error al generar PDF: ' + err.message);
-            if (tempDiv.parentNode) document.body.removeChild(tempDiv);
-        }
-    }, 100);
+    var paginas = empaquetarPaginas(bloques);
+    renderizarPaginasAPDF(paginas, 'Fichas_S21_' + grupoNombre.replace(/\s+/g, '_') + '.pdf');
 });
 
 function generarPDFPorCargo(nombreCargo, tituloPDF) {
