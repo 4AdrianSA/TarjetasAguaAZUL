@@ -970,7 +970,13 @@ document.getElementById('btn-pdf-grupo').addEventListener('click', function() {
 
     paginas.push('<div style="padding:15px;">' + renderizarResumen(resumen, grupoNombre, anioMasComun) + '</div>');
 
-    renderizarPaginasAPDF(paginas, 'Grupo_' + valor + '.pdf');
+    var btnGrupo = document.getElementById('btn-pdf-grupo');
+    btnGrupo.disabled = true;
+    btnGrupo.style.opacity = '0.6';
+    renderizarPaginasAPDF(paginas, 'Grupo_' + valor + '.pdf', function() {
+        btnGrupo.disabled = false;
+        btnGrupo.style.opacity = '1';
+    }, allFichas.length);
 });
 
 canal.onmessage = function(e) {
@@ -1267,7 +1273,44 @@ function empaquetarPaginas(bloques) {
     return paginas;
 }
 
-function renderizarPaginasAPDF(paginas, nombreArchivo) {
+function mostrarOverlayPDF(visible) {
+    var overlay = document.getElementById('overlay-pdf');
+    if (!overlay) return;
+    if (visible) {
+        overlay.style.display = 'flex';
+        document.getElementById('overlay-pdf-barra').style.width = '0%';
+    } else {
+        overlay.style.display = 'none';
+    }
+}
+
+function actualizarOverlayPDF(hechas, total, msTranscurrido, tInicio) {
+    var texto = document.getElementById('overlay-pdf-texto');
+    var detalle = document.getElementById('overlay-pdf-detalle');
+    var barra = document.getElementById('overlay-pdf-barra');
+    if (!texto || !detalle || !barra) return;
+
+    var pct = Math.min(100, Math.round(hechas / total * 100));
+    barra.style.width = pct + '%';
+
+    var seg = Math.round(msTranscurrido / 1000);
+    var restante = '';
+    if (hechas >= 3) {
+        var promedio = msTranscurrido / hechas;
+        var msRestante = promedio * (total - hechas);
+        var segRest = Math.round(msRestante / 1000);
+        restante = ' · Restante aprox: ' + (segRest >= 60 ? Math.floor(segRest / 60) + ' min ' + (segRest % 60) + ' s' : segRest + ' s');
+    }
+    var segTexto = (seg >= 60 ? Math.floor(seg / 60) + ' min ' + (seg % 60) + ' s' : seg + ' s');
+    texto.textContent = 'Página ' + hechas + ' de ' + total + ' (' + pct + '%)';
+    detalle.textContent = 'Transcurrido: ' + segTexto + restante;
+    if (tInicio && hechas < 3 && total > 0) {
+        var estInicial = Math.ceil(total * 1000 / 1000);
+        detalle.textContent = 'Transcurrido: ' + segTexto + ' · Estimado total aprox: ' + estInicial + ' s (calculando…)';
+    }
+}
+
+function renderizarPaginasAPDF(paginas, nombreArchivo, alTerminar, numFichas) {
     var CtorPDF = (typeof window.jsPDF === 'function') ? window.jsPDF :
                   (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : null;
     if (!CtorPDF) { alert('Error: librería jsPDF no cargada. Recarga la página.'); return; }
@@ -1279,6 +1322,19 @@ function renderizarPaginasAPDF(paginas, nombreArchivo) {
     var MARGEN = 5;
     var anchoUtil = ANCHO_PAG - MARGEN * 2;
     var indice = 0;
+    var tInicio = Date.now();
+
+    mostrarOverlayPDF(true);
+    var txtTexto = document.getElementById('overlay-pdf-texto');
+    if (txtTexto && numFichas) {
+        txtTexto.textContent = 'Generando PDF de ' + numFichas + ' fichas (≈' + paginas.length + ' páginas)…';
+    }
+    actualizarOverlayPDF(0, paginas.length, 0, tInicio);
+
+    function terminar() {
+        mostrarOverlayPDF(false);
+        if (alTerminar) alTerminar();
+    }
 
     function procesarPagina() {
         if (indice >= paginas.length) {
@@ -1290,6 +1346,7 @@ function renderizarPaginasAPDF(paginas, nombreArchivo) {
                 pdf.text('Pag. ' + p + ' de ' + total, ANCHO_PAG / 2, ALTO_PAG - 4, { align: 'center' });
             }
             pdf.save(nombreArchivo);
+            terminar();
             return;
         }
         var cont = document.createElement('div');
@@ -1304,16 +1361,19 @@ function renderizarPaginasAPDF(paginas, nombreArchivo) {
                 pdf.addImage(img, 'JPEG', MARGEN, MARGEN, anchoUtil, altoMM);
                 document.body.removeChild(cont);
                 indice++;
+                actualizarOverlayPDF(indice, paginas.length, Date.now() - tInicio, tInicio);
                 procesarPagina();
             } catch (err) {
                 document.body.removeChild(cont);
                 console.error('Error generando PDF:', err);
                 alert('Error al generar PDF: ' + err.message);
+                terminar();
             }
         }).catch(function(err) {
             document.body.removeChild(cont);
             console.error('Error generando PDF:', err);
             alert('Error al generar PDF: ' + err.message);
+            terminar();
         });
     }
     procesarPagina();
@@ -1386,7 +1446,13 @@ document.getElementById('btn-pdf-masivo').addEventListener('click', function() {
     }
 
     var paginas = empaquetarPaginas(bloques);
-    renderizarPaginasAPDF(paginas, 'Fichas_S21_' + grupoNombre.replace(/\s+/g, '_') + '.pdf');
+    var btnMasivo = document.getElementById('btn-pdf-masivo');
+    btnMasivo.disabled = true;
+    btnMasivo.style.opacity = '0.6';
+    renderizarPaginasAPDF(paginas, 'Fichas_S21_' + grupoNombre.replace(/\s+/g, '_') + '.pdf', function() {
+        btnMasivo.disabled = false;
+        btnMasivo.style.opacity = '1';
+    }, todos.length);
 });
 
 function generarPDFPorCargo(nombreCargo, tituloPDF) {

@@ -17,7 +17,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="utils.js"></script>
-    <script src="app.js?v=17" defer></script>
+    <script src="app.js?v=18" defer></script>
 </head>
 <body>
 
@@ -306,6 +306,15 @@
                 <button id="btn-cancelar-cambio-grupo" style="background:#f7768e;color:#1a1b26;padding:8px 16px;border-radius:4px;font-weight:bold;border:none;cursor:pointer;">Cancelar</button>
             </div>
         </div>
+    </div>
+
+    <div id="overlay-pdf" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:3000;justify-content:center;align-items:center;flex-direction:column;color:#fff;font-family:'Segoe UI',Arial,sans-serif;">
+        <div style="font-size:18px;font-weight:bold;margin-bottom:10px;">Generando PDF…</div>
+        <div style="width:70%;max-width:500px;background:#33374a;border-radius:8px;height:22px;overflow:hidden;border:1px solid #414868;">
+            <div id="overlay-pdf-barra" style="height:100%;width:0%;background:#7aa2f7;transition:width .3s;"></div>
+        </div>
+        <div id="overlay-pdf-texto" style="margin-top:10px;font-size:14px;color:#c0caf5;"></div>
+        <div id="overlay-pdf-detalle" style="margin-top:4px;font-size:12px;color:#565f89;"></div>
     </div>
 
 </body>
