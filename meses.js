@@ -50,11 +50,6 @@ function verificarAccesoMes() {
     return false;
 }
 
-function mostrarAnioServicio() {
-    var el = document.getElementById('anio-servicio-titulo');
-    if (el) el.textContent = 'Anio de servicio ' + anioServicioActual();
-}
-
 function tieneOpcionGrupo(select, valor) {
     for (var i = 0; i < select.options.length; i++) {
         if (select.options[i].value === String(valor)) return true;
@@ -541,7 +536,6 @@ cargarDatosIniciales(function() {
     actualizarEstadoDeshacer();
     actualizarSelectorGrupos();
     cargarAnioDesdeDatos();
-    mostrarAnioServicio();
     seleccionarGrupoUsuario();
     mostrarMes();
 });
