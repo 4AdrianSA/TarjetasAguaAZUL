@@ -515,18 +515,18 @@ document.getElementById('btn-pdf-mes').addEventListener('click', function() {
         tablaClon.querySelectorAll('td, th').forEach(function(c) {
             c.style.setProperty('color', '#000', 'important');
             c.style.setProperty('border-color', '#000', 'important');
-            c.style.setProperty('background-color', 'transparent', 'important');
+            c.style.setProperty('background-color', '#fff', 'important');
             c.style.setProperty('border-left', '1px solid #000', 'important');
             c.style.setProperty('border-right', '1px solid #000', 'important');
             c.style.padding = '5px 8px';
         });
         tablaClon.querySelectorAll('th').forEach(function(th) {
-            th.style.setProperty('background-color', '#ddd', 'important');
+            th.style.setProperty('background-color', '#fff', 'important');
             th.style.setProperty('color', '#000', 'important');
             th.style.setProperty('border', '1px solid #000', 'important');
         });
         tablaClon.querySelectorAll('tr').forEach(function(tr) {
-            tr.style.setProperty('background-color', 'transparent', 'important');
+            tr.style.setProperty('background-color', '#fff', 'important');
             tr.style.setProperty('border-bottom', '1px solid #ccc', 'important');
         });
         tablaClon.querySelectorAll('.badge-estado').forEach(function(b) {
@@ -544,7 +544,7 @@ document.getElementById('btn-pdf-mes').addEventListener('click', function() {
         '<h1 style="text-align:center;color:#000;margin:0 0 2px 0;font-size:18px;">Congregacion Agua Azul - Anio de servicio ' + anioServicioActual() + '</h1>' +
         '<h2 style="text-align:center;color:#000;margin:0 0 3px 0;font-size:15px;">' + nombreMes + '</h2>' +
         '<p style="text-align:center;color:#555;margin:0 0 10px 0;font-size:12px;">' + grupoTexto + '</p>' +
-        '<table style="width:100%;border-collapse:collapse;margin-bottom:12px;">' + statsFila + '</table>' +
+        '<table style="width:100%;border-collapse:collapse;margin-bottom:12px;background-color:#fff;">' + statsFila + '</table>' +
         tablaHtml;
 
     document.body.appendChild(tempDiv);
