@@ -513,18 +513,26 @@ document.getElementById('btn-pdf-mes').addEventListener('click', function() {
             inp.parentNode.replaceChild(span, inp);
         });
         tablaClon.querySelectorAll('td, th').forEach(function(c) {
-            c.style.color = '#000';
-            c.style.borderColor = '#000';
-            c.style.background = 'transparent';
+            c.style.setProperty('color', '#000', 'important');
+            c.style.setProperty('border-color', '#000', 'important');
+            c.style.setProperty('background-color', 'transparent', 'important');
+            c.style.setProperty('border-left', '1px solid #000', 'important');
+            c.style.setProperty('border-right', '1px solid #000', 'important');
             c.style.padding = '5px 8px';
         });
         tablaClon.querySelectorAll('th').forEach(function(th) {
-            th.style.backgroundColor = '#ddd';
-            th.style.color = '#000';
-            th.style.border = '1px solid #000';
+            th.style.setProperty('background-color', '#ddd', 'important');
+            th.style.setProperty('color', '#000', 'important');
+            th.style.setProperty('border', '1px solid #000', 'important');
         });
         tablaClon.querySelectorAll('tr').forEach(function(tr) {
-            tr.style.borderBottom = '1px solid #ccc';
+            tr.style.setProperty('background-color', 'transparent', 'important');
+            tr.style.setProperty('border-bottom', '1px solid #ccc', 'important');
+        });
+        tablaClon.querySelectorAll('.badge-estado').forEach(function(b) {
+            b.style.setProperty('background-color', '#ddd', 'important');
+            b.style.setProperty('color', '#000', 'important');
+            b.style.setProperty('border', '1px solid #000', 'important');
         });
         tablaClon.style.width = '100%';
         tablaClon.style.borderCollapse = 'collapse';
