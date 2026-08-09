@@ -398,6 +398,7 @@ function cargarAnioDesdeDatos() {
     lista.forEach(function(f) {
         if (f.anioServicio) anios[f.anioServicio] = true;
     });
+    anios[String(anioServicioActual())] = true;
     var select = document.getElementById('select-anio-servicio');
     var valorActual = select.value;
     select.innerHTML = '<option value="todos">Todos</option>';
@@ -407,9 +408,15 @@ function cargarAnioDesdeDatos() {
         opt.textContent = a;
         select.appendChild(opt);
     });
-    if (valorActual && valorActual !== 'todos' && anios[valorActual]) {
+    if (valorActual === 'todos' || !anios[valorActual]) {
+        select.value = String(anioServicioActual());
+    } else {
         select.value = valorActual;
     }
+}
+
+function seleccionarMesAutomatico() {
+    document.getElementById('select-mes').value = String((new Date().getMonth() + 3) % 12);
 }
 
 document.getElementById('select-mes').addEventListener('change', function() { modoEdicionMasiva = false; mostrarMes(); });
@@ -536,6 +543,7 @@ cargarDatosIniciales(function() {
     actualizarEstadoDeshacer();
     actualizarSelectorGrupos();
     cargarAnioDesdeDatos();
+    seleccionarMesAutomatico();
     seleccionarGrupoUsuario();
     mostrarMes();
 });
