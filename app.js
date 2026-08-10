@@ -1711,3 +1711,512 @@ function eliminarDuplicado(id) {
     mostrarFichas(nueva);
     document.getElementById('btn-duplicados').click();
 }
+
+// ============ IMPORTADOR DE HOJAS ESCANEADAS (OCR) ============
+
+var escaneosPendientes = [];
+var workerOCR = null;
+var workerOCRCreando = false;
+
+function anioServicioActual() {
+    var hoy = new Date();
+    return hoy.getMonth() >= 8 ? hoy.getFullYear() + 1 : hoy.getFullYear();
+}
+
+function normalizarNombre(s) {
+    return (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+function leerArchivoComoDataURL(file) {
+    return new Promise(function(resolve, reject) {
+        var fr = new FileReader();
+        fr.onload = function() { resolve(fr.result); };
+        fr.onerror = reject;
+        fr.readAsDataURL(file);
+    });
+}
+
+function reducirImagenParaOCR(dataUrl, maxDim) {
+    return new Promise(function(resolve) {
+        var img = new Image();
+        img.onload = function() {
+            var escala = Math.min(1, maxDim / Math.max(img.width, img.height));
+            var w = Math.round(img.width * escala);
+            var h = Math.round(img.height * escala);
+            if (w >= img.width && h >= img.height) { resolve(dataUrl); return; }
+            var c = document.createElement('canvas');
+            c.width = w; c.height = h;
+            c.getContext('2d').drawImage(img, 0, 0, w, h);
+            resolve(c.toDataURL('image/jpeg', 0.9));
+        };
+        img.onerror = function() { resolve(dataUrl); };
+        img.src = dataUrl;
+    });
+}
+
+async function pdfAImagenes(file) {
+    if (typeof pdfjsLib === 'undefined') {
+        throw new Error('La librería de PDF no se cargó. Revisa tu conexión.');
+    }
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    var buffer = await file.arrayBuffer();
+    var pdfDoc = await pdfjsLib.getDocument({ data: buffer }).promise;
+    var imgs = [];
+    for (var p = 1; p <= pdfDoc.numPages; p++) {
+        var page = await pdfDoc.getPage(p);
+        var viewport = page.getViewport({ scale: 2 });
+        var canvas = document.createElement('canvas');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        var ctx = canvas.getContext('2d');
+        await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+        imgs.push({ src: canvas.toDataURL('image/jpeg', 0.9), nombre: file.name + ' (página ' + p + ')' });
+        canvas.width = 0; canvas.height = 0;
+    }
+    return imgs;
+}
+
+async function prepararWorkerOCR() {
+    if (workerOCR) return workerOCR;
+    if (workerOCRCreando) {
+        while (!workerOCR) await new Promise(function(r) { setTimeout(r, 150); });
+        return workerOCR;
+    }
+    if (typeof Tesseract === 'undefined') {
+        throw new Error('La librería de OCR no se cargó. Revisa tu conexión.');
+    }
+    workerOCRCreando = true;
+    var div = document.getElementById('progreso-escaneos');
+    if (div) div.textContent = 'Descargando idioma español (solo la primera vez)…';
+    workerOCR = await Tesseract.createWorker('spa', 1, {
+        logger: function(m) {
+            if (!div) return;
+            if (m.status === 'recognizing text') {
+                div.textContent = 'Reconociendo… ' + Math.round((m.progress || 0) * 100) + '%';
+            } else if (m.status === 'loading tesseract core' || m.status === 'initializing api' || m.status === 'loading language traineddata') {
+                div.textContent = 'Preparando OCR…';
+            }
+        }
+    });
+    workerOCRCreando = false;
+    return workerOCR;
+}
+
+async function reconocerImagen(dataUrl) {
+    var reducida = await reducirImagenParaOCR(dataUrl, 2200);
+    var worker = await prepararWorkerOCR();
+    var ret = await worker.recognize(reducida);
+    return ret.data || {};
+}
+
+function ignoradasNombre() {
+    return /\b(congregacion|informe|formulario|s-?21|publicador|precursor|anciano|siervo|minist|sucursal|direccion|telefono|nombre|grupo|horas|cursos|participo|auxiliar|notas|total|firma|membrete)\b/i;
+}
+
+function candidatosNombres(texto) {
+    var lineas = texto.split('\n').map(function(l) { return l.trim(); }).filter(Boolean);
+    var ignoradas = ignoradasNombre();
+    var res = [];
+    for (var i = 0; i < lineas.length; i++) {
+        var l = lineas[i];
+        if (l.length > 80 || l.length < 6) continue;
+        if (/\b\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4}\b/.test(l)) continue;
+        if ((l.match(/\b\d+([.,]\d+)?\b/g) || []).length > 3) continue;
+        var n = normalizarNombre(l);
+        if (!n) continue;
+        if (ignoradas.test(l)) continue;
+        var palabras = n.split(' ');
+        if (palabras.length < 2 || palabras.length > 6) continue;
+        if (!/\b[A-ZÁÉÍÓÚÑ]/.test(l)) continue;
+        if (res.indexOf(l) === -1) res.push(l);
+    }
+    return res;
+}
+
+function parsearNombreOCR(texto) {
+    var nombres = candidatosNombres(texto);
+    var mejor = null;
+    var mejorPuntos = -1;
+    for (var i = 0; i < nombres.length; i++) {
+        var l = nombres[i];
+        var mayus = (l.match(/\b[A-ZÁÉÍÓÚÑ][a-záéíóúñ]{2,}\b/g) || []).length;
+        var palabras = l.split(/\s+/).length;
+        var puntos = mayus * 2 + (palabras >= 2 && palabras <= 4 ? 2 : 0);
+        if (puntos > mejorPuntos) { mejorPuntos = puntos; mejor = l; }
+    }
+    return mejor || '';
+}
+
+function extraerFechasOCR(texto) {
+    var fechas = { nacimiento: '', bautismo: '' };
+    var mesesTexto = { enero:1, febrero:2, marzo:3, abril:4, mayo:5, junio:6, julio:7, agosto:8, septiembre:9, octubre:10, noviembre:11, diciembre:12 };
+    var lineas = texto.split('\n');
+    for (var i = 0; i < lineas.length; i++) {
+        var l = lineas[i].trim();
+        var low = l.toLowerCase();
+        var iso = '';
+
+        var mNum;
+        var reNum = /\b(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4})\b/g;
+        while ((mNum = reNum.exec(l)) !== null) {
+            var dd = parseInt(mNum[1], 10), mm = parseInt(mNum[2], 10), yyyy = parseInt(mNum[3], 10);
+            if (mm > 12) { var t = dd; dd = mm; mm = t; }
+            if (mm < 1 || mm > 12 || yyyy < 1920 || yyyy > 2030) continue;
+            iso = yyyy + '-' + (mm < 10 ? '0' : '') + mm + '-' + (dd < 10 ? '0' : '') + dd;
+            break;
+        }
+
+        if (!iso) {
+            var mTex = l.match(/\b(\d{1,2})\s*de\s*([a-záéíóúñ]+)\s*(?:de\s*)?(\d{4})\b/i);
+            if (mTex) {
+                var mesInt = mesesTexto[mTex[2].toLowerCase()];
+                if (mesInt) {
+                    var dd2 = parseInt(mTex[1], 10), yyyy2 = parseInt(mTex[3], 10);
+                    if (yyyy2 >= 1920 && yyyy2 <= 2030) {
+                        iso = yyyy2 + '-' + (mesInt < 10 ? '0' : '') + mesInt + '-' + (dd2 < 10 ? '0' : '') + dd2;
+                    }
+                }
+            }
+        }
+
+        if (!iso) continue;
+        if (/nac/i.test(low)) fechas.nacimiento = iso;
+        else if (/baut/i.test(low)) fechas.bautismo = iso;
+        else { if (!fechas.nacimiento) fechas.nacimiento = iso; else if (!fechas.bautismo) fechas.bautismo = iso; }
+    }
+    return fechas;
+}
+
+function mesesVacios() {
+    return nombresMeses.map(function(nm) {
+        return { nombre: nm, participo: false, cursos: 0, auxiliar: false, horas: 0, notas: '', detectado: false };
+    });
+}
+
+function parsearMesesOCR(texto) {
+    var resultado = mesesVacios();
+    var lineas = texto.split('\n');
+    for (var i = 0; i < lineas.length; i++) {
+        var l = lineas[i].trim();
+        var low = l.toLowerCase();
+        for (var idx = 0; idx < 12; idx++) {
+            var ab = abbr[nombresMeses[idx]].toLowerCase();
+            if (low.indexOf(ab) === -1 && low.indexOf(nombresMeses[idx].toLowerCase()) === -1) continue;
+            var r = resultado[idx];
+            var numeros = l.match(/\d+([.,]\d+)?\b/g) || [];
+            numeros.forEach(function(tok) {
+                var val = parseFloat(tok.replace(',', '.'));
+                if (val % 1 !== 0) { r.horas = val; r.detectado = true; }
+                else if (val >= 0 && val <= 3 && r.cursos === 0) { r.cursos = val; r.detectado = true; }
+                else if (val >= 4) { r.horas = val; r.detectado = true; }
+            });
+            if (low.indexOf('aux') !== -1) { r.auxiliar = true; r.detectado = true; }
+        }
+    }
+    resultado.forEach(function(r) { if (r.horas > 0) r.participo = true; });
+    return resultado;
+}
+
+function parsearTextoOCR(texto) {
+    var nombre = parsearNombreOCR(texto);
+    var fechas = extraerFechasOCR(texto);
+    return {
+        nombre: nombre,
+        nombreNorm: normalizarNombre(nombre),
+        fechaNacimiento: fechas.nacimiento,
+        fechaBautismo: fechas.bautismo,
+        meses: parsearMesesOCR(texto),
+        textoCrudo: texto
+    };
+}
+
+document.getElementById('btn-escaneos').addEventListener('click', function() {
+    escaneosPendientes = [];
+    document.getElementById('contenido-escaneos').innerHTML = '';
+    document.getElementById('progreso-escaneos').textContent = '';
+    document.getElementById('modal-escaneos').style.display = 'flex';
+});
+
+document.getElementById('btn-cerrar-escaneos').addEventListener('click', function() {
+    document.getElementById('modal-escaneos').style.display = 'none';
+});
+
+document.getElementById('input-escaneos').addEventListener('change', async function(e) {
+    var files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+    e.target.value = '';
+    escaneosPendientes = [];
+    var divProgreso = document.getElementById('progreso-escaneos');
+    try {
+        var imagenes = [];
+        for (var i = 0; i < files.length; i++) {
+            var file = files[i];
+            divProgreso.textContent = 'Leyendo archivo ' + (i + 1) + '/' + files.length + ': ' + file.name + '…';
+            if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+                var imgsPdf = await pdfAImagenes(file);
+                imagenes = imagenes.concat(imgsPdf);
+            } else {
+                var dataUrl = await leerArchivoComoDataURL(file);
+                imagenes.push({ src: dataUrl, nombre: file.name });
+            }
+        }
+
+        await prepararWorkerOCR();
+
+        var ids = 0;
+        for (var j = 0; j < imagenes.length; j++) {
+            divProgreso.textContent = 'Reconociendo hoja ' + (j + 1) + '/' + imagenes.length + ' (' + imagenes[j].nombre + ')…';
+            var resultado = await reconocerImagen(imagenes[j].src);
+            var texto = resultado.text || '';
+            var nombres = candidatosNombres(texto);
+            if (nombres.length >= 3) {
+                nombres.forEach(function(nm) {
+                    escaneosPendientes.push({
+                        id: 'esc_' + Date.now() + '_' + (ids++),
+                        nombre: nm,
+                        nombreNorm: normalizarNombre(nm),
+                        fechaNacimiento: '',
+                        fechaBautismo: '',
+                        meses: mesesVacios(),
+                        textoCrudo: texto,
+                        nombreArchivo: imagenes[j].nombre,
+                        esLista: true
+                    });
+                });
+            } else {
+                var parsed = parsearTextoOCR(texto);
+                parsed.id = 'esc_' + Date.now() + '_' + (ids++);
+                parsed.nombreArchivo = imagenes[j].nombre;
+                escaneosPendientes.push(parsed);
+            }
+        }
+
+        divProgreso.textContent = '';
+        if (escaneosPendientes.length === 0) {
+            divProgreso.textContent = 'No se pudo reconocer ningún nombre. Prueba con una foto más clara.';
+        } else {
+            renderizarRevisionEscaneos();
+        }
+    } catch (err) {
+        console.error(err);
+        divProgreso.textContent = 'Error: ' + err.message;
+    }
+});
+
+function similitudNombres(a, b) {
+    if (!a || !b) return 0;
+    if (a === b) return 1;
+    var ta = a.split(' ');
+    var tb = b.split(' ');
+    var comunes = 0;
+    for (var i = 0; i < ta.length; i++) {
+        if (tb.indexOf(ta[i]) !== -1) comunes++;
+    }
+    return (2 * comunes) / (ta.length + tb.length);
+}
+
+function buscarCoincidencia(nombreNorm, lista) {
+    if (!nombreNorm) return null;
+    var mejor = null;
+    var mejorScore = 0.6;
+    for (var i = 0; i < lista.length; i++) {
+        var score = similitudNombres(nombreNorm, normalizarNombre(lista[i].nombre));
+        if (score > mejorScore) { mejorScore = score; mejor = i; }
+    }
+    return mejor;
+}
+
+function renderizarRevisionEscaneos() {
+    var cont = document.getElementById('contenido-escaneos');
+    var lista = cargarLista();
+    var indices = lista.map(function(f, i) { return i; }).sort(function(a, b) {
+        return normalizarNombre(lista[a].nombre).localeCompare(normalizarNombre(lista[b].nombre));
+    });
+
+    var html = '<p style="margin:0 0 12px 0;color:#565f89;font-size:13px;">Se reconocieron <strong style="color:#7aa2f7;">' + escaneosPendientes.length + '</strong> hoja(s). Revisa cada tarjeta, corrige si hace falta y elige la ficha destino. Solo se rellenan las celdas vacías. Guarda al final.</p>';
+
+    escaneosPendientes.forEach(function(esc, k) {
+        var coincidencia = buscarCoincidencia(esc.nombreNorm, lista);
+        var estadoBadge = coincidencia !== null
+            ? '<span style="background:rgba(115,218,202,0.12);color:#73daca;border:1px solid #73daca;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:bold;">✓ Coincide con: ' + escapeHtml(lista[coincidencia].nombre) + '</span>'
+            : '<span style="background:rgba(247,118,142,0.12);color:#f7768e;border:1px solid #f7768e;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:bold;">Sin coincidencia — se creará una ficha nueva</span>';
+
+        var opciones = '<option value="nueva">➕ Crear ficha nueva</option>';
+        indices.forEach(function(i) {
+            opciones += '<option value="' + i + '">' + escapeHtml(lista[i].nombre) + (lista[i].anioServicio ? ' (' + lista[i].anioServicio + ')' : '') + '</option>';
+        });
+
+        html += '<div style="border:1px solid #414868;border-radius:8px;padding:14px;margin-bottom:14px;background:#1a1b26;">';
+
+        html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:10px;">';
+        html += '<div style="flex:1;min-width:220px;">';
+        html += '<label style="font-size:12px;color:#565f89;">' + (esc.esLista ? 'Nombre (de la lista de asistentes):' : 'Nombre reconocido (editable):') + '</label><br>';
+        html += '<input type="text" id="nom-' + esc.id + '" value="' + escapeHtml(esc.nombre) + '" style="width:100%;max-width:340px;padding:7px 10px;border-radius:4px;border:1px solid #414868;background:#24283b;color:#c0caf5;font-size:14px;margin-top:4px;">';
+        html += '</div>';
+        html += '<div style="text-align:right;">' + estadoBadge + '<div style="color:#565f89;font-size:11px;margin-top:4px;">' + escapeHtml(esc.nombreArchivo || '') + '</div></div>';
+        html += '</div>';
+
+        html += '<div style="margin-bottom:10px;">';
+        html += '<label style="font-size:12px;color:#565f89;">Aplicar a la ficha:</label><br>';
+        html += '<select id="dest-' + esc.id + '" style="width:100%;max-width:420px;padding:7px 10px;border-radius:4px;border:1px solid #414868;background:#24283b;color:#c0caf5;font-size:13px;margin-top:4px;">' + opciones + '</select>';
+        html += '</div>';
+
+        html += '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;">';
+        html += '<label style="font-size:12px;color:#565f89;">Fecha nacimiento: <input type="date" id="fnac-' + esc.id + '" value="' + (esc.fechaNacimiento || '') + '" style="padding:5px 8px;border-radius:4px;border:1px solid #414868;background:#24283b;color:#c0caf5;margin-left:4px;"></label>';
+        html += '<label style="font-size:12px;color:#565f89;">Fecha bautismo: <input type="date" id="fbaut-' + esc.id + '" value="' + (esc.fechaBautismo || '') + '" style="padding:5px 8px;border-radius:4px;border:1px solid #414868;background:#24283b;color:#c0caf5;margin-left:4px;"></label>';
+        html += '<label style="font-size:12px;color:#565f89;">Grupo (solo si es nueva): <input type="number" id="grupo-' + esc.id + '" min="1" placeholder="Ej: 2" style="width:70px;padding:5px 8px;border-radius:4px;border:1px solid #414868;background:#24283b;color:#c0caf5;margin-left:4px;"></label>';
+        html += '</div>';
+
+        html += '<table style="width:100%;border-collapse:collapse;font-size:12px;">';
+        html += '<thead><tr style="color:#565f89;text-align:left;">';
+        html += '<th style="padding:4px;border-bottom:1px solid #414868;">Mes</th>';
+        html += '<th style="padding:4px;border-bottom:1px solid #414868;text-align:center;">Participó</th>';
+        html += '<th style="padding:4px;border-bottom:1px solid #414868;text-align:center;">Cursos</th>';
+        html += '<th style="padding:4px;border-bottom:1px solid #414868;text-align:center;">Aux.</th>';
+        html += '<th style="padding:4px;border-bottom:1px solid #414868;text-align:center;">Horas</th>';
+        html += '<th style="padding:4px;border-bottom:1px solid #414868;">Notas</th>';
+        html += '</tr></thead><tbody>';
+
+        esc.meses.forEach(function(m, i) {
+            var fondo = m.detectado ? 'background:rgba(115,218,202,0.08);' : '';
+            html += '<tr style="' + fondo + '">';
+            html += '<td style="padding:3px 4px;border-bottom:1px solid #292e42;color:#c0caf5;white-space:nowrap;">' + m.nombre + (m.detectado ? ' <span title="Datos detectados por OCR" style="color:#73daca;">●</span>' : '') + '</td>';
+            html += '<td style="padding:3px 4px;border-bottom:1px solid #292e42;text-align:center;"><input type="checkbox" id="mes-' + esc.id + '-' + i + '-participo"' + (m.participo ? ' checked' : '') + '></td>';
+            html += '<td style="padding:3px 4px;border-bottom:1px solid #292e42;text-align:center;"><input type="number" min="0" value="' + (m.cursos || '') + '" id="mes-' + esc.id + '-' + i + '-cursos" style="width:55px;padding:3px 5px;border-radius:3px;border:1px solid #414868;background:#24283b;color:#c0caf5;"></td>';
+            html += '<td style="padding:3px 4px;border-bottom:1px solid #292e42;text-align:center;"><input type="checkbox" id="mes-' + esc.id + '-' + i + '-auxiliar"' + (m.auxiliar ? ' checked' : '') + '></td>';
+            html += '<td style="padding:3px 4px;border-bottom:1px solid #292e42;text-align:center;"><input type="number" min="0" step="0.5" value="' + (m.horas || '') + '" id="mes-' + esc.id + '-' + i + '-horas" style="width:70px;padding:3px 5px;border-radius:3px;border:1px solid #414868;background:#24283b;color:#c0caf5;"></td>';
+            html += '<td style="padding:3px 4px;border-bottom:1px solid #292e42;"><input type="text" value="' + escapeHtml(m.notas || '') + '" id="mes-' + esc.id + '-' + i + '-notas" style="width:100%;padding:3px 5px;border-radius:3px;border:1px solid #414868;background:#24283b;color:#c0caf5;"></td>';
+            html += '</tr>';
+        });
+
+        html += '</tbody></table>';
+
+        html += '<details style="margin-top:10px;"><summary style="cursor:pointer;color:#565f89;font-size:12px;">Ver texto reconocido (OCR)</summary>';
+        html += '<pre style="white-space:pre-wrap;background:#16161e;border:1px solid #292e42;border-radius:4px;padding:10px;font-size:11px;color:#a9b1d6;max-height:180px;overflow:auto;margin:8px 0 0 0;">' + escapeHtml(esc.textoCrudo) + '</pre></details>';
+
+        html += '</div>';
+    });
+
+    html += '<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:6px;">';
+    html += '<button onclick="document.getElementById(\'modal-escaneos\').style.display=\'none\'" style="background:#f7768e;color:#1a1b26;border:none;padding:9px 18px;border-radius:4px;font-weight:bold;cursor:pointer;">Cancelar</button>';
+    html += '<button id="btn-confirmar-escaneos" onclick="aplicarEscaneos()" style="background:#9ece6a;color:#1a1b26;border:none;padding:9px 18px;border-radius:4px;font-weight:bold;cursor:pointer;">💾 Guardar cambios</button>';
+    html += '</div>';
+
+    cont.innerHTML = html;
+
+    escaneosPendientes.forEach(function(esc) {
+        var sel = document.getElementById('dest-' + esc.id);
+        if (!sel) return;
+        var coincidencia = buscarCoincidencia(esc.nombreNorm, lista);
+        sel.value = coincidencia !== null ? String(coincidencia) : 'nueva';
+    });
+}
+
+function leerMesesEscaneoUI(id) {
+    var resultado = [];
+    for (var i = 0; i < 12; i++) {
+        var p = document.getElementById('mes-' + id + '-' + i + '-participo').checked;
+        var c = parseInt(document.getElementById('mes-' + id + '-' + i + '-cursos').value) || 0;
+        var a = document.getElementById('mes-' + id + '-' + i + '-auxiliar').checked;
+        var h = parseFloat(document.getElementById('mes-' + id + '-' + i + '-horas').value) || 0;
+        var n = document.getElementById('mes-' + id + '-' + i + '-notas').value.trim();
+        resultado.push({
+            nombre: nombresMeses[i],
+            participo: p,
+            cursos: c,
+            auxiliar: a,
+            horas: h,
+            notas: n,
+            detectado: p || c > 0 || a || h > 0 || n.length > 0
+        });
+    }
+    return resultado;
+}
+
+function aplicarEscaneos() {
+    var lista = cargarLista();
+    var creados = 0;
+    var actualizados = 0;
+    var omitidos = 0;
+    var resumenHtml = '';
+
+    escaneosPendientes.forEach(function(esc) {
+        var nombre = document.getElementById('nom-' + esc.id).value.trim();
+        if (!nombre) { omitidos++; return; }
+
+        var fechaNac = document.getElementById('fnac-' + esc.id).value;
+        var fechaBaut = document.getElementById('fbaut-' + esc.id).value;
+        var grupoNum = document.getElementById('grupo-' + esc.id).value;
+        var dest = document.getElementById('dest-' + esc.id).value;
+        var mesesEsc = leerMesesEscaneoUI(esc.id);
+
+        if (String(dest) === 'nueva') {
+            lista.push({
+                id: Date.now() + Math.floor(Math.random() * 10000),
+                nombre: nombre,
+                fechaNacimiento: fechaNac,
+                fechaBautismo: fechaBaut,
+                anioServicio: String(anioServicioActual()),
+                cargo: [],
+                genero: '',
+                grupo: '',
+                grupoNumero: grupoNum,
+                rolGrupo: '',
+                estado: 'Activo',
+                meses: mesesEsc.filter(function(m) { return m.detectado; }).map(function(m) {
+                    return { nombre: m.nombre, participo: m.participo, cursos: m.cursos, auxiliar: m.auxiliar, horas: m.horas, notas: m.notas };
+                })
+            });
+            creados++;
+            resumenHtml += '<div style="color:#73daca;font-size:13px;padding:4px 0;">➕ <strong>' + escapeHtml(nombre) + '</strong> — ficha creada</div>';
+            return;
+        }
+
+        var f = lista[parseInt(dest, 10)];
+        if (!f) { omitidos++; return; }
+
+        var huboCambio = false;
+        if (!f.fechaNacimiento && fechaNac) { f.fechaNacimiento = fechaNac; huboCambio = true; }
+        if (!f.fechaBautismo && fechaBaut) { f.fechaBautismo = fechaBaut; huboCambio = true; }
+
+        if (!Array.isArray(f.meses)) f.meses = [];
+        var map = {};
+        f.meses.forEach(function(m) { if (m && m.nombre) map[m.nombre] = m; });
+
+        mesesEsc.forEach(function(mE) {
+            if (!mE.detectado) return;
+            var m = map[mE.nombre];
+            if (!m) {
+                map[mE.nombre] = { nombre: mE.nombre, participo: mE.participo, cursos: mE.cursos, auxiliar: mE.auxiliar, horas: mE.horas, notas: mE.notas };
+                f.meses.push(map[mE.nombre]);
+                huboCambio = true;
+                return;
+            }
+            if (mE.horas > 0 && !m.horas) { m.horas = mE.horas; huboCambio = true; }
+            if (mE.participo && !m.participo) { m.participo = true; huboCambio = true; }
+            if (mE.auxiliar && !m.auxiliar) { m.auxiliar = true; huboCambio = true; }
+            if (mE.cursos > 0 && !m.cursos) { m.cursos = mE.cursos; huboCambio = true; }
+        });
+
+        var orden = {};
+        nombresMeses.forEach(function(nm, i) { orden[nm] = i; });
+        f.meses.sort(function(a, b) { return (orden[a.nombre] !== undefined ? orden[a.nombre] : 99) - (orden[b.nombre] !== undefined ? orden[b.nombre] : 99); });
+
+        if (huboCambio) {
+            actualizados++;
+            resumenHtml += '<div style="color:#7aa2f7;font-size:13px;padding:4px 0;">✓ <strong>' + escapeHtml(f.nombre) + '</strong> — actualizado (solo celdas vacías)</div>';
+        }
+    });
+
+    guardarLista(lista);
+    mostrarFichas(cargarLista());
+    escaneosPendientes = [];
+
+    var cont = document.getElementById('contenido-escaneos');
+    cont.innerHTML = '<p style="color:#9ece6a;font-size:14px;font-weight:bold;margin:0 0 10px 0;">✅ Guardado</p>' +
+        (creados > 0 ? '<div style="color:#73daca;font-size:13px;margin-bottom:6px;">Fichas creadas: <strong>' + creados + '</strong></div>' : '') +
+        (actualizados > 0 ? '<div style="color:#7aa2f7;font-size:13px;margin-bottom:6px;">Fichas actualizadas: <strong>' + actualizados + '</strong></div>' : '') +
+        (omitidos > 0 ? '<div style="color:#e0af68;font-size:13px;margin-bottom:6px;">Omitidos (sin nombre): <strong>' + omitidos + '</strong></div>' : '') +
+        resumenHtml +
+        '<p style="margin:10px 0 0 0;color:#565f89;font-size:12px;">Puedes cerrar esta ventana.</p>';
+}

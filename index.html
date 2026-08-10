@@ -16,8 +16,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="utils.js"></script>
-    <script src="app.js?v=19" defer></script>
+    <script src="app.js?v=20" defer></script>
 </head>
 <body>
 
@@ -37,6 +39,7 @@
         <button id="btn-pdf-siervos" style="background-color:#9ece6a;">📋 Siervos</button>
         <button id="btn-duplicados" style="background-color:#e0af68;">🔍 Duplicados</button>
         <button id="btn-faltantes" style="background-color:#73daca;">📋 Fechas Faltantes</button>
+        <button id="btn-escaneos" style="background-color:#ff9e64;">📥 Escaneos</button>
         <button id="btn-cerrar-sesion" style="background-color:#f7768e;margin-left:8px;">🚪 Cerrar Sesión</button>
         </div>
 
@@ -308,6 +311,19 @@
                 <button id="btn-confirmar-cambio-grupo" style="background:#9ece6a;color:#1a1b26;padding:8px 16px;border-radius:4px;font-weight:bold;border:none;cursor:pointer;">Confirmar</button>
                 <button id="btn-cancelar-cambio-grupo" style="background:#f7768e;color:#1a1b26;padding:8px 16px;border-radius:4px;font-weight:bold;border:none;cursor:pointer;">Cancelar</button>
             </div>
+        </div>
+    </div>
+
+    <div id="modal-escaneos" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:2000;justify-content:center;align-items:flex-start;overflow-y:auto;">
+        <div style="background:#24283b;border:2px solid #414868;border-radius:8px;padding:20px;max-width:900px;width:95%;margin:20px auto;color:#c0caf5;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
+                <h2 style="margin:0;color:#7aa2f7;font-size:18px;">📥 Importar hojas escaneadas</h2>
+                <button id="btn-cerrar-escaneos" style="background:#f7768e;color:#1a1b26;padding:6px 14px;border:none;border-radius:4px;font-weight:bold;cursor:pointer;">Cerrar</button>
+            </div>
+            <p style="margin:0 0 10px 0;font-size:13px;color:#565f89;">Sube fotos o PDF escaneados (hojas S-21 o listas). La lectura es automática (OCR) y <strong>tú revisas antes de guardar</strong>. Los datos de meses se autocompletan solo si el texto es claro.</p>
+            <input type="file" id="input-escaneos" accept="image/*,.pdf" multiple style="margin-bottom:10px;">
+            <div id="progreso-escaneos" style="margin-bottom:10px;font-size:13px;color:#c0caf5;"></div>
+            <div id="contenido-escaneos"></div>
         </div>
     </div>
 
