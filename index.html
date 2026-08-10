@@ -19,7 +19,7 @@
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="utils.js"></script>
-    <script src="app.js?v=20" defer></script>
+    <script src="app.js?v=21" defer></script>
 </head>
 <body>
 
@@ -320,8 +320,12 @@
                 <h2 style="margin:0;color:#7aa2f7;font-size:18px;">📥 Importar hojas escaneadas</h2>
                 <button id="btn-cerrar-escaneos" style="background:#f7768e;color:#1a1b26;padding:6px 14px;border:none;border-radius:4px;font-weight:bold;cursor:pointer;">Cerrar</button>
             </div>
-            <p style="margin:0 0 10px 0;font-size:13px;color:#565f89;">Sube fotos o PDF escaneados (hojas S-21 o listas). La lectura es automática (OCR) y <strong>tú revisas antes de guardar</strong>. Los datos de meses se autocompletan solo si el texto es claro.</p>
-            <input type="file" id="input-escaneos" accept="image/*,.pdf" multiple style="margin-bottom:10px;">
+            <p style="margin:0 0 10px 0;font-size:13px;color:#565f89;">Sube fotos o PDF escaneados (hojas S-21 o listas), o <strong>toda la carpeta de escaneos</strong>. La lectura es automática (OCR) y <strong>tú revisas antes de guardar</strong>. Los datos de meses se autocompletan solo si el texto es claro.</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px;">
+                <input type="file" id="input-escaneos" accept="image/*,.pdf" multiple>
+                <button id="btn-carpeta-escaneos" style="background:#bb9af7;color:#1a1b26;border:none;padding:7px 12px;border-radius:4px;font-weight:bold;cursor:pointer;">📁 Elegir carpeta escaneada</button>
+                <input type="file" id="input-carpeta-escaneos" webkitdirectory multiple style="display:none;">
+            </div>
             <div id="progreso-escaneos" style="margin-bottom:10px;font-size:13px;color:#c0caf5;"></div>
             <div id="contenido-escaneos"></div>
         </div>

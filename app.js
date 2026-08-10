@@ -1788,7 +1788,7 @@ async function prepararWorkerOCR() {
     workerOCRCreando = true;
     var div = document.getElementById('progreso-escaneos');
     if (div) div.textContent = 'Descargando idioma español (solo la primera vez)…';
-    workerOCR = await Tesseract.createWorker('spa', 1, {
+    workerOCR = await Tesseract.createWorker({
         logger: function(m) {
             if (!div) return;
             if (m.status === 'recognizing text') {
@@ -1798,6 +1798,8 @@ async function prepararWorkerOCR() {
             }
         }
     });
+    await workerOCR.loadLanguage('spa');
+    await workerOCR.initialize('spa');
     workerOCRCreando = false;
     return workerOCR;
 }
@@ -1805,8 +1807,28 @@ async function prepararWorkerOCR() {
 async function reconocerImagen(dataUrl) {
     var reducida = await reducirImagenParaOCR(dataUrl, 2200);
     var worker = await prepararWorkerOCR();
-    var ret = await worker.recognize(reducida);
-    return ret.data || {};
+    var ret = await worker.recognize(reducida, {}, { blocks: true, text: true, hocr: false, tsv: false });
+    return {
+        text: (ret.data && ret.data.text) || '',
+        dataUrl: reducida,
+        palabras: obtenerPalabrasOCR(ret.data || {})
+    };
+}
+
+function obtenerPalabrasOCR(data) {
+    var out = [];
+    (data.blocks || []).forEach(function(b) {
+        (b.paragraphs || []).forEach(function(p) {
+            (p.lines || []).forEach(function(l) {
+                (l.words || []).forEach(function(w) {
+                    if (w && w.text && w.bbox) {
+                        out.push({ t: w.text, x0: w.bbox.x0, x1: w.bbox.x1, y0: w.bbox.y0, y1: w.bbox.y1 });
+                    }
+                });
+            });
+        });
+    });
+    return out;
 }
 
 function ignoradasNombre() {
@@ -1941,23 +1963,56 @@ document.getElementById('btn-cerrar-escaneos').addEventListener('click', functio
     document.getElementById('modal-escaneos').style.display = 'none';
 });
 
-document.getElementById('input-escaneos').addEventListener('change', async function(e) {
-    var files = Array.from(e.target.files || []);
-    if (files.length === 0) return;
-    e.target.value = '';
-    escaneosPendientes = [];
+function seleccionarArchivosDeCarpeta(files) {
+    var porGrupo = {};
+    var lista = [];
+    files.forEach(function(f) {
+        var rel = f.webkitRelativePath || f.name;
+        var segs = rel.split('/');
+        if (segs.length >= 2) {
+            var g = segs[1];
+            if (!porGrupo[g]) porGrupo[g] = { files: [], numero: '' };
+            porGrupo[g].files.push(f);
+            var m = g.match(/(\d+)/);
+            if (m && !porGrupo[g].numero) porGrupo[g].numero = m[1];
+        } else {
+            lista.push({ file: f, grupo: '' });
+        }
+    });
+    Object.keys(porGrupo).forEach(function(g) {
+        var grupo = porGrupo[g];
+        var imgs = grupo.files.filter(function(f) { return /\.(jpe?g|png|webp)$/i.test(f.name); });
+        if (imgs.length > 0) {
+            imgs.sort(function(a, b) {
+                var na = parseInt((a.name.match(/(\d+)/) || [])[1]) || 0;
+                var nb = parseInt((b.name.match(/(\d+)/) || [])[1]) || 0;
+                return na - nb;
+            });
+            imgs.forEach(function(f) { lista.push({ file: f, grupo: grupo.numero }); });
+        } else {
+            grupo.files.filter(function(f) { return /\.pdf$/i.test(f.name); }).forEach(function(f) {
+                lista.push({ file: f, grupo: grupo.numero });
+            });
+        }
+    });
+    return lista;
+}
+
+async function procesarArchivosEscaneos(seleccion) {
     var divProgreso = document.getElementById('progreso-escaneos');
+    escaneosPendientes = [];
     try {
         var imagenes = [];
-        for (var i = 0; i < files.length; i++) {
-            var file = files[i];
-            divProgreso.textContent = 'Leyendo archivo ' + (i + 1) + '/' + files.length + ': ' + file.name + '…';
+        for (var i = 0; i < seleccion.length; i++) {
+            var file = seleccion[i].file;
+            divProgreso.textContent = 'Leyendo archivo ' + (i + 1) + '/' + seleccion.length + ': ' + file.name + '…';
             if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
                 var imgsPdf = await pdfAImagenes(file);
+                imgsPdf.forEach(function(im) { im.grupo = seleccion[i].grupo; });
                 imagenes = imagenes.concat(imgsPdf);
             } else {
                 var dataUrl = await leerArchivoComoDataURL(file);
-                imagenes.push({ src: dataUrl, nombre: file.name });
+                imagenes.push({ src: dataUrl, nombre: file.name, grupo: seleccion[i].grupo });
             }
         }
 
@@ -1980,6 +2035,7 @@ document.getElementById('input-escaneos').addEventListener('change', async funct
                         meses: mesesVacios(),
                         textoCrudo: texto,
                         nombreArchivo: imagenes[j].nombre,
+                        grupoSugerido: imagenes[j].grupo || '',
                         esLista: true
                     });
                 });
@@ -1987,6 +2043,9 @@ document.getElementById('input-escaneos').addEventListener('change', async funct
                 var parsed = parsearTextoOCR(texto);
                 parsed.id = 'esc_' + Date.now() + '_' + (ids++);
                 parsed.nombreArchivo = imagenes[j].nombre;
+                parsed.grupoSugerido = imagenes[j].grupo || '';
+                divProgreso.textContent = 'Detectando participó y horas en ' + imagenes[j].nombre + '…';
+                await aplicarDeteccionCeldas(parsed, resultado.dataUrl, resultado.palabras);
                 escaneosPendientes.push(parsed);
             }
         }
@@ -2001,7 +2060,254 @@ document.getElementById('input-escaneos').addEventListener('change', async funct
         console.error(err);
         divProgreso.textContent = 'Error: ' + err.message;
     }
+}
+
+document.getElementById('input-escaneos').addEventListener('change', function(e) {
+    var files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+    e.target.value = '';
+    procesarArchivosEscaneos(files.map(function(f) { return { file: f, grupo: '' }; }));
 });
+
+document.getElementById('btn-carpeta-escaneos').addEventListener('click', function() {
+    document.getElementById('input-carpeta-escaneos').click();
+});
+
+document.getElementById('input-carpeta-escaneos').addEventListener('change', function(e) {
+    var files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+    e.target.value = '';
+    var seleccion = seleccionarArchivosDeCarpeta(files);
+    procesarArchivosEscaneos(seleccion);
+});
+
+function cargarImagenCanvas(dataUrl) {
+    return new Promise(function(resolve) {
+        var img = new Image();
+        img.onload = function() {
+            var c = document.createElement('canvas');
+            c.width = img.naturalWidth;
+            c.height = img.naturalHeight;
+            c.getContext('2d').drawImage(img, 0, 0);
+            resolve(c);
+        };
+        img.onerror = function() { resolve(null); };
+        img.src = dataUrl;
+    });
+}
+
+function detectarFilasConPalabras(palabras, W, H) {
+    if (!palabras || !palabras.length) return null;
+    var minH = H * 0.01, tol = H * 0.0064, xLim = W * 0.212, y0Min = H * 0.164, y1Max = H * 0.457;
+    var mw = palabras.filter(function(w) {
+        return w.x0 < xLim && w.y0 > y0Min && w.y1 < y1Max && (w.y1 - w.y0) >= minH;
+    });
+    if (mw.length < 8) return null;
+    mw.sort(function(a, b) { return (a.y0 + a.y1) / 2 - (b.y0 + b.y1) / 2; });
+    var clusters = [];
+    for (var i = 0; i < mw.length; i++) {
+        var c = (mw[i].y0 + mw[i].y1) / 2;
+        var placed = false;
+        for (var k = 0; k < clusters.length; k++) {
+            if (Math.abs(clusters[k].center - c) <= tol) {
+                clusters[k].ws.push(mw[i]);
+                var sum = 0;
+                for (var q = 0; q < clusters[k].ws.length; q++) sum += (clusters[k].ws[q].y0 + clusters[k].ws[q].y1) / 2;
+                clusters[k].center = sum / clusters[k].ws.length;
+                placed = true;
+                break;
+            }
+        }
+        if (!placed) clusters.push({ center: c, ws: [mw[i]] });
+    }
+    clusters.sort(function(a, b) { return a.center - b.center; });
+    if (clusters.length < 12) return null;
+    var centers = clusters.slice(0, 12).map(function(cl) { return cl.center; });
+    var gaps = [];
+    for (var j = 1; j < centers.length; j++) gaps.push(centers[j] - centers[j - 1]);
+    gaps.sort(function(a, b) { return a - b; });
+    var pitch = gaps[Math.floor(gaps.length / 2)];
+    if (pitch < H * 0.016 || pitch > H * 0.0215) return null;
+    return { centers: centers, pitch: pitch };
+}
+
+function grayscaleCanvas(canvas) {
+    var W = canvas.width, H = canvas.height;
+    var imgData = canvas.getContext('2d').getImageData(0, 0, W, H).data;
+    var g = new Uint8Array(W * H);
+    for (var i = 0; i < W * H; i++) {
+        var o = i * 4;
+        g[i] = Math.round(0.299 * imgData[o] + 0.587 * imgData[o + 1] + 0.114 * imgData[o + 2]);
+    }
+    return g;
+}
+
+function detectarFilasConProyeccion(canvas, g, W, H) {
+    var hproj = new Float32Array(H);
+    for (var y = 0; y < H; y++) {
+        var c = 0, row = y * W;
+        for (var x = 0; x < W; x++) if (g[row + x] < 128) c++;
+        hproj[y] = c;
+    }
+    var hLines = [], s = 0, thr = W * 0.10;
+    for (var yy = 0; yy < H; yy++) {
+        if (hproj[yy] > thr) s++;
+        else if (s >= 2) { hLines.push(yy - s + Math.floor(s / 2)); s = 0; } else s = 0;
+    }
+    if (s >= 2) hLines.push(H - s + Math.floor(s / 2));
+    var best = null;
+    for (var i = 0; i < hLines.length; i++) for (var j = i + 1; j < hLines.length; j++) {
+        var t = hLines[i], b = hLines[j], rh = (b - t) / 12;
+        if (rh < H * 0.0107 || rh > H * 0.0321) continue;
+        var m = 0;
+        for (var k = 0; k <= 12; k++) {
+            var yk = t + k * rh;
+            for (var q = i; q <= j; q++) {
+                if (Math.abs(hLines[q] - yk) <= rh * 0.12) { m++; break; }
+            }
+        }
+        if (m >= 10 && (!best || m > best.m)) best = { t: t, b: b, rh: rh, m: m };
+    }
+    if (!best) return null;
+    var c0 = best.t + best.rh / 2;
+    if (c0 < H * 0.16 || c0 > H * 0.232) return null;
+    var centers = [];
+    for (var z = 0; z < 12; z++) centers.push(best.t + z * best.rh + best.rh / 2);
+    return { centers: centers, pitch: best.rh };
+}
+
+function detectarFilasConColumna(canvas, g, W, H) {
+    var x0m = Math.round(W * 0.0588), x1m = Math.round(W * 0.2059);
+    var hproj = new Float32Array(H);
+    for (var y = 0; y < H; y++) {
+        var c = 0;
+        for (var x = x0m; x <= x1m; x++) if (g[y * W + x] < 128) c++;
+        hproj[y] = c;
+    }
+    var bands = [], inB = false, st = 0, thrB = 6;
+    for (var y2 = Math.round(H * 0.157); y2 < H; y2++) {
+        if (hproj[y2] > thrB) { if (!inB) { inB = true; st = y2; } }
+        else { if (inB) { bands.push((st + y2 - 1) / 2); inB = false; } }
+    }
+    if (inB) bands.push((st + H - 1) / 2);
+    if (bands.length < 6) return null;
+    var best = null;
+    for (var S = Math.round(H * 0.164); S <= Math.round(H * 0.229); S += 2) {
+        for (var P = H * 0.0179; P <= H * 0.0207; P += 0.0002) {
+            var m = 0;
+            for (var i = 0; i < 12; i++) {
+                var e = S + i * P;
+                for (var q = 0; q < bands.length; q++) {
+                    if (Math.abs(bands[q] - e) <= P * 0.22) { m++; break; }
+                }
+            }
+            if (m >= 10 && (!best || m > best.m)) best = { m: m, S: S, P: P };
+        }
+    }
+    if (!best) return null;
+    var centers = [];
+    for (var z = 0; z < 12; z++) centers.push(best.S + z * best.P);
+    return { centers: centers, pitch: best.P };
+}
+
+function detectarFilas(canvas, palabras) {
+    var W = canvas.width, H = canvas.height;
+    var g = grayscaleCanvas(canvas);
+    return detectarFilasConPalabras(palabras, W, H) ||
+           detectarFilasConProyeccion(canvas, g, W, H) ||
+           detectarFilasConColumna(canvas, g, W, H);
+}
+
+function corregirAlineacion(filas, palabras, W, H) {
+    if (!filas || !palabras) return filas;
+    var cab = palabras.filter(function(w) {
+        return /^20\d\d/.test(w.t) && w.y1 < H * 0.2 && w.x0 < W * 0.35;
+    });
+    if (cab.length === 0) return filas;
+    var cCab = (cab[0].y0 + cab[0].y1) / 2;
+    if (Math.abs(cCab - filas.centers[0]) <= filas.pitch * 0.6) {
+        var centers = filas.centers.slice(1);
+        while (centers.length < 12) centers.push(centers[centers.length - 1] + filas.pitch);
+        return { centers: centers, pitch: filas.pitch, corregida: true };
+    }
+    return filas;
+}
+
+function densidadTinta(ctx, x, y, w, h) {
+    if (w < 4 || h < 4 || x < 0 || y < 0) return 0;
+    var d = ctx.getImageData(x, y, w, h).data;
+    var dark = 0, tot = 0;
+    for (var i = 0; i < d.length; i += 16) {
+        var v = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
+        if (v < 130) dark++;
+        tot++;
+    }
+    return tot ? dark / tot : 0;
+}
+
+function parsearHorasDesdeTexto(t) {
+    var nums = (t.match(/\d+([.,]\d+)?/g) || []).map(function(s) { return parseFloat(s.replace(',', '.')); });
+    var plausibles = nums.filter(function(v) { return v >= 0.5 && v <= 120; });
+    if (plausibles.length === 0) return 0;
+    return Math.max.apply(null, plausibles);
+}
+
+async function ocrCeldaDigitos(canvas, x, y, w, h) {
+    var c = document.createElement('canvas');
+    c.width = Math.max(20, Math.round(w * 2.5));
+    c.height = Math.max(20, Math.round(h * 2.5));
+    var ctx2 = c.getContext('2d');
+    ctx2.drawImage(canvas, x, y, w, h, 0, 0, c.width, c.height);
+    var worker = await prepararWorkerOCR();
+    await worker.setParameters({ tessedit_char_whitelist: '0123456789.,' });
+    try {
+        var ret = await worker.recognize(c.toDataURL('image/jpeg', 0.9), {}, { blocks: false, text: true, hocr: false, tsv: false });
+        return (ret.data && ret.data.text) || '';
+    } finally {
+        await worker.setParameters({ tessedit_char_whitelist: '' });
+    }
+}
+
+async function aplicarDeteccionCeldas(esc, dataUrl, palabras) {
+    if (!esc || esc.esLista || !dataUrl) return;
+    try {
+        var canvas = await cargarImagenCanvas(dataUrl);
+        if (!canvas) return;
+        var filas = detectarFilas(canvas, palabras);
+        if (!filas) { esc.filasDetectadas = false; return; }
+        esc.filasDetectadas = true;
+        filas = corregirAlineacion(filas, palabras, canvas.width, canvas.height) || filas;
+        var ctx = canvas.getContext('2d');
+        var W = canvas.width, H = canvas.height;
+        var p0 = Math.round(W * 0.2094), p1 = Math.round(W * 0.3176);
+        var h0 = Math.round(W * 0.4294), h1 = Math.round(W * 0.6471);
+        for (var i = 0; i < 12; i++) {
+            var y0 = Math.round(filas.centers[i] - filas.pitch / 2) + 2;
+            var y1 = Math.round(filas.centers[i] + filas.pitch / 2) - 2;
+            if (y1 - y0 < 10) continue;
+
+            if (p1 - p0 >= 8) {
+                var dens = densidadTinta(ctx, p0, y0, p1 - p0, y1 - y0);
+                if (dens > 0.045) {
+                    esc.meses[i].participo = true;
+                    esc.meses[i].detectado = true;
+                }
+            }
+
+            if (h1 - h0 >= 25) {
+                var texto = await ocrCeldaDigitos(canvas, h0, y0, h1 - h0, y1 - y0);
+                var horas = parsearHorasDesdeTexto(texto);
+                if (horas > 0) {
+                    esc.meses[i].horas = horas;
+                    esc.meses[i].participo = true;
+                    esc.meses[i].detectado = true;
+                }
+            }
+        }
+    } catch (e) {
+        console.error('Detección de celdas falló:', e);
+    }
+}
 
 function similitudNombres(a, b) {
     if (!a || !b) return 0;
@@ -2064,7 +2370,7 @@ function renderizarRevisionEscaneos() {
         html += '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;">';
         html += '<label style="font-size:12px;color:#565f89;">Fecha nacimiento: <input type="date" id="fnac-' + esc.id + '" value="' + (esc.fechaNacimiento || '') + '" style="padding:5px 8px;border-radius:4px;border:1px solid #414868;background:#24283b;color:#c0caf5;margin-left:4px;"></label>';
         html += '<label style="font-size:12px;color:#565f89;">Fecha bautismo: <input type="date" id="fbaut-' + esc.id + '" value="' + (esc.fechaBautismo || '') + '" style="padding:5px 8px;border-radius:4px;border:1px solid #414868;background:#24283b;color:#c0caf5;margin-left:4px;"></label>';
-        html += '<label style="font-size:12px;color:#565f89;">Grupo (solo si es nueva): <input type="number" id="grupo-' + esc.id + '" min="1" placeholder="Ej: 2" style="width:70px;padding:5px 8px;border-radius:4px;border:1px solid #414868;background:#24283b;color:#c0caf5;margin-left:4px;"></label>';
+        html += '<label style="font-size:12px;color:#565f89;">Grupo (solo si es nueva): <input type="number" id="grupo-' + esc.id + '" min="1" placeholder="Ej: 2" value="' + (esc.grupoSugerido || '') + '" style="width:70px;padding:5px 8px;border-radius:4px;border:1px solid #414868;background:#24283b;color:#c0caf5;margin-left:4px;"></label>';
         html += '</div>';
 
         html += '<table style="width:100%;border-collapse:collapse;font-size:12px;">';
@@ -2109,6 +2415,8 @@ function renderizarRevisionEscaneos() {
         if (!sel) return;
         var coincidencia = buscarCoincidencia(esc.nombreNorm, lista);
         sel.value = coincidencia !== null ? String(coincidencia) : 'nueva';
+        var grupoInput = document.getElementById('grupo-' + esc.id);
+        if (grupoInput && !grupoInput.value) grupoInput.value = esc.grupoSugerido || '';
     });
 }
 
@@ -2178,6 +2486,7 @@ function aplicarEscaneos() {
         var huboCambio = false;
         if (!f.fechaNacimiento && fechaNac) { f.fechaNacimiento = fechaNac; huboCambio = true; }
         if (!f.fechaBautismo && fechaBaut) { f.fechaBautismo = fechaBaut; huboCambio = true; }
+        if (!f.grupoNumero && esc.grupoSugerido) { f.grupoNumero = esc.grupoSugerido; huboCambio = true; }
 
         if (!Array.isArray(f.meses)) f.meses = [];
         var map = {};
