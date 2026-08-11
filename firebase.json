@@ -5,7 +5,15 @@
       "firebase.json",
       ".firebaserc",
       "**/node_modules/**",
-      "**/.git/**"
+      "**/.git/**",
+      "**/fichas escaneadas*/**",
+      "**/fichas*escaneadas*/**",
+      "revisiones/**",
+      "ficha-ejemplo-HALI-MARISOL.html",
+      "iniciar-*.sh",
+      "package.json",
+      "README.md",
+      "*.md"
     ]
   },
   "firestore": {
