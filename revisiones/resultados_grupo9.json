@@ -1,0 +1,1775 @@
+[
+  {
+    "grupo": "9",
+    "pagina": "pagina-1.jpg",
+    "nota": "",
+    "filasDetectadas": true,
+    "nombre": "JAVIER MENDOZA",
+    "nombreNorm": "javier mendoza",
+    "fechaNacimiento": "1990-12-13",
+    "fechaBautismo": "2016-07-31",
+    "cargo": [
+      "Siervo ministerial"
+    ],
+    "meses": [
+      {
+        "nombre": "Septiembre",
+        "participo": true,
+        "cursos": 11,
+        "auxiliar": true,
+        "horas": 5
+      },
+      {
+        "nombre": "Octubre",
+        "participo": true,
+        "cursos": 2,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Noviembre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Diciembre",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": true,
+        "horas": 23
+      },
+      {
+        "nombre": "Enero",
+        "participo": true,
+        "cursos": 4,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Febrero",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": true,
+        "horas": 17
+      },
+      {
+        "nombre": "Marzo",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": true,
+        "horas": 57
+      },
+      {
+        "nombre": "Abril",
+        "participo": true,
+        "cursos": 15,
+        "auxiliar": true,
+        "horas": 33.333
+      },
+      {
+        "nombre": "Mayo",
+        "participo": true,
+        "cursos": 4,
+        "auxiliar": false,
+        "horas": 35
+      },
+      {
+        "nombre": "Junio",
+        "participo": true,
+        "cursos": 7,
+        "auxiliar": true,
+        "horas": 64.31
+      },
+      {
+        "nombre": "Julio",
+        "participo": true,
+        "cursos": 9,
+        "auxiliar": true,
+        "horas": 14
+      },
+      {
+        "nombre": "Agosto",
+        "participo": true,
+        "cursos": 4,
+        "auxiliar": true,
+        "horas": 7
+      }
+    ]
+  },
+  {
+    "grupo": "9",
+    "pagina": "pagina-2.jpg",
+    "nota": "Página no detectada por el OCR automático. Verifica la imagen; datos precargados del OCR anterior.",
+    "filasDetectadas": true,
+    "nombre": "Martin Ugarte",
+    "nombreNorm": "",
+    "fechaNacimiento": "",
+    "fechaBautismo": "",
+    "cargo": [],
+    "meses": [
+      {
+        "nombre": "Septiembre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 41.1
+      },
+      {
+        "nombre": "Octubre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 51
+      },
+      {
+        "nombre": "Noviembre",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Diciembre",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Enero",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 1
+      },
+      {
+        "nombre": "Febrero",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 13
+      },
+      {
+        "nombre": "Marzo",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 51
+      },
+      {
+        "nombre": "Abril",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Mayo",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Junio",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Julio",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Agosto",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 5
+      }
+    ]
+  },
+  {
+    "grupo": "9",
+    "pagina": "pagina-3.jpg",
+    "nota": "",
+    "filasDetectadas": true,
+    "nombre": "BARBARA DE UGARTE",
+    "nombreNorm": "barbara de ugarte",
+    "fechaNacimiento": "",
+    "fechaBautismo": "",
+    "cargo": [],
+    "meses": [
+      {
+        "nombre": "Septiembre",
+        "participo": true,
+        "cursos": 7,
+        "auxiliar": true,
+        "horas": 32
+      },
+      {
+        "nombre": "Octubre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 7
+      },
+      {
+        "nombre": "Noviembre",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": true,
+        "horas": 8
+      },
+      {
+        "nombre": "Diciembre",
+        "participo": true,
+        "cursos": 11,
+        "auxiliar": true,
+        "horas": 12
+      },
+      {
+        "nombre": "Enero",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 41
+      },
+      {
+        "nombre": "Febrero",
+        "participo": true,
+        "cursos": 5,
+        "auxiliar": true,
+        "horas": 55
+      },
+      {
+        "nombre": "Marzo",
+        "participo": true,
+        "cursos": 9,
+        "auxiliar": true,
+        "horas": 5
+      },
+      {
+        "nombre": "Abril",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 33
+      },
+      {
+        "nombre": "Mayo",
+        "participo": true,
+        "cursos": 9,
+        "auxiliar": true,
+        "horas": 32.52311
+      },
+      {
+        "nombre": "Junio",
+        "participo": true,
+        "cursos": 20,
+        "auxiliar": true,
+        "horas": 97
+      },
+      {
+        "nombre": "Julio",
+        "participo": true,
+        "cursos": 7,
+        "auxiliar": true,
+        "horas": 3.4
+      },
+      {
+        "nombre": "Agosto",
+        "participo": true,
+        "cursos": 7,
+        "auxiliar": true,
+        "horas": 41
+      }
+    ]
+  },
+  {
+    "grupo": "9",
+    "pagina": "pagina-5.jpg",
+    "nota": "",
+    "filasDetectadas": true,
+    "nombre": "",
+    "nombreNorm": "",
+    "fechaNacimiento": "",
+    "fechaBautismo": "",
+    "cargo": [
+      "Anciano"
+    ],
+    "meses": [
+      {
+        "nombre": "Septiembre",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": true,
+        "horas": 5
+      },
+      {
+        "nombre": "Octubre",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": false,
+        "horas": 5
+      },
+      {
+        "nombre": "Noviembre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 15
+      },
+      {
+        "nombre": "Diciembre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 13
+      },
+      {
+        "nombre": "Enero",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 5
+      },
+      {
+        "nombre": "Febrero",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 38
+      },
+      {
+        "nombre": "Marzo",
+        "participo": true,
+        "cursos": 11,
+        "auxiliar": true,
+        "horas": 100
+      },
+      {
+        "nombre": "Abril",
+        "participo": true,
+        "cursos": 13,
+        "auxiliar": false,
+        "horas": 9.51
+      },
+      {
+        "nombre": "Mayo",
+        "participo": true,
+        "cursos": 6,
+        "auxiliar": false,
+        "horas": 47
+      },
+      {
+        "nombre": "Junio",
+        "participo": true,
+        "cursos": 14,
+        "auxiliar": false,
+        "horas": 11
+      },
+      {
+        "nombre": "Julio",
+        "participo": true,
+        "cursos": 5,
+        "auxiliar": true,
+        "horas": 1
+      },
+      {
+        "nombre": "Agosto",
+        "participo": true,
+        "cursos": 7,
+        "auxiliar": true,
+        "horas": 13
+      }
+    ]
+  },
+  {
+    "grupo": "9",
+    "pagina": "pagina-7.jpg",
+    "nota": "",
+    "filasDetectadas": true,
+    "nombre": "DOMINGO GONZALES",
+    "nombreNorm": "domingo gonzales",
+    "fechaNacimiento": "1946-08-04",
+    "fechaBautismo": "1988-08-13",
+    "cargo": [
+      "Anciano",
+      "Siervo ministerial"
+    ],
+    "meses": [
+      {
+        "nombre": "Septiembre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 22
+      },
+      {
+        "nombre": "Octubre",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Noviembre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 4
+      },
+      {
+        "nombre": "Diciembre",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Enero",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 5
+      },
+      {
+        "nombre": "Febrero",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Marzo",
+        "participo": true,
+        "cursos": 5,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Abril",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Mayo",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Junio",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Julio",
+        "participo": true,
+        "cursos": 5,
+        "auxiliar": false,
+        "horas": 10
+      },
+      {
+        "nombre": "Agosto",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": false,
+        "horas": 0
+      }
+    ]
+  },
+  {
+    "grupo": "9",
+    "pagina": "pagina-8.jpg",
+    "nota": "",
+    "filasDetectadas": true,
+    "nombre": "JOHAN BAHENA DE JESUS",
+    "nombreNorm": "johan bahena de jesus",
+    "fechaNacimiento": "2010-10-31",
+    "fechaBautismo": "",
+    "cargo": [
+      "Siervo ministerial",
+      "Precursor Regular",
+      "Precursor Especial"
+    ],
+    "meses": [
+      {
+        "nombre": "Septiembre",
+        "participo": true,
+        "cursos": 5,
+        "auxiliar": false,
+        "horas": 11
+      },
+      {
+        "nombre": "Octubre",
+        "participo": true,
+        "cursos": 9,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Noviembre",
+        "participo": true,
+        "cursos": 13,
+        "auxiliar": false,
+        "horas": 15
+      },
+      {
+        "nombre": "Diciembre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 5
+      },
+      {
+        "nombre": "Enero",
+        "participo": true,
+        "cursos": 7,
+        "auxiliar": false,
+        "horas": 4.35
+      },
+      {
+        "nombre": "Febrero",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 19
+      },
+      {
+        "nombre": "Marzo",
+        "participo": true,
+        "cursos": 7,
+        "auxiliar": false,
+        "horas": 45
+      },
+      {
+        "nombre": "Abril",
+        "participo": true,
+        "cursos": 5,
+        "auxiliar": false,
+        "horas": 14
+      },
+      {
+        "nombre": "Mayo",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 35
+      },
+      {
+        "nombre": "Junio",
+        "participo": true,
+        "cursos": 6,
+        "auxiliar": false,
+        "horas": 17.5
+      },
+      {
+        "nombre": "Julio",
+        "participo": true,
+        "cursos": 4,
+        "auxiliar": false,
+        "horas": 53
+      },
+      {
+        "nombre": "Agosto",
+        "participo": true,
+        "cursos": 3,
+        "auxiliar": false,
+        "horas": 115
+      }
+    ]
+  },
+  {
+    "grupo": "9",
+    "pagina": "pagina-9.jpg",
+    "nota": "",
+    "filasDetectadas": true,
+    "nombre": "NOE BAHENA PINO",
+    "nombreNorm": "noe bahena pino",
+    "fechaNacimiento": "1972-03-18",
+    "fechaBautismo": "2014-03-23",
+    "cargo": [
+      "Siervo ministerial",
+      "Precursor Regular",
+      "Precursor Especial",
+      "Misionero que sirve en el campo"
+    ],
+    "meses": [
+      {
+        "nombre": "Septiembre",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Octubre",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": false,
+        "horas": 1
+      },
+      {
+        "nombre": "Noviembre",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": false,
+        "horas": 7
+      },
+      {
+        "nombre": "Diciembre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 53.7
+      },
+      {
+        "nombre": "Enero",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Febrero",
+        "participo": true,
+        "cursos": 17,
+        "auxiliar": false,
+        "horas": 11
+      },
+      {
+        "nombre": "Marzo",
+        "participo": true,
+        "cursos": 17,
+        "auxiliar": false,
+        "horas": 93
+      },
+      {
+        "nombre": "Abril",
+        "participo": true,
+        "cursos": 7,
+        "auxiliar": false,
+        "horas": 39
+      },
+      {
+        "nombre": "Mayo",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 13
+      },
+      {
+        "nombre": "Junio",
+        "participo": true,
+        "cursos": 4,
+        "auxiliar": false,
+        "horas": 1
+      },
+      {
+        "nombre": "Julio",
+        "participo": true,
+        "cursos": 4,
+        "auxiliar": false,
+        "horas": 1
+      },
+      {
+        "nombre": "Agosto",
+        "participo": true,
+        "cursos": 5,
+        "auxiliar": false,
+        "horas": 0
+      }
+    ]
+  },
+  {
+    "grupo": "9",
+    "pagina": "pagina-10.jpg",
+    "nota": "",
+    "filasDetectadas": true,
+    "nombre": "TERESA MORALES ZACATELCO",
+    "nombreNorm": "teresa morales zacatelco",
+    "fechaNacimiento": "",
+    "fechaBautismo": "2009-01-02",
+    "cargo": [
+      "Misionero que sirve en el campo"
+    ],
+    "meses": [
+      {
+        "nombre": "Septiembre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 5
+      },
+      {
+        "nombre": "Octubre",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": false,
+        "horas": 7
+      },
+      {
+        "nombre": "Noviembre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 5
+      },
+      {
+        "nombre": "Diciembre",
+        "participo": true,
+        "cursos": 3,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Enero",
+        "participo": true,
+        "cursos": 2,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Febrero",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 19
+      },
+      {
+        "nombre": "Marzo",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Abril",
+        "participo": true,
+        "cursos": 12,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Mayo",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 5
+      },
+      {
+        "nombre": "Junio",
+        "participo": true,
+        "cursos": 5,
+        "auxiliar": true,
+        "horas": 1
+      },
+      {
+        "nombre": "Julio",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Agosto",
+        "participo": true,
+        "cursos": 3,
+        "auxiliar": true,
+        "horas": 15
+      }
+    ]
+  },
+  {
+    "grupo": "9",
+    "pagina": "pagina-11.jpg",
+    "nota": "",
+    "filasDetectadas": true,
+    "nombre": "EDGAR PLIEGO FLORES",
+    "nombreNorm": "edgar pliego flores",
+    "fechaNacimiento": "1978-04-29",
+    "fechaBautismo": "1989-01-28",
+    "cargo": [],
+    "meses": [
+      {
+        "nombre": "Septiembre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Octubre",
+        "participo": true,
+        "cursos": 15,
+        "auxiliar": false,
+        "horas": 1
+      },
+      {
+        "nombre": "Noviembre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Diciembre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 21
+      },
+      {
+        "nombre": "Enero",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Febrero",
+        "participo": true,
+        "cursos": 12,
+        "auxiliar": true,
+        "horas": 7
+      },
+      {
+        "nombre": "Marzo",
+        "participo": true,
+        "cursos": 5,
+        "auxiliar": true,
+        "horas": 33
+      },
+      {
+        "nombre": "Abril",
+        "participo": true,
+        "cursos": 5,
+        "auxiliar": true,
+        "horas": 7
+      },
+      {
+        "nombre": "Mayo",
+        "participo": true,
+        "cursos": 15,
+        "auxiliar": true,
+        "horas": 71
+      },
+      {
+        "nombre": "Junio",
+        "participo": true,
+        "cursos": 5,
+        "auxiliar": true,
+        "horas": 71
+      },
+      {
+        "nombre": "Julio",
+        "participo": true,
+        "cursos": 7,
+        "auxiliar": true,
+        "horas": 35
+      },
+      {
+        "nombre": "Agosto",
+        "participo": true,
+        "cursos": 9,
+        "auxiliar": true,
+        "horas": 119
+      }
+    ]
+  },
+  {
+    "grupo": "9",
+    "pagina": "pagina-12.jpg",
+    "nota": "",
+    "filasDetectadas": true,
+    "nombre": "Susana Laura Gil López",
+    "nombreNorm": "susana laura gil lopez",
+    "fechaNacimiento": "1994-03-19",
+    "fechaBautismo": "2008-01-27",
+    "cargo": [],
+    "meses": [
+      {
+        "nombre": "Septiembre",
+        "participo": true,
+        "cursos": 5,
+        "auxiliar": true,
+        "horas": 111
+      },
+      {
+        "nombre": "Octubre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Noviembre",
+        "participo": true,
+        "cursos": 11,
+        "auxiliar": false,
+        "horas": 6
+      },
+      {
+        "nombre": "Diciembre",
+        "participo": true,
+        "cursos": 5,
+        "auxiliar": true,
+        "horas": 11
+      },
+      {
+        "nombre": "Enero",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 7
+      },
+      {
+        "nombre": "Febrero",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 7
+      },
+      {
+        "nombre": "Marzo",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 20
+      },
+      {
+        "nombre": "Abril",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 35
+      },
+      {
+        "nombre": "Mayo",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 93
+      },
+      {
+        "nombre": "Junio",
+        "participo": true,
+        "cursos": 3,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Julio",
+        "participo": true,
+        "cursos": 13,
+        "auxiliar": true,
+        "horas": 53
+      },
+      {
+        "nombre": "Agosto",
+        "participo": true,
+        "cursos": 9,
+        "auxiliar": true,
+        "horas": 73.3
+      }
+    ]
+  },
+  {
+    "grupo": "9",
+    "pagina": "pagina-13.jpg",
+    "nota": "",
+    "filasDetectadas": true,
+    "nombre": "Flor Beltrán",
+    "nombreNorm": "flor beltran",
+    "fechaNacimiento": "",
+    "fechaBautismo": "",
+    "cargo": [
+      "Siervo ministerial"
+    ],
+    "meses": [
+      {
+        "nombre": "Septiembre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 4
+      },
+      {
+        "nombre": "Octubre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 7
+      },
+      {
+        "nombre": "Noviembre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 1
+      },
+      {
+        "nombre": "Diciembre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Enero",
+        "participo": true,
+        "cursos": 15,
+        "auxiliar": true,
+        "horas": 4
+      },
+      {
+        "nombre": "Febrero",
+        "participo": true,
+        "cursos": 4,
+        "auxiliar": true,
+        "horas": 30.31
+      },
+      {
+        "nombre": "Marzo",
+        "participo": true,
+        "cursos": 5,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Abril",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 4
+      },
+      {
+        "nombre": "Mayo",
+        "participo": true,
+        "cursos": 5,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Junio",
+        "participo": true,
+        "cursos": 7,
+        "auxiliar": true,
+        "horas": 4
+      },
+      {
+        "nombre": "Julio",
+        "participo": true,
+        "cursos": 7,
+        "auxiliar": true,
+        "horas": 37
+      },
+      {
+        "nombre": "Agosto",
+        "participo": true,
+        "cursos": 2,
+        "auxiliar": false,
+        "horas": 12
+      }
+    ]
+  },
+  {
+    "grupo": "9",
+    "pagina": "pagina-14.jpg",
+    "nota": "",
+    "filasDetectadas": false,
+    "nombre": "DANIEL PORTILLO",
+    "nombreNorm": "daniel portillo",
+    "fechaNacimiento": "",
+    "fechaBautismo": "",
+    "cargo": [
+      "Precursor Especial"
+    ],
+    "meses": [
+      {
+        "nombre": "Septiembre",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Octubre",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Noviembre",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Diciembre",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Enero",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Febrero",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Marzo",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Abril",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Mayo",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Junio",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Julio",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Agosto",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      }
+    ]
+  },
+  {
+    "grupo": "9",
+    "pagina": "pagina-15.jpg",
+    "nota": "Página no detectada por el OCR automático. Verifica la imagen; datos precargados del OCR anterior.",
+    "filasDetectadas": false,
+    "nombre": "",
+    "nombreNorm": "",
+    "fechaNacimiento": "",
+    "fechaBautismo": "",
+    "cargo": [],
+    "meses": [
+      {
+        "nombre": "Septiembre",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Octubre",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Noviembre",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Diciembre",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Enero",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Febrero",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Marzo",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Abril",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Mayo",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Junio",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Julio",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Agosto",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      }
+    ]
+  },
+  {
+    "grupo": "9",
+    "pagina": "pagina-16.jpg",
+    "nota": "",
+    "filasDetectadas": false,
+    "nombre": "FIDELINA ROSALES DE DELOYA",
+    "nombreNorm": "fidelina rosales de deloya",
+    "fechaNacimiento": "1975-07-07",
+    "fechaBautismo": "2012-11-17",
+    "cargo": [
+      "Precursor Regular"
+    ],
+    "meses": [
+      {
+        "nombre": "Septiembre",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Octubre",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Noviembre",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Diciembre",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Enero",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Febrero",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Marzo",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Abril",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Mayo",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Junio",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Julio",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Agosto",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      }
+    ]
+  },
+  {
+    "grupo": "9",
+    "pagina": "pagina-17.jpg",
+    "nota": "Página no detectada por el OCR automático. Verifica la imagen; datos precargados del OCR anterior.",
+    "filasDetectadas": false,
+    "nombre": "",
+    "nombreNorm": "",
+    "fechaNacimiento": "",
+    "fechaBautismo": "",
+    "cargo": [],
+    "meses": [
+      {
+        "nombre": "Septiembre",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Octubre",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Noviembre",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Diciembre",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Enero",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Febrero",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Marzo",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Abril",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Mayo",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Junio",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Julio",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Agosto",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      }
+    ]
+  },
+  {
+    "grupo": "9",
+    "pagina": "pagina-18.jpg",
+    "nota": "",
+    "filasDetectadas": true,
+    "nombre": "MANUEL DELOYA",
+    "nombreNorm": "manuel deloya",
+    "fechaNacimiento": "1965-07-04",
+    "fechaBautismo": "1983-10-29",
+    "cargo": [
+      "Anciano",
+      "Precursor Regular"
+    ],
+    "meses": [
+      {
+        "nombre": "Septiembre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Octubre",
+        "participo": true,
+        "cursos": 3,
+        "auxiliar": true,
+        "horas": 13
+      },
+      {
+        "nombre": "Noviembre",
+        "participo": true,
+        "cursos": 5,
+        "auxiliar": true,
+        "horas": 70
+      },
+      {
+        "nombre": "Diciembre",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": false,
+        "horas": 1
+      },
+      {
+        "nombre": "Enero",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Febrero",
+        "participo": true,
+        "cursos": 4,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Marzo",
+        "participo": true,
+        "cursos": 4,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Abril",
+        "participo": true,
+        "cursos": 9,
+        "auxiliar": true,
+        "horas": 44
+      },
+      {
+        "nombre": "Mayo",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 4.2
+      },
+      {
+        "nombre": "Junio",
+        "participo": true,
+        "cursos": 19,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Julio",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 39
+      },
+      {
+        "nombre": "Agosto",
+        "participo": true,
+        "cursos": 4,
+        "auxiliar": true,
+        "horas": 2
+      }
+    ]
+  },
+  {
+    "grupo": "9",
+    "pagina": "pagina-19.jpg",
+    "nota": "",
+    "filasDetectadas": false,
+    "nombre": "RANGEL DE JESUS DE BAHENA",
+    "nombreNorm": "rangel de jesus de bahena",
+    "fechaNacimiento": "1970-12-24",
+    "fechaBautismo": "2000-04-09",
+    "cargo": [],
+    "meses": [
+      {
+        "nombre": "Septiembre",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Octubre",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Noviembre",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Diciembre",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Enero",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Febrero",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Marzo",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Abril",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Mayo",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Junio",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Julio",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Agosto",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      }
+    ]
+  },
+  {
+    "grupo": "9",
+    "pagina": "pagina-20.jpg",
+    "nota": "Página no detectada por el OCR automático. Verifica la imagen; datos precargados del OCR anterior.",
+    "filasDetectadas": false,
+    "nombre": "",
+    "nombreNorm": "",
+    "fechaNacimiento": "",
+    "fechaBautismo": "",
+    "cargo": [],
+    "meses": [
+      {
+        "nombre": "Septiembre",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Octubre",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Noviembre",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Diciembre",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Enero",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Febrero",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Marzo",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Abril",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Mayo",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Junio",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Julio",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Agosto",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      }
+    ]
+  }
+]

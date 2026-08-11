@@ -1,0 +1,381 @@
+[
+  {
+    "grupo": "3",
+    "pagina": "pagina-2.jpg",
+    "nombre": "MARIA EVELIA SANTANA DE ARCE",
+    "fechaNacimiento": "1976-04-24",
+    "fechaBautismo": "2000-04-15",
+    "cargo": [],
+    "meses": [
+      {
+        "nombre": "Septiembre",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Octubre",
+        "participo": true,
+        "cursos": 2,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Noviembre",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": false,
+        "horas": 45
+      },
+      {
+        "nombre": "Diciembre",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": false,
+        "horas": 53
+      },
+      {
+        "nombre": "Enero",
+        "participo": true,
+        "cursos": 3,
+        "auxiliar": false,
+        "horas": 50
+      },
+      {
+        "nombre": "Febrero",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 50
+      },
+      {
+        "nombre": "Marzo",
+        "participo": true,
+        "cursos": 2,
+        "auxiliar": false,
+        "horas": 50
+      },
+      {
+        "nombre": "Abril",
+        "participo": true,
+        "cursos": 2,
+        "auxiliar": false,
+        "horas": 50
+      },
+      {
+        "nombre": "Mayo",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": false,
+        "horas": 50
+      },
+      {
+        "nombre": "Junio",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": false,
+        "horas": 49
+      },
+      {
+        "nombre": "Julio",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Agosto",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      }
+    ]
+  },
+  {
+    "grupo": "3",
+    "pagina": "pagina-3.jpg",
+    "nombre": "ESTEFANY ALAMO",
+    "fechaNacimiento": "1982-09-03",
+    "fechaBautismo": "1996-04-05",
+    "cargo": [],
+    "meses": [
+      {
+        "nombre": "Septiembre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Octubre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Noviembre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Diciembre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Enero",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 16
+      },
+      {
+        "nombre": "Febrero",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Marzo",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 15
+      },
+      {
+        "nombre": "Abril",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 15
+      },
+      {
+        "nombre": "Mayo",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Junio",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Julio",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Agosto",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      }
+    ]
+  },
+  {
+    "grupo": "3",
+    "pagina": "pagina-5.jpg",
+    "nombre": "ERICK MENDOZA",
+    "fechaNacimiento": "1995-08-24",
+    "fechaBautismo": "2014-08-02",
+    "cargo": [
+      "Anciano",
+      "Siervo ministerial"
+    ],
+    "meses": [
+      {
+        "nombre": "Septiembre",
+        "participo": true,
+        "cursos": 3,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Octubre",
+        "participo": true,
+        "cursos": 3,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Noviembre",
+        "participo": true,
+        "cursos": 3,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Diciembre",
+        "participo": true,
+        "cursos": 3,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Enero",
+        "participo": true,
+        "cursos": 3,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Febrero",
+        "participo": true,
+        "cursos": 2,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Marzo",
+        "participo": true,
+        "cursos": 3,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Abril",
+        "participo": true,
+        "cursos": 3,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Mayo",
+        "participo": true,
+        "cursos": 3,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Junio",
+        "participo": true,
+        "cursos": 3,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Julio",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Agosto",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      }
+    ]
+  },
+  {
+    "grupo": "3",
+    "pagina": "pagina-5.jpg",
+    "nombre": "Graciela Espinoza",
+    "fechaNacimiento": "",
+    "fechaBautismo": "",
+    "cargo": [],
+    "meses": [
+      {
+        "nombre": "Septiembre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Octubre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Noviembre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Diciembre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Enero",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Febrero",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Marzo",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Abril",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Mayo",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Junio",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Julio",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Agosto",
+        "participo": false,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      }
+    ]
+  }
+]

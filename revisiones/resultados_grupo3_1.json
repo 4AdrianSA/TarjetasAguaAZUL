@@ -1,0 +1,1270 @@
+[
+  {
+    "grupo": "3",
+    "pagina": "pagina-1.jpg",
+    "nota": "",
+    "filasDetectadas": true,
+    "nombre": "KEYLA ARCE SANTANA",
+    "nombreNorm": "keyla arce santana",
+    "fechaNacimiento": "2005-10-18",
+    "fechaBautismo": "2018-08-04",
+    "cargo": [],
+    "meses": [
+      {
+        "nombre": "Septiembre",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": true,
+        "horas": 5
+      },
+      {
+        "nombre": "Octubre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Noviembre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 115
+      },
+      {
+        "nombre": "Diciembre",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Enero",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Febrero",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": false,
+        "horas": 54
+      },
+      {
+        "nombre": "Marzo",
+        "participo": true,
+        "cursos": 5,
+        "auxiliar": false,
+        "horas": 9
+      },
+      {
+        "nombre": "Abril",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 7
+      },
+      {
+        "nombre": "Mayo",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 72
+      },
+      {
+        "nombre": "Junio",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": false,
+        "horas": 57
+      },
+      {
+        "nombre": "Julio",
+        "participo": true,
+        "cursos": 5,
+        "auxiliar": false,
+        "horas": 51
+      },
+      {
+        "nombre": "Agosto",
+        "participo": true,
+        "cursos": 5,
+        "auxiliar": false,
+        "horas": 74
+      }
+    ]
+  },
+  {
+    "grupo": "3",
+    "pagina": "pagina-2.jpg",
+    "nota": "",
+    "filasDetectadas": true,
+    "nombre": "JIMENA ARCE SANTANA",
+    "nombreNorm": "jimena arce santana",
+    "fechaNacimiento": "2008-12-10",
+    "fechaBautismo": "2019-11-24",
+    "cargo": [],
+    "meses": [
+      {
+        "nombre": "Septiembre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 53
+      },
+      {
+        "nombre": "Octubre",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Noviembre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Diciembre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 11
+      },
+      {
+        "nombre": "Enero",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 15
+      },
+      {
+        "nombre": "Febrero",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 7
+      },
+      {
+        "nombre": "Marzo",
+        "participo": true,
+        "cursos": 15,
+        "auxiliar": true,
+        "horas": 33
+      },
+      {
+        "nombre": "Abril",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 12
+      },
+      {
+        "nombre": "Mayo",
+        "participo": true,
+        "cursos": 7,
+        "auxiliar": false,
+        "horas": 33
+      },
+      {
+        "nombre": "Junio",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": true,
+        "horas": 73.1
+      },
+      {
+        "nombre": "Julio",
+        "participo": true,
+        "cursos": 4,
+        "auxiliar": true,
+        "horas": 115
+      },
+      {
+        "nombre": "Agosto",
+        "participo": true,
+        "cursos": 7,
+        "auxiliar": true,
+        "horas": 72
+      }
+    ]
+  },
+  {
+    "grupo": "3",
+    "pagina": "pagina-3.jpg",
+    "nota": "",
+    "filasDetectadas": true,
+    "nombre": "ISMAEL ARCE ALAMAN",
+    "nombreNorm": "ismael arce alaman",
+    "fechaNacimiento": "1975-01-13",
+    "fechaBautismo": "1992-03-13",
+    "cargo": [],
+    "meses": [
+      {
+        "nombre": "Septiembre",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Octubre",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": true,
+        "horas": 3.1
+      },
+      {
+        "nombre": "Noviembre",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": true,
+        "horas": 11
+      },
+      {
+        "nombre": "Diciembre",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": true,
+        "horas": 4
+      },
+      {
+        "nombre": "Enero",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 7.4
+      },
+      {
+        "nombre": "Febrero",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": false,
+        "horas": 7
+      },
+      {
+        "nombre": "Marzo",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": false,
+        "horas": 37.9
+      },
+      {
+        "nombre": "Abril",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": true,
+        "horas": 71
+      },
+      {
+        "nombre": "Mayo",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 74
+      },
+      {
+        "nombre": "Junio",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 79
+      },
+      {
+        "nombre": "Julio",
+        "participo": true,
+        "cursos": 4,
+        "auxiliar": false,
+        "horas": 32
+      },
+      {
+        "nombre": "Agosto",
+        "participo": true,
+        "cursos": 8,
+        "auxiliar": false,
+        "horas": 117.51
+      }
+    ]
+  },
+  {
+    "grupo": "3",
+    "pagina": "pagina-4.jpg",
+    "nota": "",
+    "filasDetectadas": true,
+    "nombre": "ROSEINA SANTANA",
+    "nombreNorm": "roseina santana",
+    "fechaNacimiento": "",
+    "fechaBautismo": "",
+    "cargo": [],
+    "meses": [
+      {
+        "nombre": "Septiembre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 5
+      },
+      {
+        "nombre": "Octubre",
+        "participo": true,
+        "cursos": 5,
+        "auxiliar": false,
+        "horas": 35
+      },
+      {
+        "nombre": "Noviembre",
+        "participo": true,
+        "cursos": 3,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Diciembre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 64
+      },
+      {
+        "nombre": "Enero",
+        "participo": true,
+        "cursos": 5,
+        "auxiliar": true,
+        "horas": 53
+      },
+      {
+        "nombre": "Febrero",
+        "participo": true,
+        "cursos": 5,
+        "auxiliar": false,
+        "horas": 13
+      },
+      {
+        "nombre": "Marzo",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 51
+      },
+      {
+        "nombre": "Abril",
+        "participo": true,
+        "cursos": 5,
+        "auxiliar": true,
+        "horas": 32
+      },
+      {
+        "nombre": "Mayo",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 33
+      },
+      {
+        "nombre": "Junio",
+        "participo": true,
+        "cursos": 5,
+        "auxiliar": false,
+        "horas": 9
+      },
+      {
+        "nombre": "Julio",
+        "participo": true,
+        "cursos": 7,
+        "auxiliar": true,
+        "horas": 91.3
+      },
+      {
+        "nombre": "Agosto",
+        "participo": true,
+        "cursos": 5,
+        "auxiliar": true,
+        "horas": 57
+      }
+    ]
+  },
+  {
+    "grupo": "3",
+    "pagina": "pagina-5.jpg",
+    "nota": "",
+    "filasDetectadas": true,
+    "nombre": "MANUEL SANTANA RUIZ",
+    "nombreNorm": "manuel santana ruiz",
+    "fechaNacimiento": "1946-03-25",
+    "fechaBautismo": "2010-05-15",
+    "cargo": [],
+    "meses": [
+      {
+        "nombre": "Septiembre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Octubre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Noviembre",
+        "participo": true,
+        "cursos": 2,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Diciembre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 71
+      },
+      {
+        "nombre": "Enero",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 41
+      },
+      {
+        "nombre": "Febrero",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 44
+      },
+      {
+        "nombre": "Marzo",
+        "participo": true,
+        "cursos": 7,
+        "auxiliar": false,
+        "horas": 7
+      },
+      {
+        "nombre": "Abril",
+        "participo": true,
+        "cursos": 3,
+        "auxiliar": false,
+        "horas": 21
+      },
+      {
+        "nombre": "Mayo",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": false,
+        "horas": 111
+      },
+      {
+        "nombre": "Junio",
+        "participo": true,
+        "cursos": 7,
+        "auxiliar": true,
+        "horas": 78
+      },
+      {
+        "nombre": "Julio",
+        "participo": true,
+        "cursos": 4,
+        "auxiliar": false,
+        "horas": 11.32
+      },
+      {
+        "nombre": "Agosto",
+        "participo": true,
+        "cursos": 9,
+        "auxiliar": false,
+        "horas": 76
+      }
+    ]
+  },
+  {
+    "grupo": "3",
+    "pagina": "pagina-6.jpg",
+    "nota": "",
+    "filasDetectadas": true,
+    "nombre": "LEOBARDO VAZQUEZ",
+    "nombreNorm": "leobardo vazquez",
+    "fechaNacimiento": "1988-05-31",
+    "fechaBautismo": "2004-10-23",
+    "cargo": [
+      "Siervo ministerial"
+    ],
+    "meses": [
+      {
+        "nombre": "Septiembre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Octubre",
+        "participo": true,
+        "cursos": 3,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Noviembre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Diciembre",
+        "participo": true,
+        "cursos": 3,
+        "auxiliar": true,
+        "horas": 9
+      },
+      {
+        "nombre": "Enero",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 31
+      },
+      {
+        "nombre": "Febrero",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Marzo",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": true,
+        "horas": 51
+      },
+      {
+        "nombre": "Abril",
+        "participo": true,
+        "cursos": 15,
+        "auxiliar": false,
+        "horas": 54
+      },
+      {
+        "nombre": "Mayo",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 91
+      },
+      {
+        "nombre": "Junio",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 7.35593
+      },
+      {
+        "nombre": "Julio",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": false,
+        "horas": 5
+      },
+      {
+        "nombre": "Agosto",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 51
+      }
+    ]
+  },
+  {
+    "grupo": "3",
+    "pagina": "pagina-7.jpg",
+    "nota": "",
+    "filasDetectadas": true,
+    "nombre": "JUANA FUENTES TAPIA",
+    "nombreNorm": "juana fuentes tapia",
+    "fechaNacimiento": "1947-05-25",
+    "fechaBautismo": "1997-02-16",
+    "cargo": [],
+    "meses": [
+      {
+        "nombre": "Septiembre",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": true,
+        "horas": 12
+      },
+      {
+        "nombre": "Octubre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 4
+      },
+      {
+        "nombre": "Noviembre",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Diciembre",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": false,
+        "horas": 5
+      },
+      {
+        "nombre": "Enero",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 5
+      },
+      {
+        "nombre": "Febrero",
+        "participo": true,
+        "cursos": 4,
+        "auxiliar": false,
+        "horas": 7
+      },
+      {
+        "nombre": "Marzo",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 111
+      },
+      {
+        "nombre": "Abril",
+        "participo": true,
+        "cursos": 7,
+        "auxiliar": true,
+        "horas": 22
+      },
+      {
+        "nombre": "Mayo",
+        "participo": true,
+        "cursos": 7,
+        "auxiliar": false,
+        "horas": 3
+      },
+      {
+        "nombre": "Junio",
+        "participo": true,
+        "cursos": 10,
+        "auxiliar": false,
+        "horas": 21
+      },
+      {
+        "nombre": "Julio",
+        "participo": true,
+        "cursos": 7,
+        "auxiliar": false,
+        "horas": 51
+      },
+      {
+        "nombre": "Agosto",
+        "participo": true,
+        "cursos": 7,
+        "auxiliar": false,
+        "horas": 72
+      }
+    ]
+  },
+  {
+    "grupo": "3",
+    "pagina": "pagina-8.jpg",
+    "nota": "",
+    "filasDetectadas": true,
+    "nombre": "JUANA ARIAS",
+    "nombreNorm": "juana arias",
+    "fechaNacimiento": "1971-06-24",
+    "fechaBautismo": "1996-12-21",
+    "cargo": [],
+    "meses": [
+      {
+        "nombre": "Septiembre",
+        "participo": true,
+        "cursos": 15,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Octubre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Noviembre",
+        "participo": true,
+        "cursos": 5,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Diciembre",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Enero",
+        "participo": true,
+        "cursos": 3,
+        "auxiliar": true,
+        "horas": 15
+      },
+      {
+        "nombre": "Febrero",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": false,
+        "horas": 45
+      },
+      {
+        "nombre": "Marzo",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 12
+      },
+      {
+        "nombre": "Abril",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 6.75
+      },
+      {
+        "nombre": "Mayo",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 114
+      },
+      {
+        "nombre": "Junio",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": false,
+        "horas": 51
+      },
+      {
+        "nombre": "Julio",
+        "participo": true,
+        "cursos": 7,
+        "auxiliar": false,
+        "horas": 33
+      },
+      {
+        "nombre": "Agosto",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 2
+      }
+    ]
+  },
+  {
+    "grupo": "3",
+    "pagina": "pagina-9.jpg",
+    "nota": "",
+    "filasDetectadas": true,
+    "nombre": "GUADALUPE DE VERGARA",
+    "nombreNorm": "guadalupe de vergara",
+    "fechaNacimiento": "",
+    "fechaBautismo": "",
+    "cargo": [],
+    "meses": [
+      {
+        "nombre": "Septiembre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Octubre",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Noviembre",
+        "participo": true,
+        "cursos": 11,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Diciembre",
+        "participo": true,
+        "cursos": 5,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Enero",
+        "participo": true,
+        "cursos": 9,
+        "auxiliar": false,
+        "horas": 55
+      },
+      {
+        "nombre": "Febrero",
+        "participo": true,
+        "cursos": 11,
+        "auxiliar": false,
+        "horas": 35
+      },
+      {
+        "nombre": "Marzo",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": true,
+        "horas": 51
+      },
+      {
+        "nombre": "Abril",
+        "participo": true,
+        "cursos": 2,
+        "auxiliar": true,
+        "horas": 7
+      },
+      {
+        "nombre": "Mayo",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": false,
+        "horas": 7
+      },
+      {
+        "nombre": "Junio",
+        "participo": true,
+        "cursos": 2,
+        "auxiliar": false,
+        "horas": 53
+      },
+      {
+        "nombre": "Julio",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 31
+      },
+      {
+        "nombre": "Agosto",
+        "participo": true,
+        "cursos": 7,
+        "auxiliar": false,
+        "horas": 5
+      }
+    ]
+  },
+  {
+    "grupo": "3",
+    "pagina": "pagina-10.jpg",
+    "nota": "",
+    "filasDetectadas": true,
+    "nombre": "BRENDA ALAMO DE VAZQUEZ",
+    "nombreNorm": "brenda alamo de vazquez",
+    "fechaNacimiento": "1988-05-06",
+    "fechaBautismo": "2003-07-12",
+    "cargo": [],
+    "meses": [
+      {
+        "nombre": "Septiembre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Octubre",
+        "participo": true,
+        "cursos": 4,
+        "auxiliar": true,
+        "horas": 1
+      },
+      {
+        "nombre": "Noviembre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Diciembre",
+        "participo": true,
+        "cursos": 5,
+        "auxiliar": true,
+        "horas": 111
+      },
+      {
+        "nombre": "Enero",
+        "participo": true,
+        "cursos": 5,
+        "auxiliar": false,
+        "horas": 3
+      },
+      {
+        "nombre": "Febrero",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 7
+      },
+      {
+        "nombre": "Marzo",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 53
+      },
+      {
+        "nombre": "Abril",
+        "participo": true,
+        "cursos": 6,
+        "auxiliar": false,
+        "horas": 42
+      },
+      {
+        "nombre": "Mayo",
+        "participo": true,
+        "cursos": 5,
+        "auxiliar": false,
+        "horas": 5
+      },
+      {
+        "nombre": "Junio",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 44.7
+      },
+      {
+        "nombre": "Julio",
+        "participo": true,
+        "cursos": 17,
+        "auxiliar": false,
+        "horas": 13
+      },
+      {
+        "nombre": "Agosto",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 91
+      }
+    ]
+  },
+  {
+    "grupo": "3",
+    "pagina": "pagina-11.jpg",
+    "nota": "",
+    "filasDetectadas": true,
+    "nombre": "MARIA ELENA SANTANA",
+    "nombreNorm": "maria elena santana",
+    "fechaNacimiento": "1971-07-13",
+    "fechaBautismo": "2011-11-13",
+    "cargo": [],
+    "meses": [
+      {
+        "nombre": "Septiembre",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Octubre",
+        "participo": true,
+        "cursos": 5,
+        "auxiliar": true,
+        "horas": 17
+      },
+      {
+        "nombre": "Noviembre",
+        "participo": true,
+        "cursos": 15,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Diciembre",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": false,
+        "horas": 1
+      },
+      {
+        "nombre": "Enero",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": false,
+        "horas": 4
+      },
+      {
+        "nombre": "Febrero",
+        "participo": true,
+        "cursos": 7,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Marzo",
+        "participo": true,
+        "cursos": 2,
+        "auxiliar": false,
+        "horas": 4
+      },
+      {
+        "nombre": "Abril",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Mayo",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 5
+      },
+      {
+        "nombre": "Junio",
+        "participo": true,
+        "cursos": 15,
+        "auxiliar": false,
+        "horas": 85
+      },
+      {
+        "nombre": "Julio",
+        "participo": true,
+        "cursos": 11,
+        "auxiliar": false,
+        "horas": 24
+      },
+      {
+        "nombre": "Agosto",
+        "participo": true,
+        "cursos": 7,
+        "auxiliar": false,
+        "horas": 95
+      }
+    ]
+  },
+  {
+    "grupo": "3",
+    "pagina": "pagina-12.jpg",
+    "nota": "",
+    "filasDetectadas": true,
+    "nombre": "MARIA EVELIA SANTANA DE ARCE",
+    "nombreNorm": "maria evelia santana de arce",
+    "fechaNacimiento": "1976-04-24",
+    "fechaBautismo": "2000-04-15",
+    "cargo": [
+      "Misionero que sirve en el campo"
+    ],
+    "meses": [
+      {
+        "nombre": "Septiembre",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": false,
+        "horas": 0
+      },
+      {
+        "nombre": "Octubre",
+        "participo": true,
+        "cursos": 2,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Noviembre",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": true,
+        "horas": 44
+      },
+      {
+        "nombre": "Diciembre",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Enero",
+        "participo": true,
+        "cursos": 5,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Febrero",
+        "participo": true,
+        "cursos": 17,
+        "auxiliar": true,
+        "horas": 103
+      },
+      {
+        "nombre": "Marzo",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 9
+      },
+      {
+        "nombre": "Abril",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Mayo",
+        "participo": true,
+        "cursos": 11,
+        "auxiliar": true,
+        "horas": 56
+      },
+      {
+        "nombre": "Junio",
+        "participo": true,
+        "cursos": 11,
+        "auxiliar": true,
+        "horas": 1
+      },
+      {
+        "nombre": "Julio",
+        "participo": true,
+        "cursos": 7,
+        "auxiliar": true,
+        "horas": 2.6
+      },
+      {
+        "nombre": "Agosto",
+        "participo": true,
+        "cursos": 6,
+        "auxiliar": true,
+        "horas": 1
+      }
+    ]
+  },
+  {
+    "grupo": "3",
+    "pagina": "pagina-13.jpg",
+    "nota": "",
+    "filasDetectadas": true,
+    "nombre": "ESTEFANY ALAMO",
+    "nombreNorm": "estefany alamo",
+    "fechaNacimiento": "1982-09-03",
+    "fechaBautismo": "1996-04-05",
+    "cargo": [
+      "Anciano",
+      "Siervo ministerial"
+    ],
+    "meses": [
+      {
+        "nombre": "Septiembre",
+        "participo": true,
+        "cursos": 5,
+        "auxiliar": true,
+        "horas": 44
+      },
+      {
+        "nombre": "Octubre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Noviembre",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Diciembre",
+        "participo": true,
+        "cursos": 5,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Enero",
+        "participo": true,
+        "cursos": 14,
+        "auxiliar": true,
+        "horas": 1
+      },
+      {
+        "nombre": "Febrero",
+        "participo": true,
+        "cursos": 1,
+        "auxiliar": true,
+        "horas": 7
+      },
+      {
+        "nombre": "Marzo",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 0
+      },
+      {
+        "nombre": "Abril",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 11
+      },
+      {
+        "nombre": "Mayo",
+        "participo": true,
+        "cursos": 0,
+        "auxiliar": true,
+        "horas": 17
+      },
+      {
+        "nombre": "Junio",
+        "participo": true,
+        "cursos": 11,
+        "auxiliar": false,
+        "horas": 2
+      },
+      {
+        "nombre": "Julio",
+        "participo": true,
+        "cursos": 13,
+        "auxiliar": true,
+        "horas": 11
+      },
+      {
+        "nombre": "Agosto",
+        "participo": true,
+        "cursos": 7,
+        "auxiliar": true,
+        "horas": 53
+      }
+    ]
+  }
+]
