@@ -22,6 +22,7 @@ function mostrarToast(mensaje, tipo) {
 var db = null;
 var usaFirebase = false;
 var cacheLista = [];
+var cacheSolicitudes = [];
 
 try {
     if (typeof firebase !== 'undefined' && typeof firebaseConfig !== 'undefined' && firebaseConfig.apiKey !== 'TU_API_KEY_AQUI') {
@@ -38,9 +39,20 @@ function cargarLista() {
 function guardarLista(lista) {
     cacheLista = lista.filter(function(f) { return f && f.nombre; });
     localStorage.setItem('publicadores', JSON.stringify(cacheLista));
+    guardarSolicitudes(cacheSolicitudes);
+}
+
+function cargarSolicitudes() {
+    return cacheSolicitudes;
+}
+
+function guardarSolicitudes(solicitudes) {
+    cacheSolicitudes = solicitudes.filter(function(s) { return s && s.id; });
+    localStorage.setItem('solicitudes', JSON.stringify(cacheSolicitudes));
     if (usaFirebase && db) {
         db.collection('publicadores').doc('datos').set({
             lista: cacheLista,
+            solicitudes: cacheSolicitudes,
             fechaGuardado: new Date().toISOString()
         }).catch(function(err) { console.error('Error Firestore:', err); });
     }
@@ -52,18 +64,22 @@ function cargarDatosIniciales(callback) {
         db.collection('publicadores').doc('datos').get().then(function(doc) {
             if (doc.exists && doc.data().lista) {
                 cacheLista = doc.data().lista;
+                cacheSolicitudes = doc.data().solicitudes || (JSON.parse(localStorage.getItem('solicitudes')) || []);
             } else {
                 cacheLista = (JSON.parse(localStorage.getItem('publicadores')) || []).filter(function(f) { return f && f.nombre; });
+                cacheSolicitudes = (JSON.parse(localStorage.getItem('solicitudes')) || []).filter(function(s) { return s && s.id; });
                 if (cacheLista.length > 0) guardarLista(cacheLista);
             }
             callback();
         }).catch(function(err) {
             console.error('Error Firestore:', err);
             cacheLista = (JSON.parse(localStorage.getItem('publicadores')) || []).filter(function(f) { return f && f.nombre; });
+            cacheSolicitudes = (JSON.parse(localStorage.getItem('solicitudes')) || []).filter(function(s) { return s && s.id; });
             callback();
         });
     } else {
         cacheLista = (JSON.parse(localStorage.getItem('publicadores')) || []).filter(function(f) { return f && f.nombre; });
+        cacheSolicitudes = (JSON.parse(localStorage.getItem('solicitudes')) || []).filter(function(s) { return s && s.id; });
         callback();
     }
 }

@@ -481,3 +481,32 @@ h1 {
         max-width: 95% !important;
     }
 }
+
+.badge-estado {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: bold;
+    margin-left: 6px;
+}
+
+.badge-estado-inactivo {
+    background-color: #e0af68;
+    color: #1a1b26;
+}
+
+.badge-estado-baja {
+    background-color: #f7768e;
+    color: #1a1b26;
+}
+
+.badge-pendiente {
+    background-color: #7aa2f7;
+    color: #1a1b26;
+}
+
+.btn-pdf:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

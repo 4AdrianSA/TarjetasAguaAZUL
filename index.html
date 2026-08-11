@@ -19,7 +19,7 @@
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="utils.js"></script>
-    <script src="app.js?v=22" defer></script>
+    <script src="app.js?v=23" defer></script>
 </head>
 <body>
 
@@ -38,6 +38,7 @@
         <button id="btn-pdf-ancianos" style="background-color:#ff9e64;">📋 Ancianos</button>
         <button id="btn-pdf-siervos" style="background-color:#9ece6a;">📋 Siervos</button>
         <button id="btn-duplicados" style="background-color:#e0af68;">🔍 Duplicados</button>
+        <button id="btn-aprobaciones" style="background-color:#7aa2f7;">🔔 Aprobaciones <span id="contador-aprobaciones" style="background:#f7768e;color:#1a1b26;border-radius:10px;padding:1px 7px;font-size:12px;font-weight:bold;margin-left:3px;">0</span></button>
         <button id="btn-faltantes" style="background-color:#73daca;">📋 Fechas Faltantes</button>
         <button id="btn-escaneos" style="background-color:#ff9e64;">📥 Escaneos</button>
         <button id="btn-cerrar-sesion" style="background-color:#f7768e;margin-left:8px;">🚪 Cerrar Sesión</button>
@@ -270,6 +271,16 @@
     </div>
 
     <div id="fichas-guardadas"></div>
+
+    <div id="modal-aprobaciones" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.75);z-index:1500;justify-content:center;align-items:center;">
+        <div style="background:#24283b;border:2px solid #414868;border-radius:8px;padding:20px;max-width:720px;width:92%;max-height:85vh;overflow-y:auto;color:#c0caf5;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
+                <h2 style="margin:0;color:#7aa2f7;font-size:18px;">🔔 Cambios por aprobar</h2>
+                <button id="btn-cerrar-aprobaciones" style="background:#f7768e;color:#1a1b26;padding:5px 12px;border:none;border-radius:4px;font-weight:bold;cursor:pointer;">Cerrar</button>
+            </div>
+            <div id="contenido-aprobaciones"></div>
+        </div>
+    </div>
 
     <div id="modal-duplicados" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:1000;justify-content:center;align-items:center;">
         <div style="background:#24283b;border:2px solid #414868;border-radius:8px;padding:20px;max-width:600px;width:90%;max-height:80vh;overflow-y:auto;color:#c0caf5;">

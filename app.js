@@ -782,6 +782,8 @@ document.getElementById('faltantes-panel').addEventListener('click', function(e)
 
 cargarDatosIniciales(function() {
 
+actualizarContadorAprobaciones();
+
 document.getElementById('btn-guardar').addEventListener('click', function() {
     var ficha = recolectarDatos();
     if (!ficha) return;
@@ -1105,12 +1107,28 @@ canal.onmessage = function(e) {
 };
 
 window.addEventListener('storage', function(e) {
-    if (e.key === 'publicadores') {
+    if (e.key === 'publicadores' || e.key === 'solicitudes') {
         var local = JSON.parse(localStorage.getItem('publicadores')) || [];
         cacheLista = local.filter(function(f) { return f && f.nombre; });
+        cacheSolicitudes = (JSON.parse(localStorage.getItem('solicitudes')) || []).filter(function(s) { return s && s.id; });
+        actualizarContadorAprobaciones();
+        var modal = document.getElementById('modal-aprobaciones');
+        if (modal && modal.style.display === 'flex') renderizarAprobaciones();
         mostrarFichas(cargarLista());
     }
 });
+
+canal.onmessage = function(e) {
+    if (e.data === 'actualizar') {
+        var localCanal = JSON.parse(localStorage.getItem('publicadores')) || [];
+        cacheLista = localCanal.filter(function(f) { return f && f.nombre; });
+        cacheSolicitudes = (JSON.parse(localStorage.getItem('solicitudes')) || []).filter(function(s) { return s && s.id; });
+        actualizarContadorAprobaciones();
+        var modalCanal = document.getElementById('modal-aprobaciones');
+        if (modalCanal && modalCanal.style.display === 'flex') renderizarAprobaciones();
+        mostrarFichas(cargarLista());
+    }
+};
 
 document.getElementById('btn-nuevo-anio').addEventListener('click', function() {
     var lista = cargarLista();
@@ -1679,6 +1697,184 @@ function eliminarDuplicado(id) {
     mostrarFichas(nueva);
     document.getElementById('btn-duplicados').click();
 }
+
+// ============ APROBACIONES (cambios de nombre / altas de publicador) ============
+
+function solicitudesPendientes() {
+    return cargarSolicitudes().filter(function(s) { return s.estado === 'pendiente'; });
+}
+
+function actualizarContadorAprobaciones() {
+    var contador = document.getElementById('contador-aprobaciones');
+    if (!contador) return;
+    var n = solicitudesPendientes().length;
+    contador.textContent = n;
+    contador.style.display = n > 0 ? 'inline-block' : 'none';
+}
+
+function formatFechaAprobacion(fecha) {
+    if (!fecha) return '';
+    var d = new Date(fecha);
+    if (isNaN(d.getTime())) return '';
+    return d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }) + ' ' +
+        d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+}
+
+function detectarDuplicadosSolicitudes() {
+    var lista = cargarLista();
+    var pendientes = solicitudesPendientes();
+    var filas = [];
+    pendientes.forEach(function(s) {
+        var propuesto = normalizarNombre(s.nombre);
+        if (!propuesto) return;
+        var coincidencias = [];
+        lista.forEach(function(f) {
+            if (normalizarNombre(f.nombre) === propuesto) {
+                coincidencias.push(f.nombre + (f.grupoNumero ? ' (Grupo ' + f.grupoNumero + ')' : ''));
+            }
+        });
+        pendientes.forEach(function(o) {
+            if (Number(o.id) !== Number(s.id) && normalizarNombre(o.nombre) === propuesto) {
+                coincidencias.push(o.nombre + ' (solicitud pendiente)');
+            }
+        });
+        var unicas = [];
+        coincidencias.forEach(function(c) { if (unicas.indexOf(c) === -1) unicas.push(c); });
+        if (unicas.length > 0) {
+            filas.push({ nombre: s.nombre, tipo: s.tipo === 'nuevo' ? 'Alta' : 'Renombre', coincidencias: unicas });
+        }
+    });
+    return filas;
+}
+
+function renderizarAprobaciones() {
+    var cont = document.getElementById('contenido-aprobaciones');
+    if (!cont) return;
+    var pendientes = solicitudesPendientes();
+    actualizarContadorAprobaciones();
+
+    if (pendientes.length === 0) {
+        cont.innerHTML = '<p style="color:#9ece6a;font-weight:bold;font-size:14px;">No hay cambios por aprobar.</p>';
+        return;
+    }
+
+    var html = '<p style="margin:0 0 10px 0;color:#e0af68;font-size:14px;">Hay <strong>' + pendientes.length + '</strong> solicitud(es) pendiente(s):</p>';
+    pendientes.forEach(function(s) {
+        var tipoTexto = s.tipo === 'nuevo' ? '➕ Alta de publicador' : '✏️ Cambio de nombre';
+        var detalle = s.tipo === 'nuevo'
+            ? 'Nombre: <strong>' + escapeHtml(s.nombre) + '</strong> — Grupo: <strong>' + escapeHtml(s.grupoNumero || '-') + '</strong>'
+            : 'De: <strong>' + escapeHtml(s.nombreAnterior || '-') + '</strong> → A: <strong>' + escapeHtml(s.nombre) + '</strong>';
+        html += '<div style="border:1px solid #414868;border-radius:6px;padding:10px;margin-bottom:8px;">';
+        html += '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">';
+        html += '<div style="font-size:13px;">' + tipoTexto + '<br>' + detalle +
+            '<br><span style="color:#565f89;font-size:11px;">Enviado por: ' + escapeHtml(s.autor || '-') + ' · ' + formatFechaAprobacion(s.fecha) + '</span></div>';
+        html += '<div style="white-space:nowrap;">' +
+            '<button onclick="aprobarSolicitud(' + s.id + ')" style="background:#9ece6a;color:#1a1b26;border:none;padding:6px 14px;border-radius:4px;font-weight:bold;cursor:pointer;margin-right:6px;">\u2713 Aprobar</button>' +
+            '<button onclick="rechazarSolicitud(' + s.id + ')" style="background:#f7768e;color:#1a1b26;border:none;padding:6px 14px;border-radius:4px;font-weight:bold;cursor:pointer;">\u2717 Rechazar</button>' +
+            '</div>';
+        html += '</div></div>';
+    });
+
+    var dups = detectarDuplicadosSolicitudes();
+    if (dups.length > 0) {
+        html += '<div style="border:2px solid #e0af68;border-radius:6px;padding:10px;margin-top:12px;">';
+        html += '<h3 style="margin:0 0 8px 0;color:#e0af68;font-size:15px;">\u26A0 Posibles duplicados</h3>';
+        html += '<table style="width:100%;border-collapse:collapse;font-size:12px;">' +
+            '<thead><tr><th style="border-bottom:1px solid #414868;padding:4px 6px;text-align:left;color:#7aa2f7;">Solicitud</th>' +
+            '<th style="border-bottom:1px solid #414868;padding:4px 6px;text-align:left;color:#7aa2f7;">Coincide con</th></tr></thead><tbody>';
+        dups.forEach(function(d) {
+            html += '<tr><td style="padding:4px 6px;border-bottom:1px solid #33374a;">' + escapeHtml(d.nombre) + ' (' + d.tipo + ')</td>' +
+                '<td style="padding:4px 6px;border-bottom:1px solid #33374a;">' + escapeHtml(d.coincidencias.join(' \u00B7 ')) + '</td></tr>';
+        });
+        html += '</tbody></table>';
+        html += '<p style="margin:8px 0 0 0;color:#565f89;font-size:11px;">Revisa antes de aprobar: puede tratarse de la misma persona ya registrada.</p>';
+        html += '</div>';
+    }
+
+    cont.innerHTML = html;
+}
+
+function aprobarSolicitud(id) {
+    id = Number(id);
+    var solicitudes = cargarSolicitudes();
+    var solicitud = null;
+    for (var i = 0; i < solicitudes.length; i++) {
+        if (Number(solicitudes[i].id) === id) { solicitud = solicitudes[i]; break; }
+    }
+    if (!solicitud) return;
+
+    var lista = cargarLista();
+    var duplicado = false;
+
+    if (solicitud.tipo === 'nuevo') {
+        var norm = normalizarNombre(solicitud.nombre);
+        lista.forEach(function(f) {
+            if (normalizarNombre(f.nombre) === norm) duplicado = true;
+        });
+        if (duplicado && !confirm('Posible duplicado: ' + solicitud.nombre + ' ya est\u00E1 registrado. \u00BFAgregar de todos modos?')) return;
+        var detalle = solicitud.detalle || {};
+        lista.push({
+            id: detalle.id || Date.now(),
+            nombre: solicitud.nombre,
+            grupoNumero: solicitud.grupoNumero || detalle.grupoNumero || '',
+            anioServicio: detalle.anioServicio || anioServicioActual(),
+            estado: detalle.estado || 'Activo',
+            cargo: detalle.cargo || [],
+            genero: detalle.genero || '',
+            grupo: detalle.grupo || 'Otras ovejas',
+            rolGrupo: detalle.rolGrupo || '',
+            fechaNacimiento: detalle.fechaNacimiento || '',
+            fechaBautismo: detalle.fechaBautismo || '',
+            observaciones: detalle.observaciones || '',
+            meses: detalle.meses || []
+        });
+    } else if (solicitud.tipo === 'renombrar') {
+        var target = null;
+        for (var k = 0; k < lista.length; k++) {
+            if (Number(lista[k].id) === Number(solicitud.publicadorId)) { target = lista[k]; break; }
+        }
+        if (!target) {
+            mostrarToast('No se encontr\u00F3 el publicador original', 'error');
+            return;
+        }
+        var normR = normalizarNombre(solicitud.nombre);
+        lista.forEach(function(f) {
+            if (f.id !== target.id && normalizarNombre(f.nombre) === normR) duplicado = true;
+        });
+        if (duplicado && !confirm('Posible duplicado: ' + solicitud.nombre + ' ya est\u00E1 registrado. \u00BFRenombrar de todos modos?')) return;
+        target.nombre = solicitud.nombre;
+    }
+
+    solicitud.estado = 'aprobado';
+    guardarLista(lista);
+    guardarSolicitudes(solicitudes);
+    mostrarFichas(cargarLista());
+    renderizarAprobaciones();
+    mostrarToast('Solicitud aprobada: ' + solicitud.nombre, 'ok');
+}
+
+function rechazarSolicitud(id) {
+    id = Number(id);
+    var solicitudes = cargarSolicitudes();
+    for (var i = 0; i < solicitudes.length; i++) {
+        if (Number(solicitudes[i].id) === id) {
+            solicitudes[i].estado = 'rechazado';
+            break;
+        }
+    }
+    guardarSolicitudes(solicitudes);
+    renderizarAprobaciones();
+    mostrarToast('Solicitud rechazada', 'ok');
+}
+
+document.getElementById('btn-aprobaciones').addEventListener('click', function() {
+    renderizarAprobaciones();
+    document.getElementById('modal-aprobaciones').style.display = 'flex';
+});
+
+document.getElementById('btn-cerrar-aprobaciones').addEventListener('click', function() {
+    document.getElementById('modal-aprobaciones').style.display = 'none';
+});
 
 // ============ IMPORTADOR DE HOJAS ESCANEADAS (OCR) ============
 
