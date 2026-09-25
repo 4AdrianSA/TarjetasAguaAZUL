@@ -1030,72 +1030,88 @@ document.getElementById('btn-pdf-grupo').addEventListener('click', function() {
     var estadoFiltro = document.getElementById('select-estado').value;
     var grupoNombre = valor === 'todos' ? 'Todos los grupos' : 'Grupo ' + valor;
 
-    var listaFiltrada = lista.filter(function(f) {
+    var candidatos = lista.filter(function(f) {
         var estado = f.estado || 'Activo';
         if (estadoFiltro !== 'todos' && estado !== estadoFiltro) return false;
         return true;
     });
 
-    var datos;
-    if (valor === 'todos') {
-        var gruposMap = {};
-        var gruposOrden = [];
-        for (var g = 0; g < listaFiltrada.length; g++) {
-            var num = listaFiltrada[g].grupoNumero || 'Sin grupo';
-            if (!gruposMap[num]) { gruposMap[num] = []; gruposOrden.push(num); }
-            gruposMap[num].push(listaFiltrada[g]);
-        }
-        gruposOrden.sort(function(a, b) { return parseInt(a) - parseInt(b); });
-        datos = [];
-        for (var gi = 0; gi < gruposOrden.length; gi++) {
-            datos.push({ subtitulo: 'Grupo ' + gruposOrden[gi], fichas: gruposMap[gruposOrden[gi]] });
-        }
-    } else {
-        datos = [{ subtitulo: null, fichas: listaFiltrada.filter(function(f) { return String(f.grupoNumero) === String(valor); }) }];
-    }
-
-    var totalPub = 0;
-    datos.forEach(function(d) { totalPub += d.fichas.length; });
-    if (totalPub === 0) {
+    if (candidatos.length === 0) {
         alert('No hay publicadores activos en este grupo.');
         return;
     }
 
-    var paginas = [];
-    paginas.push('<div style="margin:0;padding:5px 15px 0 15px;">' +
-        '<h1 style="text-align:center;color:#000;margin:0;padding:0;font-size:16px;line-height:1.3;">' + grupoNombre + '</h1>' +
-        '<p style="text-align:center;color:#333;margin:0;padding:0 0 2px 0;font-size:11px;line-height:1.3;">Total: ' + totalPub + ' publicadores</p>' +
-        '</div>');
-
-    for (var d = 0; d < datos.length; d++) {
-        var bloque = datos[d];
-        var nombreBloque = bloque.subtitulo || grupoNombre;
-        var fichasOrdenadas = ordenarFichas(bloque.fichas);
-        for (var f = 0; f < fichasOrdenadas.length; f++) {
-            paginas.push('<div style="margin:0;padding:0 15px;">' + renderizarFichaPDF(fichasOrdenadas[f], { grupo: true, nombreGrupo: nombreBloque }) + '</div>');
+    abrirSelectorAnio(candidatos, function(aniosSel) {
+        if (aniosSel === null) return;
+        var listaFiltrada = candidatos.filter(function(f) { return fichaEnAnios(f, aniosSel); });
+        if (listaFiltrada.length === 0) {
+            mostrarToast('No hay fichas para el año seleccionado', 'error');
+            return;
         }
-    }
+        var etiqueta = etiquetaAnios(aniosSel);
 
-    var allFichas = [];
-    datos.forEach(function(dd) { allFichas = allFichas.concat(ordenarFichas(dd.fichas)); });
-    var resumen = calcularResumenGrupo(allFichas);
+        var datos;
+        if (valor === 'todos') {
+            var gruposMap = {};
+            var gruposOrden = [];
+            for (var g = 0; g < listaFiltrada.length; g++) {
+                var num = listaFiltrada[g].grupoNumero || 'Sin grupo';
+                if (!gruposMap[num]) { gruposMap[num] = []; gruposOrden.push(num); }
+                gruposMap[num].push(listaFiltrada[g]);
+            }
+            gruposOrden.sort(function(a, b) { return parseInt(a) - parseInt(b); });
+            datos = [];
+            for (var gi = 0; gi < gruposOrden.length; gi++) {
+                datos.push({ subtitulo: 'Grupo ' + gruposOrden[gi], fichas: gruposMap[gruposOrden[gi]] });
+            }
+        } else {
+            datos = [{ subtitulo: null, fichas: listaFiltrada.filter(function(f) { return String(f.grupoNumero) === String(valor); }) }];
+        }
 
-    var aniosCount = {};
-    allFichas.forEach(function(ff) {
-        var a = ff.anioServicio || String(new Date().getFullYear());
-        aniosCount[a] = (aniosCount[a] || 0) + 1;
+        var totalPub = 0;
+        datos.forEach(function(d) { totalPub += d.fichas.length; });
+
+        var paginas = [];
+        paginas.push('<div style="margin:0;padding:5px 15px 0 15px;">' +
+            '<h1 style="text-align:center;color:#000;margin:0;padding:0;font-size:16px;line-height:1.3;">' + grupoNombre + '</h1>' +
+            '<p style="text-align:center;color:#333;margin:0;padding:0 0 2px 0;font-size:11px;line-height:1.3;">Año de servicio: ' + etiqueta + ' &nbsp;|&nbsp; Total: ' + totalPub + ' publicadores</p>' +
+            '</div>');
+
+        for (var d = 0; d < datos.length; d++) {
+            var bloque = datos[d];
+            var nombreBloque = bloque.subtitulo || grupoNombre;
+            var fichasOrdenadas = ordenarFichas(bloque.fichas);
+            for (var f = 0; f < fichasOrdenadas.length; f++) {
+                paginas.push('<div style="margin:0;padding:0 15px;">' + renderizarFichaPDF(fichasOrdenadas[f], { grupo: true, nombreGrupo: nombreBloque }) + '</div>');
+            }
+        }
+
+        var allFichas = [];
+        datos.forEach(function(dd) { allFichas = allFichas.concat(ordenarFichas(dd.fichas)); });
+        var resumen = calcularResumenGrupo(allFichas);
+
+        var anioResumen;
+        if (Array.isArray(aniosSel) && aniosSel.length > 0) {
+            anioResumen = aniosSel[0];
+        } else {
+            var aniosCount = {};
+            allFichas.forEach(function(ff) {
+                var a = ff.anioServicio || String(new Date().getFullYear());
+                aniosCount[a] = (aniosCount[a] || 0) + 1;
+            });
+            anioResumen = Object.keys(aniosCount).sort(function(a, b) { return aniosCount[b] - aniosCount[a]; })[0] || String(new Date().getFullYear());
+        }
+
+        paginas.push('<div style="padding:15px;">' + renderizarResumen(resumen, grupoNombre, anioResumen) + '</div>');
+
+        var btnGrupo = document.getElementById('btn-pdf-grupo');
+        btnGrupo.disabled = true;
+        btnGrupo.style.opacity = '0.6';
+        renderizarPaginasAPDF(paginas, 'Grupo_' + valor + '_' + etiqueta.replace(/\s+/g, '_') + '.pdf', function() {
+            btnGrupo.disabled = false;
+            btnGrupo.style.opacity = '1';
+        }, allFichas.length);
     });
-    var anioMasComun = Object.keys(aniosCount).sort(function(a, b) { return aniosCount[b] - aniosCount[a]; })[0] || String(new Date().getFullYear());
-
-    paginas.push('<div style="padding:15px;">' + renderizarResumen(resumen, grupoNombre, anioMasComun) + '</div>');
-
-    var btnGrupo = document.getElementById('btn-pdf-grupo');
-    btnGrupo.disabled = true;
-    btnGrupo.style.opacity = '0.6';
-    renderizarPaginasAPDF(paginas, 'Grupo_' + valor + '.pdf', function() {
-        btnGrupo.disabled = false;
-        btnGrupo.style.opacity = '1';
-    }, allFichas.length);
 });
 
 canal.onmessage = function(e) {
@@ -1445,6 +1461,109 @@ function actualizarOverlayPDF(hechas, total, msTranscurrido, tInicio) {
     }
 }
 
+function anioServicioActualPDF() {
+    var hoy = new Date();
+    return hoy.getMonth() >= 8 ? hoy.getFullYear() : hoy.getFullYear() - 1;
+}
+
+function recogerAnios(lista) {
+    var anios = {};
+    lista.forEach(function(f) {
+        if (f.anioServicio) anios[String(f.anioServicio)] = true;
+    });
+    anios[String(anioServicioActualPDF())] = true;
+    return Object.keys(anios).sort();
+}
+
+function abrirSelectorAnio(listaCandidatos, callback) {
+    var modal = document.getElementById('modal-anio-pdf');
+    var select = document.getElementById('select-anio-pdf');
+    var listaDiv = document.getElementById('lista-anios-pdf');
+    if (!modal || !select || !listaDiv) { callback('todos'); return; }
+
+    var anios = recogerAnios(listaCandidatos);
+
+    select.innerHTML = '';
+    listaDiv.innerHTML = '';
+    anios.forEach(function(a) {
+        var opt = document.createElement('option');
+        opt.value = a;
+        opt.textContent = a;
+        select.appendChild(opt);
+
+        var label = document.createElement('label');
+        label.style.display = 'block';
+        label.style.margin = '2px 0';
+        label.style.fontSize = '13px';
+        label.style.cursor = 'pointer';
+        var cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.value = a;
+        cb.checked = true;
+        label.appendChild(cb);
+        label.appendChild(document.createTextNode(' ' + a));
+        listaDiv.appendChild(label);
+    });
+
+    var radios = modal.querySelectorAll('input[name="radio-anio-pdf"]');
+    radios.forEach(function(r) { r.checked = (r.value === 'todos'); });
+    listaDiv.style.display = 'none';
+    select.disabled = true;
+
+    function cerrar() {
+        modal.style.display = 'none';
+        modal.removeEventListener('click', onClickFondo);
+    }
+    function onClickFondo(e) {
+        if (e.target === modal) cerrar();
+    }
+    modal.addEventListener('click', onClickFondo);
+
+    radios.forEach(function(r) {
+        r.addEventListener('change', function() {
+            listaDiv.style.display = (r.value === 'varios') ? '' : 'none';
+            select.disabled = (r.value !== 'uno');
+        });
+    });
+
+    document.getElementById('btn-confirmar-anio-pdf').onclick = function() {
+        var valorRadio = modal.querySelector('input[name="radio-anio-pdf"]:checked').value;
+        var resultado;
+        if (valorRadio === 'todos') {
+            resultado = 'todos';
+        } else if (valorRadio === 'uno') {
+            resultado = [select.value];
+        } else {
+            resultado = [];
+            modal.querySelectorAll('#lista-anios-pdf input[type="checkbox"]').forEach(function(cb) {
+                if (cb.checked) resultado.push(cb.value);
+            });
+            if (resultado.length === 0) { mostrarToast('Selecciona al menos un año', 'error'); return; }
+        }
+        cerrar();
+        callback(resultado);
+    };
+
+    document.getElementById('btn-cancelar-anio-pdf').onclick = function() {
+        cerrar();
+        callback(null);
+    };
+
+    modal.style.display = 'flex';
+}
+
+function fichaEnAnios(f, anios) {
+    if (anios === 'todos') return true;
+    if (!Array.isArray(anios)) return true;
+    var a = String(f.anioServicio || '');
+    return anios.indexOf(a) !== -1;
+}
+
+function etiquetaAnios(anios) {
+    if (anios === 'todos' || !Array.isArray(anios)) return 'Todos los a\u00F1os';
+    return anios.join('-');
+}
+
 function renderizarPaginasAPDF(paginas, nombreArchivo, alTerminar, numFichas) {
     var CtorPDF = (typeof window.jsPDF === 'function') ? window.jsPDF :
                   (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : null;
@@ -1519,106 +1638,123 @@ document.getElementById('btn-pdf-masivo').addEventListener('click', function() {
     var valor = document.getElementById('select-grupo-pdf').value;
     var estadoFiltro = document.getElementById('select-estado').value;
 
-    var todos = lista.filter(function(f) {
+    var candidatos = lista.filter(function(f) {
         var estado = f.estado || 'Activo';
         if (estadoFiltro !== 'todos' && estado !== estadoFiltro) return false;
+        if (valor !== 'todos' && String(f.grupoNumero) !== String(valor)) return false;
         return true;
     });
 
-    if (valor !== 'todos') {
-        todos = todos.filter(function(f) { return String(f.grupoNumero) === String(valor); });
-    }
-
-    if (todos.length === 0) {
+    if (candidatos.length === 0) {
         alert('No hay publicadores activos para generar PDF.');
         return;
     }
 
-    var grupoNombre = valor === 'todos' ? 'Todos los grupos' : 'Grupo ' + valor;
+    abrirSelectorAnio(candidatos, function(aniosSel) {
+        if (aniosSel === null) return;
+        var todos = candidatos.filter(function(f) { return fichaEnAnios(f, aniosSel); });
+        if (todos.length === 0) {
+            mostrarToast('No hay fichas para el año seleccionado', 'error');
+            return;
+        }
 
-    var bloques = [];
-    bloques.push('<div style="margin:0;padding:10px 15px;text-align:center;">' +
-        '<h1 style="margin:0;font-size:16px;color:#000;">' + (valor === 'todos' ? 'Toda la Congregacion - Fichas S-21' : grupoNombre + ' - Fichas S-21') + '</h1>' +
-        '<p style="margin:2px 0 0 0;font-size:11px;color:#333;">Total: ' + todos.length + ' publicadores</p></div>');
+        var grupoNombre = valor === 'todos' ? 'Todos los grupos' : 'Grupo ' + valor;
+        var etiqueta = etiquetaAnios(aniosSel);
 
-    if (valor === 'todos') {
-        var gruposMap = {};
-        var gruposOrden = [];
-        todos.forEach(function(f) {
-            var num = f.grupoNumero || 'Sin grupo';
-            if (!gruposMap[num]) { gruposMap[num] = []; gruposOrden.push(num); }
-            gruposMap[num].push(f);
-        });
-        gruposOrden.sort(function(a, b) {
-            if (a === 'Sin grupo') return 1;
-            if (b === 'Sin grupo') return -1;
-            return parseInt(a) - parseInt(b);
-        });
+        var bloques = [];
+        bloques.push('<div style="margin:0;padding:10px 15px;text-align:center;">' +
+            '<h1 style="margin:0;font-size:16px;color:#000;">' + (valor === 'todos' ? 'Toda la Congregacion - Fichas S-21' : grupoNombre + ' - Fichas S-21') + '</h1>' +
+            '<p style="margin:2px 0 0 0;font-size:11px;color:#333;">Año de servicio: ' + etiqueta + ' &nbsp;|&nbsp; Total: ' + todos.length + ' publicadores</p></div>');
 
-        for (var gi = 0; gi < gruposOrden.length; gi++) {
-            var grupo = gruposOrden[gi];
-            var fichasGrupo = gruposMap[grupo].slice().sort(function(a, b) { return pesoFicha(a) - pesoFicha(b); });
-            var nombreGrupo = 'Grupo ' + grupo;
+        if (valor === 'todos') {
+            var gruposMap = {};
+            var gruposOrden = [];
+            todos.forEach(function(f) {
+                var num = f.grupoNumero || 'Sin grupo';
+                if (!gruposMap[num]) { gruposMap[num] = []; gruposOrden.push(num); }
+                gruposMap[num].push(f);
+            });
+            gruposOrden.sort(function(a, b) {
+                if (a === 'Sin grupo') return 1;
+                if (b === 'Sin grupo') return -1;
+                return parseInt(a) - parseInt(b);
+            });
 
-            bloques.push('<div style="padding:5px 15px 0 15px;">' +
-                '<h2 style="margin:0 0 5px 0;font-size:14px;color:#000;">' + nombreGrupo + ' (' + fichasGrupo.length + ')</h2></div>');
+            for (var gi = 0; gi < gruposOrden.length; gi++) {
+                var grupo = gruposOrden[gi];
+                var fichasGrupo = gruposMap[grupo].slice().sort(function(a, b) { return pesoFicha(a) - pesoFicha(b); });
+                var nombreGrupo = 'Grupo ' + grupo;
 
-            fichasGrupo.forEach(function(f) {
-                bloques.push('<div style="padding:0 15px;">' + renderizarFichaPDF(f, { grupo: true, nombreGrupo: nombreGrupo }) + '</div>');
+                bloques.push('<div style="padding:5px 15px 0 15px;">' +
+                    '<h2 style="margin:0 0 5px 0;font-size:14px;color:#000;">' + nombreGrupo + ' (' + fichasGrupo.length + ')</h2></div>');
+
+                fichasGrupo.forEach(function(f) {
+                    bloques.push('<div style="padding:0 15px;">' + renderizarFichaPDF(f, { grupo: true, nombreGrupo: nombreGrupo }) + '</div>');
+                });
+            }
+        } else {
+            var ordenados = todos.slice().sort(function(a, b) {
+                var ga = parseInt(a.grupoNumero) || 9999;
+                var gb = parseInt(b.grupoNumero) || 9999;
+                if (ga !== gb) return ga - gb;
+                return pesoFicha(a) - pesoFicha(b);
+            });
+
+            ordenados.forEach(function(f) {
+                bloques.push('<div style="padding:0 15px;">' + renderizarFichaPDF(f, { grupo: true, nombreGrupo: grupoNombre }) + '</div>');
             });
         }
-    } else {
-        var ordenados = todos.slice().sort(function(a, b) {
-            var ga = parseInt(a.grupoNumero) || 9999;
-            var gb = parseInt(b.grupoNumero) || 9999;
-            if (ga !== gb) return ga - gb;
-            return pesoFicha(a) - pesoFicha(b);
-        });
 
-        ordenados.forEach(function(f) {
-            bloques.push('<div style="padding:0 15px;">' + renderizarFichaPDF(f, { grupo: true, nombreGrupo: grupoNombre }) + '</div>');
-        });
-    }
-
-    var paginas = empaquetarPaginas(bloques);
-    var btnMasivo = document.getElementById('btn-pdf-masivo');
-    btnMasivo.disabled = true;
-    btnMasivo.style.opacity = '0.6';
-    renderizarPaginasAPDF(paginas, 'Fichas_S21_' + grupoNombre.replace(/\s+/g, '_') + '.pdf', function() {
-        btnMasivo.disabled = false;
-        btnMasivo.style.opacity = '1';
-    }, todos.length);
+        var paginas = empaquetarPaginas(bloques);
+        var btnMasivo = document.getElementById('btn-pdf-masivo');
+        btnMasivo.disabled = true;
+        btnMasivo.style.opacity = '0.6';
+        renderizarPaginasAPDF(paginas, 'Fichas_S21_' + grupoNombre.replace(/\s+/g, '_') + '_' + etiqueta.replace(/\s+/g, '_') + '.pdf', function() {
+            btnMasivo.disabled = false;
+            btnMasivo.style.opacity = '1';
+        }, todos.length);
+    });
 });
 
 function generarPDFPorCargo(nombreCargo, tituloPDF, btn) {
     var lista = cargarLista();
     var estadoFiltro = document.getElementById('select-estado').value;
 
-    var filtrados = lista.filter(function(f) {
+    var candidatos = lista.filter(function(f) {
         var estado = f.estado || 'Activo';
         if (estadoFiltro !== 'todos' && estado !== estadoFiltro) return false;
         var cargos = Array.isArray(f.cargo) ? f.cargo : (f.cargo ? [f.cargo] : []);
         return cargos.indexOf(nombreCargo) !== -1;
     });
 
-    if (filtrados.length === 0) {
+    if (candidatos.length === 0) {
         mostrarToast('No hay publicadores con cargo: ' + nombreCargo, 'error');
         return;
     }
 
-    var ordenados = ordenarFichas(filtrados);
+    abrirSelectorAnio(candidatos, function(aniosSel) {
+        if (aniosSel === null) return;
+        var filtrados = candidatos.filter(function(f) { return fichaEnAnios(f, aniosSel); });
+        if (filtrados.length === 0) {
+            mostrarToast('No hay fichas para el año seleccionado', 'error');
+            return;
+        }
 
-    var bloques = [];
-    for (var i = 0; i < ordenados.length; i++) {
-        bloques.push(renderizarFichaPDF(ordenados[i], { grupo: true, nombreGrupo: tituloPDF }));
-    }
-    var paginas = empaquetarPaginas(bloques);
-    var nombreArchivo = tituloPDF.replace(/\s+/g, '_') + '_Fichas_S21.pdf';
+        var ordenados = ordenarFichas(filtrados);
+        var etiqueta = etiquetaAnios(aniosSel);
 
-    if (btn) { btn.disabled = true; btn.style.opacity = '0.6'; }
-    renderizarPaginasAPDF(paginas, nombreArchivo, function() {
-        if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
-    }, ordenados.length);
+        var bloques = [];
+        for (var i = 0; i < ordenados.length; i++) {
+            bloques.push(renderizarFichaPDF(ordenados[i], { grupo: true, nombreGrupo: tituloPDF + ' - ' + etiqueta }));
+        }
+        var paginas = empaquetarPaginas(bloques);
+        var nombreArchivo = tituloPDF.replace(/\s+/g, '_') + '_Fichas_S21_' + etiqueta.replace(/\s+/g, '_') + '.pdf';
+
+        if (btn) { btn.disabled = true; btn.style.opacity = '0.6'; }
+        renderizarPaginasAPDF(paginas, nombreArchivo, function() {
+            if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
+        }, ordenados.length);
+    });
 }
 
 document.getElementById('btn-pdf-prec-reg').addEventListener('click', function() {

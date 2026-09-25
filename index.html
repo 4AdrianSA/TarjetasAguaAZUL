@@ -342,6 +342,29 @@
         </div>
     </div>
 
+    <div id="modal-anio-pdf" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:1200;justify-content:center;align-items:center;">
+        <div style="background:#24283b;border:2px solid #414868;border-radius:8px;padding:20px;max-width:460px;width:90%;color:#c0caf5;">
+            <h2 style="margin:0 0 15px 0;color:#7aa2f7;font-size:18px;">📑 ¿Qué año de servicio?</h2>
+            <div style="margin-bottom:12px;">
+                <label style="display:block;margin-bottom:6px;font-size:14px;cursor:pointer;">
+                    <input type="radio" name="radio-anio-pdf" value="todos" checked> Todos los años de servicio
+                </label>
+                <label style="display:block;margin-bottom:6px;font-size:14px;cursor:pointer;">
+                    <input type="radio" name="radio-anio-pdf" value="uno"> Un año específico
+                    <select id="select-anio-pdf" style="margin-left:6px;padding:4px 8px;border-radius:4px;border:1px solid #414868;background:#1a1b26;color:#c0caf5;font-size:13px;"></select>
+                </label>
+                <label style="display:block;margin-bottom:6px;font-size:14px;cursor:pointer;">
+                    <input type="radio" name="radio-anio-pdf" value="varios"> Seleccionar varios años
+                </label>
+                <div id="lista-anios-pdf" style="display:none;margin:6px 0 0 24px;max-height:140px;overflow-y:auto;border:1px solid #414868;border-radius:4px;padding:8px;"></div>
+            </div>
+            <div style="display:flex;gap:8px;justify-content:flex-end;">
+                <button id="btn-confirmar-anio-pdf" style="background:#9ece6a;color:#1a1b26;padding:8px 16px;border-radius:4px;font-weight:bold;border:none;cursor:pointer;">Generar PDF</button>
+                <button id="btn-cancelar-anio-pdf" style="background:#f7768e;color:#1a1b26;padding:8px 16px;border-radius:4px;font-weight:bold;border:none;cursor:pointer;">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
     <div id="overlay-pdf" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:3000;justify-content:center;align-items:center;flex-direction:column;color:#fff;font-family:'Segoe UI',Arial,sans-serif;">
         <div style="font-size:18px;font-weight:bold;margin-bottom:10px;">Generando PDF…</div>
         <div style="width:70%;max-width:500px;background:#33374a;border-radius:8px;height:22px;overflow:hidden;border:1px solid #414868;">
